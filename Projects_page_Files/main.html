@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaTech - Engineering Capabilities</title>
+    
+    <!-- Fonts -->
+    <link href="https://cdn.fontcdn.ir/Font/Persian/Vazirmatn/Vazirmatn.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'Inter', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Liberation Mono", "Courier New", 'monospace'],
+                    },
+                    colors: {
+                        bgMain: '#F8FAFC',
+                        bgCard: '#FFFFFF',
+                        bgTech: '#07111F',
+                        techLight: '#111827',
+                        primary: '#2563EB',
+                        cyan: '#06B6D4',
+                        purple: '#7C3AED',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #F8FAFC;
+            color: #0F172A;
+            overflow-x: hidden;
+            cursor: none; /* Custom cursor */
+        }
+
+        .ltr { direction: ltr; display: inline-block; }
+
+        /* Custom Cursor */
+        #custom-cursor {
+            position: fixed;
+            top: 0; left: 0;
+            width: 12px; height: 12px;
+            background-color: #2563EB;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+                        height 0.3s cubic-bezier(0.16, 1, 0.3, 1), 
+                        background-color 0.3s, 
+                        border-radius 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(37, 99, 235, 0.5);
+            mix-blend-mode: exclusion;
+        }
+
+        #custom-cursor::after {
+            content: '';
+            position: absolute;
+            width: 30px; height: 30px;
+            border: 1px solid rgba(37, 99, 235, 0.3);
+            border-radius: 50%;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+
+        #custom-cursor span {
+            display: none;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            font-family: 'Inter', sans-serif;
+            text-transform: uppercase;
+        }
+
+        #custom-cursor.active {
+            width: 70px; height: 70px;
+            background-color: #2563EB;
+            mix-blend-mode: normal;
+        }
+        
+        #custom-cursor.active::after {
+            transform: scale(1.5);
+            opacity: 0;
+        }
+
+        #custom-cursor.active span { display: block; }
+
+        .capability-card {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid #E2E8F0;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        .capability-card:hover {
+            transform: translateY(-5px);
+            border-color: #CBD5E1;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .tech-window {
+            background: #0B1220;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #1E293B;
+            transition: border-color 0.4s;
+        }
+
+        .capability-card:hover .tech-window {
+            border-color: #3B82F6;
+        }
+
+        /* Web Anim */
+        .web-line { width: 0; background: #3B82F6; border-radius: 4px; animation: drawCode 3s infinite; }
+        @keyframes drawCode { 0%, 20% { width: 0; } 50%, 100% { width: var(--w); } }
+        
+        /* WP Anim */
+        .wp-block { transform: translateY(20px); opacity: 0; animation: stackBlocks 3s infinite; }
+        @keyframes stackBlocks { 20%, 100% { transform: translateY(0); opacity: 1; } }
+
+        /* AI Anim */
+        .ai-pulse { animation: pulseGlow 2s infinite; }
+        @keyframes pulseGlow { 0% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(6, 182, 212, 0); } 100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0); } }
+        .data-packet { animation: movePacket 2s infinite linear; }
+        @keyframes movePacket { 0% { left: 10%; top: 50%; opacity: 0;} 10% {opacity: 1;} 90% {opacity: 1;} 100% { left: 90%; top: 50%; opacity: 0;} }
+
+        /* MATLAB Anim */
+        .sine-wave { stroke-dasharray: 100; stroke-dashoffset: 100; animation: drawWave 2s infinite linear; }
+        @keyframes drawWave { to { stroke-dashoffset: 0; } }
+
+        /* COMSOL Anim */
+        .mesh-grid { background-image: linear-gradient(rgba(6, 182, 212, 0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(6, 182, 212, 0.3) 1px, transparent 1px); background-size: 10px 10px; animation: revealMesh 3s infinite alternate; mask-image: radial-gradient(circle, black, transparent 80%); -webkit-mask-image: radial-gradient(circle, black, transparent 80%);}
+        @keyframes revealMesh { 0% { opacity: 0; transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); } }
+
+        /* CV Anim */
+        .scan-line { width: 100%; height: 2px; background: rgba(16, 185, 129, 0.8); position: absolute; box-shadow: 0 0 10px #10B981; animation: scan 2s infinite alternate linear; }
+        @keyframes scan { 0% { top: 10%; } 100% { top: 90%; } }
+
+        .project-modal {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        .project-modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .device-frame-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            background: radial-gradient(circle at center, #1E293B, #07111F);
+            min-height: 500px;
+        }
+
+        .mock-device {
+            background: #FFFFFF;
+            overflow: hidden;
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #334155;
+        }
+
+        .mock-device.desktop {
+            width: 100%;
+            max-width: 900px;
+            height: 550px;
+            border-radius: 12px;
+        }
+
+        .mock-device.mobile {
+            width: 320px;
+            height: 650px;
+            border-radius: 40px;
+            border: 12px solid #0F172A;
+        }
+
+        /* Mock UI Elements */
+        .mock-nav { height: 60px; border-bottom: 1px solid #E2E8F0; display: flex; align-items: center; padding: 0 20px; justify-content: space-between; }
+        .mock-hero { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px; background: linear-gradient(135deg, #F8FAFC, #E2E8F0); }
+        .mock-title { font-size: 2rem; font-weight: 800; color: #0F172A; margin-bottom: 16px; }
+        .mock-skeleton-text { height: 12px; background: #CBD5E1; border-radius: 6px; margin-bottom: 8px; }
+
+        .btn-toggle {
+            padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 600; font-family: 'Inter', sans-serif;
+            transition: all 0.3s; background: transparent; color: #94A3B8; border: 1px solid transparent;
+        }
+        .btn-toggle.active { background: #1E293B; color: #FFFFFF; border-color: #334155; }
+
+        /* Background grid pattern */
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, #E2E8F0 1px, transparent 1px), linear-gradient(to bottom, #E2E8F0 1px, transparent 1px);
+            mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+        }
+
+    </style>
+</head>
+<body class="antialiased selection:bg-blue-200 selection:text-blue-900">
+
+    <div id="custom-cursor"><span id="cursor-text">EXPLORE</span></div>
+
+    <!-- MAIN HOMEPAGE SECTION -->
+    <section class="relative pt-24 pb-32">
+        <!-- Background Grid -->
+        <div class="absolute inset-0 bg-grid opacity-50 pointer-events-none -z-10"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-xs font-bold tracking-widest ltr mb-4">
+                    <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span> OUR CAPABILITIES
+                </div>
+                <h2 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">چه چیزهایی می‌توانیم بسازیم؟</h2>
+                <p class="text-lg text-slate-600 leading-relaxed">
+                    از محصولات دیجیتال و وب‌سایت‌های حرفه‌ای تا سیستم‌های هوش مصنوعی و پروژه‌های مهندسی، MetaTech راهکارهای متناسب با نیاز هر پروژه را طراحی و پیاده‌سازی می‌کند.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-24">
+                
+                <!-- Card 01: Web -->
+                <div class="capability-card bg-white rounded-2xl p-6 flex flex-col cursor-trigger group" data-cursor="WEB" onclick="openProject('modal-web')">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-3xl font-black text-slate-200 ltr font-mono">01</span>
+                        <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+                            <i class="fas fa-code"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">طراحی و توسعه وب</h3>
+                    <p class="text-sm text-slate-500 mb-4 flex-1">طراحی و توسعه وب‌سایت‌ها و محصولات دیجیتال حرفه‌ای، سریع، واکنش‌گرا و متناسب با هویت برند.</p>
+                    
+                    <ul class="text-xs text-slate-600 space-y-1 mb-6 flex-1">
+                        <li><i class="fas fa-check text-blue-500 ml-1"></i> پلتفرم‌های شرکتی و فروشگاهی</li>
+                        <li><i class="fas fa-check text-blue-500 ml-1"></i> داشبوردهای مدیریتی اختصاصی</li>
+                    </ul>
+
+                    <!-- Visual Tech Window -->
+                    <div class="tech-window h-32 rounded-xl mt-auto flex flex-col justify-center items-center p-4">
+                        <div class="w-3/4 h-3/4 border border-slate-700 rounded-md bg-slate-800 flex flex-col p-2 relative overflow-hidden group-hover:border-blue-500 transition-colors">
+                            <div class="flex gap-1 mb-2 border-b border-slate-700 pb-1">
+                                <div class="w-2 h-2 rounded-full bg-slate-600"></div>
+                                <div class="w-2 h-2 rounded-full bg-slate-600"></div>
+                                <div class="w-2 h-2 rounded-full bg-slate-600"></div>
+                            </div>
+                            <div class="flex-1 flex flex-col gap-2">
+                                <div class="web-line h-2" style="--w: 40%; animation-delay: 0s;"></div>
+                                <div class="web-line h-2" style="--w: 80%; animation-delay: 0.2s;"></div>
+                                <div class="web-line h-2" style="--w: 60%; animation-delay: 0.4s;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- NEW LEARN MORE BUTTON -->
+                    <a href="/Projects_page_Files/web_development_service.html" target="_blank" onclick="event.stopPropagation()" class="mt-6 flex items-center justify-center w-full py-3 bg-slate-50 hover:bg-blue-50 text-blue-600 text-sm font-bold rounded-xl transition-colors border border-slate-200 hover:border-blue-200 group-hover:bg-blue-600 group-hover:text-white">
+                        اطلاعات بیشتر <i class="fas fa-arrow-left mr-2 transition-transform group-hover:-translate-x-1"></i>
+                    </a>
+                </div>
+
+                <!-- Card 02: WordPress -->
+                <div class="capability-card bg-white rounded-2xl p-6 flex flex-col cursor-trigger group" data-cursor="WP" onclick="openProject('modal-wp')">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-3xl font-black text-slate-200 ltr font-mono">02</span>
+                        <div class="w-10 h-10 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center text-lg">
+                            <i class="fab fa-wordpress-simple"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">توسعه WordPress</h3>
+                    <p class="text-sm text-slate-500 mb-4 flex-1">ساخت وب‌سایت‌های حرفه‌ای و قابل مدیریت با وردپرس، از طراحی قالب اختصاصی تا توسعه افزونه.</p>
+                    
+                    <ul class="text-xs text-slate-600 space-y-1 mb-6 flex-1">
+                        <li><i class="fas fa-check text-slate-500 ml-1"></i> قالب‌های اختصاصی (Custom Theme)</li>
+                        <li><i class="fas fa-check text-slate-500 ml-1"></i> بهینه‌سازی سرعت و امنیت</li>
+                    </ul>
+
+                    <div class="tech-window h-32 rounded-xl mt-auto flex flex-col justify-center items-center p-4">
+                        <div class="flex flex-col gap-2 w-1/2">
+                            <div class="wp-block h-4 bg-slate-700 rounded border border-slate-600" style="animation-delay: 0s;"></div>
+                            <div class="wp-block h-8 bg-slate-700 rounded border border-slate-600 group-hover:bg-slate-600 transition-colors" style="animation-delay: 0.2s;"></div>
+                            <div class="wp-block h-4 bg-slate-700 rounded border border-slate-600" style="animation-delay: 0.4s;"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- NEW LEARN MORE BUTTON -->
+                    <a href="/Projects_page_Files/wordpress_development_service.html" target="_blank" onclick="event.stopPropagation()" class="mt-6 flex items-center justify-center w-full py-3 bg-slate-50 hover:bg-slate-100 text-slate-700 text-sm font-bold rounded-xl transition-colors border border-slate-200 hover:border-slate-300 group-hover:bg-slate-800 group-hover:text-white">
+                        اطلاعات بیشتر <i class="fas fa-arrow-left mr-2 transition-transform group-hover:-translate-x-1"></i>
+                    </a>
+                </div>
+
+                <!-- Card 03: AI Agents -->
+                <div class="capability-card bg-white rounded-2xl p-6 flex flex-col cursor-trigger group" data-cursor="AI" onclick="openProject('modal-ai')">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-3xl font-black text-slate-200 ltr font-mono">03</span>
+                        <div class="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-lg">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">ایجنت‌های هوش مصنوعی</h3>
+                    <p class="text-sm text-slate-500 mb-4 flex-1">طراحی سیستم‌های هوشمند برای خودکارسازی فرآیندها، پاسخ‌گویی، تحلیل اطلاعات و یکپارچه‌سازی ابزارها.</p>
+                    
+                    <ul class="text-xs text-slate-600 space-y-1 mb-6 flex-1">
+                        <li><i class="fas fa-check text-purple-500 ml-1"></i> اتوماسیون (n8n, LangChain)</li>
+                        <li><i class="fas fa-check text-purple-500 ml-1"></i> سیستم‌های RAG و چت‌بات سازمانی</li>
+                    </ul>
+
+                    <div class="tech-window h-32 rounded-xl mt-auto flex items-center justify-center relative">
+                        <div class="absolute w-full h-[1px] bg-slate-700"></div>
+                        <div class="absolute data-packet w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee]"></div>
+                        <div class="w-8 h-8 rounded-full border border-purple-500 bg-purple-900/50 ai-pulse z-10 flex items-center justify-center">
+                            <i class="fas fa-robot text-purple-300 text-xs"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- NEW LEARN MORE BUTTON -->
+                    <a href="/Projects_page_Files/ai_agents_automation.html" target="_blank" onclick="event.stopPropagation()" class="mt-6 flex items-center justify-center w-full py-3 bg-slate-50 hover:bg-purple-50 text-purple-600 text-sm font-bold rounded-xl transition-colors border border-slate-200 hover:border-purple-200 group-hover:bg-purple-600 group-hover:text-white">
+                        اطلاعات بیشتر <i class="fas fa-arrow-left mr-2 transition-transform group-hover:-translate-x-1"></i>
+                    </a>
+                </div>
+
+                <!-- Card 04: MATLAB -->
+                <div class="capability-card bg-white rounded-2xl p-6 flex flex-col cursor-trigger group" data-cursor="MATLAB" onclick="openProject('modal-matlab')">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-3xl font-black text-slate-200 ltr font-mono">04</span>
+                        <div class="w-10 h-10 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center text-lg">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">پروژه‌های MATLAB</h3>
+                    <p class="text-sm text-slate-500 mb-4 flex-1">توسعه و تحلیل پروژه‌های مهندسی در حوزه سیگنال، کنترل، مخابرات، داده و محاسبات علمی.</p>
+                    
+                    <ul class="text-xs text-slate-600 space-y-1 mb-6 flex-1">
+                        <li><i class="fas fa-check text-orange-500 ml-1"></i> پردازش سیگنال و سیستم‌های کنترل</li>
+                        <li><i class="fas fa-check text-orange-500 ml-1"></i> محاسبات عددی و بهینه‌سازی</li>
+                    </ul>
+
+                    <div class="tech-window h-32 rounded-xl mt-auto p-4 flex items-center justify-center">
+                        <svg viewBox="0 0 100 40" class="w-full h-full opacity-70 group-hover:opacity-100 transition-opacity">
+                            <path d="M0,20 Q10,0 20,20 T40,20 T60,20 T80,20 T100,20" fill="none" stroke="#F97316" stroke-width="2" class="sine-wave"/>
+                            <line x1="0" y1="20" x2="100" y2="20" stroke="#334155" stroke-width="1" stroke-dasharray="2,2"/>
+                            <line x1="10" y1="0" x2="10" y2="40" stroke="#334155" stroke-width="1"/>
+                        </svg>
+                    </div>
+                    
+                    <!-- NEW LEARN MORE BUTTON -->
+                    <a href="/Projects_page_Files/matlab_engineering.html" target="_blank" onclick="event.stopPropagation()" class="mt-6 flex items-center justify-center w-full py-3 bg-slate-50 hover:bg-orange-50 text-orange-600 text-sm font-bold rounded-xl transition-colors border border-slate-200 hover:border-orange-200 group-hover:bg-orange-500 group-hover:text-white">
+                        اطلاعات بیشتر <i class="fas fa-arrow-left mr-2 transition-transform group-hover:-translate-x-1"></i>
+                    </a>
+                </div>
+
+                <!-- Card 05: COMSOL -->
+                <div class="capability-card bg-white rounded-2xl p-6 flex flex-col cursor-trigger group" data-cursor="SIM" onclick="openProject('modal-comsol')">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-3xl font-black text-slate-200 ltr font-mono">05</span>
+                        <div class="w-10 h-10 rounded-lg bg-cyan-50 text-cyan-600 flex items-center justify-center text-lg">
+                            <i class="fas fa-cube"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">شبیه‌سازی COMSOL</h3>
+                    <p class="text-sm text-slate-500 mb-4 flex-1">مدل‌سازی و شبیه‌سازی مسائل مهندسی و چندفیزیکی برای تحلیل، طراحی و بهینه‌سازی سیستم‌ها.</p>
+                    
+                    <ul class="text-xs text-slate-600 space-y-1 mb-6 flex-1">
+                        <li><i class="fas fa-check text-cyan-500 ml-1"></i> انتقال حرارت و الکترومغناطیس</li>
+                        <li><i class="fas fa-check text-cyan-500 ml-1"></i> دینامیک سیالات و مکانیک جامدات</li>
+                    </ul>
+
+                    <div class="tech-window h-32 rounded-xl mt-auto flex items-center justify-center overflow-hidden">
+                        <div class="w-16 h-16 border border-cyan-500/50 transform rotate-45 rotate-x-60 relative group-hover:border-cyan-400 transition-colors bg-cyan-900/20">
+                            <div class="absolute inset-0 mesh-grid"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- NEW LEARN MORE BUTTON -->
+                    <a href="/Projects_page_Files/comsol_multiphysics.html" target="_blank" onclick="event.stopPropagation()" class="mt-6 flex items-center justify-center w-full py-3 bg-slate-50 hover:bg-cyan-50 text-cyan-600 text-sm font-bold rounded-xl transition-colors border border-slate-200 hover:border-cyan-200 group-hover:bg-cyan-600 group-hover:text-white">
+                        اطلاعات بیشتر <i class="fas fa-arrow-left mr-2 transition-transform group-hover:-translate-x-1"></i>
+                    </a>
+                </div>
+
+                <!-- Card 06: OpenCV / CV -->
+                <div class="capability-card bg-white rounded-2xl p-6 flex flex-col cursor-trigger group" data-cursor="VISION" onclick="openProject('modal-cv')">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-3xl font-black text-slate-200 ltr font-mono">06</span>
+                        <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">هوش مصنوعی و بینایی ماشین</h3>
+                    <p class="text-sm text-slate-500 mb-4 flex-1">توسعه سیستم‌های پردازش تصویر و یادگیری عمیق برای تشخیص، طبقه‌بندی و تحلیل تصاویر.</p>
+                    
+                    <ul class="text-xs text-slate-600 space-y-1 mb-6 flex-1">
+                        <li><i class="fas fa-check text-emerald-500 ml-1"></i> تشخیص اشیا (Object Detection)</li>
+                        <li><i class="fas fa-check text-emerald-500 ml-1"></i> پردازش ویدئو و OpenCV</li>
+                    </ul>
+
+                    <div class="tech-window h-32 rounded-xl mt-auto p-4 flex items-center justify-center relative">
+                        <div class="w-2/3 h-2/3 border-2 border-slate-700 rounded relative overflow-hidden group-hover:border-emerald-500/50 transition-colors">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <i class="fas fa-user text-slate-600 text-2xl"></i>
+                            </div>
+                            <div class="absolute top-1/4 left-1/4 right-1/4 bottom-1/4 border border-emerald-400 bg-emerald-400/10 z-10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div class="scan-line"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- NEW LEARN MORE BUTTON -->
+                    <a href="/Projects_page_Files/code_artifact.html" target="_blank" onclick="event.stopPropagation()" class="mt-6 flex items-center justify-center w-full py-3 bg-slate-50 hover:bg-emerald-50 text-emerald-600 text-sm font-bold rounded-xl transition-colors border border-slate-200 hover:border-emerald-200 group-hover:bg-emerald-600 group-hover:text-white">
+                        اطلاعات بیشتر <i class="fas fa-arrow-left mr-2 transition-transform group-hover:-translate-x-1"></i>
+                    </a>
+                </div>
+
+            </div>
+
+            <div class="mt-16 pt-16 border-t border-slate-200">
+                <div class="flex items-end justify-between mb-10">
+                    <div>
+                        <h3 class="text-3xl font-extrabold text-slate-900 mb-2">نمونه‌کارهای منتخب</h3>
+                        <p class="text-slate-500">بخشی از پروژه‌هایی که برای نمایش توانایی‌ها و کیفیت اجرای MetaTech انتخاب کرده‌ایم.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    
+                    <!-- Feature 01 -->
+                    <div class="group cursor-pointer" onclick="openProject('modal-web')">
+                        <div class="aspect-video bg-slate-100 rounded-xl mb-4 overflow-hidden relative border border-slate-200 shadow-sm group-hover:shadow-md transition">
+                            <div class="absolute inset-0 bg-[#07111F] p-4 flex flex-col">
+                                <div class="flex gap-1 mb-3"><div class="w-2 h-2 rounded-full bg-slate-700"></div><div class="w-2 h-2 rounded-full bg-slate-700"></div></div>
+                                <div class="flex-1 border border-slate-800 bg-slate-900 rounded p-4 text-center flex flex-col justify-center">
+                                    <div class="text-slate-300 font-bold ltr tracking-widest text-lg">NOVA <span class="text-blue-500">ENG.</span></div>
+                                    <div class="text-slate-600 text-[10px] mt-2">Corporate Platform</div>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded ltr">WEB DEVELOPMENT</span>
+                        <h4 class="font-bold text-slate-900 mt-3 text-lg group-hover:text-blue-600 transition">پلتفرم شرکتی NOVA</h4>
+                        <p class="text-sm text-slate-500 mt-1 line-clamp-2">طراحی و توسعه یک پلتفرم شرکتی مدرن با تمرکز بر تجربه کاربری، سرعت و نمایش حرفه‌ای خدمات.</p>
+                    </div>
+
+                    <!-- Feature 02 -->
+                    <div class="group cursor-pointer" onclick="openProject('modal-ai')">
+                        <div class="aspect-video bg-slate-100 rounded-xl mb-4 overflow-hidden relative border border-slate-200 shadow-sm group-hover:shadow-md transition">
+                            <div class="absolute inset-0 bg-[#07111F] p-4 flex gap-4">
+                                <div class="w-1/3 bg-slate-900 rounded border border-slate-800 flex flex-col p-2 gap-2">
+                                    <div class="h-2 bg-slate-800 rounded w-full"></div>
+                                    <div class="h-2 bg-slate-800 rounded w-3/4"></div>
+                                </div>
+                                <div class="flex-1 bg-slate-900 rounded border border-slate-800 flex flex-col justify-end p-2 gap-2">
+                                    <div class="h-6 bg-purple-900/30 rounded w-2/3 ml-auto border border-purple-500/30"></div>
+                                    <div class="h-6 bg-slate-800 rounded w-2/3 mr-auto"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded ltr">AI AGENT</span>
+                        <h4 class="font-bold text-slate-900 mt-3 text-lg group-hover:text-purple-600 transition">دستیار هوشمند سازمانی</h4>
+                        <p class="text-sm text-slate-500 mt-1 line-clamp-2">داشبورد یکپارچه هوش مصنوعی شامل پایگاه دانش، اتوماسیون گردش کار و تحلیل داده‌ها.</p>
+                    </div>
+
+                    <!-- Feature 03 -->
+                    <div class="group cursor-pointer" onclick="openProject('modal-comsol')">
+                        <div class="aspect-video bg-slate-100 rounded-xl mb-4 overflow-hidden relative border border-slate-200 shadow-sm group-hover:shadow-md transition">
+                            <div class="absolute inset-0 bg-[#07111F] flex items-center justify-center">
+                                <div class="w-24 h-24 rounded-full border border-cyan-500/30 bg-gradient-to-tr from-cyan-900/50 to-blue-900/50 relative">
+                                    <div class="absolute inset-0 rounded-full border-2 border-dashed border-cyan-400 animate-spin-slow" style="animation-duration: 10s;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-bold text-cyan-600 bg-cyan-50 px-2 py-1 rounded ltr">COMSOL / MATLAB</span>
+                        <h4 class="font-bold text-slate-900 mt-3 text-lg group-hover:text-cyan-600 transition">شبیه‌سازی دینامیک حرارتی</h4>
+                        <p class="text-sm text-slate-500 mt-1 line-clamp-2">مدل‌سازی سه‌بعدی و شبیه‌سازی چندفیزیکی توزیع حرارت و جریان در تجهیزات صنعتی.</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="modals-container" class="fixed inset-0 z-[100] hidden">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-slate-900/90 backdrop-blur-sm" onclick="closeModals()"></div>
+
+        <!-- Scrollable Content Area -->
+        <div class="absolute inset-0 overflow-y-auto overflow-x-hidden">
+            <div class="min-h-full flex items-center justify-center p-4 sm:p-6">
+                
+                <!-- 1. WEB DEVELOPMENT MODAL -->
+                <div id="modal-web" class="project-modal w-full max-w-6xl bg-white rounded-2xl shadow-2xl overflow-hidden relative flex-col">
+                    <!-- Header -->
+                    <div class="sticky top-0 z-20 flex justify-between items-center p-4 border-b border-slate-200 bg-white/90 backdrop-blur">
+                        <button onclick="closeModals()" class="text-slate-500 hover:text-slate-900 font-medium flex items-center gap-2">
+                            <i class="fas fa-arrow-right"></i> بازگشت به پروژه‌ها
+                        </button>
+                        <button class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-bold text-sm transition">شروع یک پروژه</button>
+                    </div>
+                    
+                    <!-- Result First: Visual Showcase -->
+                    <div class="bg-[#07111F] border-b border-slate-800">
+                        <div class="p-4 flex justify-center gap-4">
+                            <button class="btn-toggle active" onclick="setDeviceMode('web-frame', 'desktop', this)"><i class="fas fa-desktop ml-2"></i> DESKTOP</button>
+                            <button class="btn-toggle" onclick="setDeviceMode('web-frame', 'mobile', this)"><i class="fas fa-mobile-alt ml-2"></i> MOBILE</button>
+                        </div>
+                        <div class="device-frame-container">
+                            <div id="web-frame" class="mock-device desktop">
+                                <!-- Mock Website Content -->
+                                <div class="mock-nav">
+                                    <div class="font-bold text-slate-800 text-xl ltr">NOVA <span class="text-blue-600">ENG.</span></div>
+                                    <div class="hidden md:flex gap-6 text-sm text-slate-500 font-medium"><span>Services</span><span>Projects</span><span>About</span></div>
+                                </div>
+                                <div class="mock-hero">
+                                    <div class="mock-title">Engineering the Future.</div>
+                                    <p class="text-slate-500 mb-8 max-w-md mx-auto text-sm">Advanced solutions for modern structural challenges.</p>
+                                    <div class="w-32 h-10 bg-blue-600 rounded mx-auto mb-8"></div>
+                                    <div class="w-full max-w-lg mx-auto">
+                                        <div class="mock-skeleton-text w-full"></div>
+                                        <div class="mock-skeleton-text w-5/6 mx-auto"></div>
+                                        <div class="mock-skeleton-text w-4/6 mx-auto"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Process & Details -->
+                    <div class="p-8 md:p-12 max-w-4xl mx-auto w-full">
+                        <h2 class="text-3xl font-bold text-slate-900 mb-4">چه چیزی ساختیم؟</h2>
+                        <p class="text-slate-600 mb-10 leading-relaxed text-lg">این پروژه با هدف ایجاد یک تجربه دیجیتال حرفه‌ای برای معرفی برند و خدمات شرکت NOVA طراحی و توسعه داده شد. تمرکز اصلی بر روی سرعت بالا، معماری مقیاس‌پذیر و رابط کاربری مینیمال و شرکتی بود.</p>
+                        
+                        <div class="grid md:grid-cols-2 gap-10 mb-16">
+                            <div>
+                                <h3 class="font-bold text-slate-900 mb-3 text-lg border-r-2 border-blue-500 pr-3">چالش (The Challenge)</h3>
+                                <p class="text-slate-600 text-sm leading-relaxed">نیاز به یک پلتفرم که بتواند حجم بالایی از پروژه‌های مهندسی را به صورت بصری و ساختاریافته نمایش دهد، بدون اینکه سرعت لود صفحات افت کند.</p>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-900 mb-3 text-lg border-r-2 border-green-500 pr-3">راهکار (The Solution)</h3>
+                                <p class="text-slate-600 text-sm leading-relaxed">استفاده از معماری Jamstack، پیاده‌سازی SSR برای سئو، و طراحی یک سیستم دیزاین اختصاصی (Design System) برای یکپارچگی بصری در تمامی صفحات و دستگاه‌ها.</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-16 border-t border-b border-slate-100 py-8">
+                            <h3 class="text-center font-bold text-slate-400 text-xs tracking-widest ltr mb-6">TECHNOLOGIES USED</h3>
+                            <div class="flex flex-wrap justify-center gap-3">
+                                <span class="px-4 py-2 bg-slate-50 text-slate-700 rounded-lg text-sm font-medium border border-slate-200 ltr">React / Next.js</span>
+                                <span class="px-4 py-2 bg-slate-50 text-slate-700 rounded-lg text-sm font-medium border border-slate-200 ltr">Tailwind CSS</span>
+                                <span class="px-4 py-2 bg-slate-50 text-slate-700 rounded-lg text-sm font-medium border border-slate-200 ltr">Node.js API</span>
+                                <span class="px-4 py-2 bg-slate-50 text-slate-700 rounded-lg text-sm font-medium border border-slate-200 ltr">PostgreSQL</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-blue-50 rounded-2xl p-8 text-center border border-blue-100">
+                            <h3 class="text-2xl font-bold text-blue-900 mb-2">این فقط یک نمونه است.</h3>
+                            <p class="text-blue-700 mb-8">ما می‌توانیم همین سطح از طراحی و توسعه را متناسب با نیاز کسب‌وکار شما شخصی‌سازی کنیم. چه سیستم‌هایی می‌سازیم؟</p>
+                            <div class="flex flex-wrap justify-center gap-2 mb-8">
+                                <span class="px-3 py-1 bg-white text-blue-800 rounded-full text-xs font-bold shadow-sm">وب‌سایت شرکتی</span>
+                                <span class="px-3 py-1 bg-white text-blue-800 rounded-full text-xs font-bold shadow-sm">پلتفرم‌های اختصاصی (Web App)</span>
+                                <span class="px-3 py-1 bg-white text-blue-800 rounded-full text-xs font-bold shadow-sm">داشبورد مدیریتی</span>
+                                <span class="px-3 py-1 bg-white text-blue-800 rounded-full text-xs font-bold shadow-sm">فروشگاه‌های پیچیده</span>
+                            </div>
+                            <button class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold transition shadow-lg shadow-blue-600/30">شروع پروژه وب شما</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="modal-ai" class="project-modal w-full max-w-6xl bg-white rounded-2xl shadow-2xl overflow-hidden relative flex-col">
+                    <div class="sticky top-0 z-20 flex justify-between items-center p-4 border-b border-slate-200 bg-white/90 backdrop-blur">
+                        <button onclick="closeModals()" class="text-slate-500 hover:text-slate-900 font-medium flex items-center gap-2">
+                            <i class="fas fa-arrow-right"></i> بازگشت به پروژه‌ها
+                        </button>
+                        <button class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-lg font-bold text-sm transition">شروع یک پروژه</button>
+                    </div>
+                    
+                    <!-- Showcase -->
+                    <div class="bg-[#07111F] p-8 md:p-12 border-b border-slate-800 flex flex-col md:flex-row gap-8 items-stretch min-h-[500px]">
+                        <!-- Chat Interface -->
+                        <div class="flex-1 bg-slate-900 border border-slate-700 rounded-xl flex flex-col overflow-hidden shadow-2xl">
+                            <div class="h-14 border-b border-slate-800 flex items-center px-4 bg-slate-800/50">
+                                <div class="w-3 h-3 rounded-full bg-green-500 mr-2 animate-pulse"></div>
+                                <span class="text-white font-medium text-sm">MetaTech AI Enterprise Agent</span>
+                            </div>
+                            <div class="flex-1 p-4 overflow-y-auto flex flex-col gap-4" id="ai-chat-history">
+                                <div class="self-start max-w-[80%] bg-slate-800 text-slate-200 p-3 rounded-2xl rounded-tr-sm text-sm border border-slate-700">
+                                    سلام! من نمونه ایجنت هوش مصنوعی سازمانی هستم. این یک رابط کاربری دمو برای نمایش قابلیت‌های ماست. درباره سیستم‌های اتوماسیون سوالی دارید؟
+                                </div>
+                            </div>
+                            <div class="p-4 bg-slate-800/50 border-t border-slate-800 flex gap-2">
+                                <input type="text" id="ai-input" placeholder="پیام خود را بنویسید..." class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-purple-500">
+                                <button onclick="sendFakeAiMessage()" class="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-lg transition"><i class="fas fa-paper-plane rotate-180"></i></button>
+                            </div>
+                        </div>
+                        <!-- Workflow Vis -->
+                        <div class="w-full md:w-1/3 flex flex-col items-center justify-center gap-4 py-8">
+                            <h4 class="text-slate-400 text-xs font-bold tracking-widest ltr mb-4">ARCHITECTURE</h4>
+                            <div class="w-40 bg-slate-800 border border-slate-700 text-white text-center py-2 rounded text-sm relative z-10 shadow-lg">User Interface</div>
+                            <div class="h-6 border-r-2 border-dashed border-slate-600 relative">
+                                <div class="absolute w-2 h-2 bg-purple-500 rounded-full -left-[3px] top-0 animate-[scan_2s_infinite]"></div>
+                            </div>
+                            <div class="w-40 bg-purple-900/40 border border-purple-500/50 text-purple-100 text-center py-2 rounded text-sm relative z-10 shadow-[0_0_15px_rgba(168,85,247,0.2)]">AI Orchestrator</div>
+                            <div class="h-6 border-r-2 border-dashed border-slate-600"></div>
+                            <div class="flex gap-4">
+                                <div class="w-24 bg-slate-800 border border-slate-700 text-slate-300 text-center py-2 rounded text-xs">Vector DB</div>
+                                <div class="w-24 bg-slate-800 border border-slate-700 text-slate-300 text-center py-2 rounded text-xs">External APIs</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Details -->
+                    <div class="p-8 md:p-12 max-w-4xl mx-auto w-full">
+                        <h2 class="text-3xl font-bold text-slate-900 mb-4">معماری هوش مصنوعی سازمانی</h2>
+                        <p class="text-slate-600 mb-10 leading-relaxed text-lg">سیستم فوق نمایشی از معماری RAG (Retrieval-Augmented Generation) و ایجنت‌های هوشمند است که قابلیت اتصال به دیتابیس‌های داخلی شرکت و پاسخگویی دقیق بر اساس اسناد محرمانه را داراست.</p>
+                        
+                        <div class="bg-purple-50 rounded-2xl p-8 text-center border border-purple-100 mt-12">
+                            <h3 class="text-2xl font-bold text-purple-900 mb-2">چه سیستم‌های AI می‌توانیم بسازیم؟</h3>
+                            <p class="text-purple-700 mb-8">از خودکارسازی فرآیندهای تکراری تا خلق دستیاران هوشمند تخصصی.</p>
+                            <div class="flex flex-wrap justify-center gap-2 mb-8">
+                                <span class="px-3 py-1 bg-white text-purple-800 rounded-full text-xs font-bold shadow-sm">دستیار پشتیبانی مشتریان</span>
+                                <span class="px-3 py-1 bg-white text-purple-800 rounded-full text-xs font-bold shadow-sm">تحلیل‌گر داده و گزارش‌ساز</span>
+                                <span class="px-3 py-1 bg-white text-purple-800 rounded-full text-xs font-bold shadow-sm">اتوماسیون فرم‌ها و اسناد</span>
+                                <span class="px-3 py-1 bg-white text-purple-800 rounded-full text-xs font-bold shadow-sm">موتورهای پیشنهاد دهنده</span>
+                            </div>
+                            <button class="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-xl font-bold transition shadow-lg shadow-purple-600/30">مشاوره پیاده‌سازی AI</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="modal-comsol" class="project-modal w-full max-w-6xl bg-white rounded-2xl shadow-2xl overflow-hidden relative flex-col">
+                    <div class="sticky top-0 z-20 flex justify-between items-center p-4 border-b border-slate-200 bg-white/90 backdrop-blur">
+                        <button onclick="closeModals()" class="text-slate-500 hover:text-slate-900 font-medium flex items-center gap-2">
+                            <i class="fas fa-arrow-right"></i> بازگشت به پروژه‌ها
+                        </button>
+                        <button class="bg-cyan-600 hover:bg-cyan-700 text-white px-5 py-2 rounded-lg font-bold text-sm transition">شروع یک پروژه</button>
+                    </div>
+                    
+                    <!-- Showcase -->
+                    <div class="bg-[#07111F] p-4 md:p-8 border-b border-slate-800 min-h-[500px] flex flex-col relative overflow-hidden">
+                        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9IiMzMzQxNTUiLz48L3N2Zz4=')] opacity-20"></div>
+                        <h3 class="text-white font-mono text-sm mb-4 relative z-10"><i class="fas fa-cube text-cyan-500 ml-2"></i> Engineering Simulation Environment</h3>
+                        
+                        <div class="flex-1 flex items-center justify-center relative z-10">
+                            <!-- Simulated 3D Object with Heatmap -->
+                            <div class="relative w-64 h-64 border border-cyan-500/20 rounded-full bg-gradient-to-tr from-blue-900 via-cyan-800 to-red-600 shadow-[0_0_50px_rgba(6,182,212,0.2)] flex items-center justify-center overflow-hidden">
+                                <div class="absolute inset-0 mesh-grid" style="background-size: 20px 20px;"></div>
+                                <div class="absolute w-32 h-32 bg-red-500/50 rounded-full blur-2xl top-1/4 right-1/4"></div>
+                                <div class="absolute w-32 h-32 bg-blue-500/50 rounded-full blur-2xl bottom-1/4 left-1/4"></div>
+                            </div>
+                            
+                            <!-- Legend -->
+                            <div class="absolute right-8 bottom-8 bg-slate-900/80 border border-slate-700 p-3 rounded backdrop-blur text-[10px] text-slate-300 font-mono ltr">
+                                <div class="mb-2 text-center">Temp (K)</div>
+                                <div class="w-4 h-32 rounded bg-gradient-to-b from-red-600 via-yellow-400 to-blue-600 mx-auto"></div>
+                                <div class="flex justify-between flex-col h-32 absolute top-7 right-9 text-[9px]">
+                                    <span>393</span><span>293</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Details -->
+                    <div class="p-8 md:p-12 max-w-4xl mx-auto w-full">
+                        <h2 class="text-3xl font-bold text-slate-900 mb-4">شبیه‌سازی چندفیزیکی (Multiphysics)</h2>
+                        <p class="text-slate-600 mb-10 leading-relaxed text-lg">این دمو نمایشی از خروجی بصری شبیه‌سازی انتقال حرارت و جریان سیال است که با استفاده از ابزارهای محاسباتی دقیق (مانند COMSOL و MATLAB) برای تحلیل رفتار سیستم‌های مهندسی پیش از ساخت انجام می‌شود.</p>
+                        
+                        <div class="bg-cyan-50 rounded-2xl p-8 text-center border border-cyan-100 mt-8">
+                            <h3 class="text-2xl font-bold text-cyan-900 mb-2">چه پروژه‌های مهندسی می‌پذیریم؟</h3>
+                            <p class="text-cyan-700 mb-8">از تحلیل‌های تئوری تا شبیه‌سازی‌های المان محدود (FEM).</p>
+                            <div class="flex flex-wrap justify-center gap-2 mb-8">
+                                <span class="px-3 py-1 bg-white text-cyan-800 rounded-full text-xs font-bold shadow-sm">الکترومغناطیس و آنتن</span>
+                                <span class="px-3 py-1 bg-white text-cyan-800 rounded-full text-xs font-bold shadow-sm">دینامیک سیالات محاسباتی (CFD)</span>
+                                <span class="px-3 py-1 bg-white text-cyan-800 rounded-full text-xs font-bold shadow-sm">پردازش سیگنال (MATLAB)</span>
+                                <span class="px-3 py-1 bg-white text-cyan-800 rounded-full text-xs font-bold shadow-sm">طراحی سیستم‌های کنترل</span>
+                            </div>
+                            <button class="bg-cyan-600 hover:bg-cyan-700 text-white px-8 py-3 rounded-xl font-bold transition shadow-lg shadow-cyan-600/30">ثبت درخواست پروژه مهندسی</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Fallback Modals for WP, MATLAB, CV (Using generic structure to satisfy constraints compactly) -->
+                <div id="modal-generic" class="project-modal w-full max-w-3xl bg-white rounded-2xl shadow-xl overflow-hidden relative flex-col">
+                     <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                        <h3 class="font-bold text-slate-800" id="generic-title">آزمایشگاه تخصصی</h3>
+                        <button onclick="closeModals()" class="text-slate-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+                    </div>
+                    <div class="p-12 text-center flex flex-col items-center">
+                        <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mb-6 text-3xl text-slate-400">
+                            <i class="fas fa-flask"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-slate-800 mb-4">محیط دمو در حال آماده‌سازی</h2>
+                        <p class="text-slate-500 mb-8 max-w-md">این بخش برای نمایش تخصصی قابلیتی که انتخاب کردید در حال توسعه است. دیزاین، رابط کاربری و تعاملات آن منطبق بر اصول مهندسی MetaTech خواهد بود.</p>
+                        <button onclick="closeModals()" class="bg-slate-900 text-white px-6 py-2 rounded-lg font-bold">متوجه شدم</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Custom Cursor Logic ---
+        const cursor = document.getElementById('custom-cursor');
+        const cursorText = document.getElementById('cursor-text');
+        const triggers = document.querySelectorAll('.cursor-trigger');
+        let isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+        if (!isMobile) {
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+            });
+
+            triggers.forEach(trigger => {
+                trigger.addEventListener('mouseenter', () => {
+                    cursor.classList.add('active');
+                    cursorText.innerText = trigger.getAttribute('data-cursor') || 'EXPLORE';
+                });
+                trigger.addEventListener('mouseleave', () => {
+                    cursor.classList.remove('active');
+                });
+            });
+        } else {
+            cursor.style.display = 'none'; // Disable on touch devices
+        }
+
+        // --- Modals Logic ---
+        const modalsContainer = document.getElementById('modals-container');
+        const allModals = document.querySelectorAll('.project-modal');
+
+        function openProject(modalId) {
+            // Re-route incomplete mockups to generic
+            if(modalId === 'modal-wp' || modalId === 'modal-matlab' || modalId === 'modal-cv') {
+               modalId = 'modal-generic';
+            }
+
+            document.body.style.overflow = 'hidden'; // Prevent bg scrolling
+            modalsContainer.classList.remove('hidden');
+            
+            allModals.forEach(m => m.classList.remove('active'));
+            
+            const targetModal = document.getElementById(modalId);
+            if(targetModal) {
+                // small delay for display block to render before opacity transition
+                setTimeout(() => targetModal.classList.add('active'), 10);
+            }
+            if(!isMobile) cursor.classList.remove('active'); // reset cursor
+        }
+
+        function closeModals() {
+            document.body.style.overflow = '';
+            allModals.forEach(m => m.classList.remove('active'));
+            setTimeout(() => {
+                modalsContainer.classList.add('hidden');
+            }, 400); // Wait for transition
+        }
+
+        // Prevent clicks inside modal from closing it
+        allModals.forEach(modal => {
+            modal.addEventListener('click', (e) => e.stopPropagation());
+        });
+
+        // --- Desktop/Mobile Toggle Showcase ---
+        function setDeviceMode(frameId, mode, btn) {
+            const frame = document.getElementById(frameId);
+            const parent = btn.parentElement;
+            const buttons = parent.querySelectorAll('.btn-toggle');
+            
+            buttons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            if (mode === 'mobile') {
+                frame.classList.remove('desktop');
+                frame.classList.add('mobile');
+            } else {
+                frame.classList.remove('mobile');
+                frame.classList.add('desktop');
+            }
+        }
+
+        // --- Fake AI Chat Interaction ---
+        function sendFakeAiMessage() {
+            const input = document.getElementById('ai-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const chatHistory = document.getElementById('ai-chat-history');
+            
+            // User message
+            const userDiv = document.createElement('div');
+            userDiv.className = 'self-end max-w-[80%] bg-purple-600 text-white p-3 rounded-2xl rounded-tl-sm text-sm shadow-md';
+            userDiv.innerText = text;
+            chatHistory.appendChild(userDiv);
+            
+            input.value = '';
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+
+            // Bot typing simulation
+            setTimeout(() => {
+                const botDiv = document.createElement('div');
+                botDiv.className = 'self-start max-w-[80%] bg-slate-800 text-slate-200 p-3 rounded-2xl rounded-tr-sm text-sm border border-slate-700';
+                botDiv.innerHTML = 'این یک دمو فرانت‌اند است. در سیستم واقعی، من (ایجنت AI) درخواست شما را پردازش کرده و بر اساس مستندات پایگاه دانش به آن پاسخ می‌دهم.';
+                chatHistory.appendChild(botDiv);
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            }, 800);
+        }
+        
+        // Listen for Enter key on chat
+        document.getElementById('ai-input')?.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendFakeAiMessage();
+            }
+        });
+
+    </script>
+</body>
+</html>

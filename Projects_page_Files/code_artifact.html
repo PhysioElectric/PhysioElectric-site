@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بینایی ماشین و پردازش تصویر | MetaTech</title>
+    
+    <link href="https://cdn.fontcdn.ir/Font/Persian/Vazirmatn/Vazirmatn.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        cvDark: '#020617', // Very deep slate
+                        cvPanel: '#0F172A',
+                        cvEmerald: '#10B981', // OpenCV Green
+                        cvCyan: '#06B6D4'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #020617;
+            color: #F8FAFC;
+            overflow-x: hidden;
+            cursor: none; 
+            scroll-behavior: smooth;
+        }
+        .ltr { direction: ltr; display: inline-block; }
+
+        /* Custom CV Cursor (Targeting Box) */
+        #custom-cursor {
+            position: fixed; top: 0; left: 0; width: 24px; height: 24px;
+            border: 2px solid #10B981; border-radius: 4px; pointer-events: none; z-index: 99999;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+            mix-blend-mode: screen;
+        }
+        #custom-cursor::before {
+            content: ''; position: absolute; width: 4px; height: 4px; background: #10B981;
+        }
+        #custom-cursor span {
+            display: none; color: #10B981; font-size: 9px; font-weight: 700;
+            letter-spacing: 1px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase;
+            position: absolute; top: -15px; background: rgba(2, 6, 23, 0.8); padding: 2px 4px;
+        }
+        #custom-cursor.active { width: 40px; height: 40px; background-color: rgba(16, 185, 129, 0.1); }
+        #custom-cursor.active span { display: block; }
+
+        /* CV Background Matrix Grid */
+        .bg-cv-grid {
+            position: fixed; inset: 0; z-index: -1;
+            background-image: radial-gradient(rgba(16, 185, 129, 0.15) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+        .bg-cv-grid::after {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(circle at 50% 50%, transparent 0%, #020617 80%);
+        }
+
+        /* Glassmorphism Panels */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Canvas Drawing Area */
+        #drawing-board {
+            width: 100%; height: 300px;
+            background-color: #020617;
+            background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+            cursor: crosshair; touch-action: none;
+            border-radius: 12px;
+        }
+        
+        .scan-line {
+            position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+            background: #10B981; box-shadow: 0 0 15px #10B981;
+            opacity: 0; pointer-events: none;
+        }
+        .scanning .scan-line {
+            opacity: 1;
+            animation: scanAnim 1.5s ease-in-out infinite alternate;
+        }
+        @keyframes scanAnim { 0% { top: 0%; } 100% { top: 100%; } }
+
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* Typewriter Effect */
+        .typewriter { overflow: hidden; white-space: pre-wrap; border-right: .15em solid #10B981; animation: blink-caret .75s step-end infinite; }
+        @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: #10B981; } }
+    </style>
+</head>
+<body class="antialiased selection:bg-emerald-900 selection:text-emerald-300">
+
+    <div id="custom-cursor"><span id="cursor-text">TARGET</span></div>
+    
+    <div class="bg-cv-grid"></div>
+
+    <!-- Header -->
+    <header id="main-header" class="fixed w-full z-50 transition-all duration-300 py-4 bg-cvDark/80 backdrop-blur-xl border-b border-emerald-900/30 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+            <div class="flex items-center gap-6">
+                <div class="font-bold text-2xl text-white ltr tracking-tighter cursor-target" data-cursor="HOME">Meta<span class="text-cvEmerald">Tech</span></div>
+                <div class="h-6 w-px bg-slate-700 hidden sm:block"></div>
+                <a href="/Projects_page_Files/main.html" class="hidden sm:flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-cvEmerald transition cursor-target" data-cursor="BACK">
+                    <i class="fas fa-arrow-right text-xs"></i> بازگشت به صفحه اصلی
+                </a>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <button class="text-xs font-bold text-slate-500 hover:text-white transition ltr cursor-target" data-cursor="LANG">FA | EN</button>
+                <button onclick="document.getElementById('contact-section').scrollIntoView({behavior: 'smooth'})" class="bg-cvEmerald hover:bg-emerald-400 text-slate-950 px-5 py-2.5 rounded-lg font-bold text-sm shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all cursor-target" data-cursor="START">شروع پروژه</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- HERO SECTION -->
+        <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-24 flex flex-col items-center justify-center min-h-[60vh] border-b border-emerald-900/30">
+            <!-- Glowing ambient -->
+            <div class="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-emerald-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+            <div class="max-w-5xl mx-auto px-4 relative z-10 text-center reveal active">
+                <div class="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-full bg-emerald-950 border border-emerald-800 text-emerald-400 text-xs font-bold tracking-widest ltr mb-8 font-mono">
+                    <i class="fas fa-crosshairs"></i> COMPUTER VISION LAB
+                </div>
+                
+                <h1 class="text-4xl md:text-5xl lg:text-7xl font-extrabold text-white mb-6 tracking-tight leading-tight">
+                    استخراج معنا از پیکسل‌ها؛ <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">بینایی ماشین و یادگیری عمیق.</span>
+                </h1>
+                
+                <p class="text-lg md:text-xl text-slate-400 max-w-3xl mx-auto mb-10 leading-relaxed">
+                    توسعه سیستم‌های پردازش تصویر مبتنی بر شبکه‌های عصبی (CNN). ما چشمانی هوشمند برای خواندن متون، تشخیص الگوهای صنعتی و تحلیل ویدیوهای زنده می‌سازیم.
+                </p>
+                
+                <div class="flex flex-wrap justify-center gap-3">
+                    <span class="px-4 py-2 glass-panel rounded-xl text-sm font-bold text-slate-300 border-slate-700/50"><i class="fas fa-font text-emerald-400 ml-2"></i>تشخیص متن (OCR)</span>
+                    <span class="px-4 py-2 glass-panel rounded-xl text-sm font-bold text-slate-300 border-slate-700/50"><i class="fas fa-box text-cyan-400 ml-2"></i>تشخیص اشیا (Object Detection)</span>
+                    <span class="px-4 py-2 glass-panel rounded-xl text-sm font-bold text-slate-300 border-slate-700/50"><i class="fas fa-video text-emerald-400 ml-2"></i>پردازش ویدئو (Video Analytics)</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- INTERACTIVE OCR DEMO SECTION -->
+        <section class="py-24 relative overflow-hidden border-b border-emerald-900/30">
+            <div class="max-w-6xl mx-auto px-4 relative z-10 reveal">
+                
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4">آزمایشگاه تعاملی OCR</h2>
+                    <p class="text-slate-400 text-lg max-w-2xl mx-auto">کلمه‌ای روی بوم زیر بنویسید (با موس یا لمس) و دکمه پردازش را بزنید تا فرآیند استخراج ویژگی‌ها (Contour Detection) و تبدیل دست‌خط به متن را شبیه‌سازی کنیم.</p>
+                </div>
+
+                <div class="glass-panel rounded-3xl p-6 lg:p-8 flex flex-col lg:flex-row gap-8 items-stretch cursor-target" data-cursor="DRAW">
+                    
+                    <!-- Left: Canvas Area -->
+                    <div class="w-full lg:w-2/3 flex flex-col gap-4">
+                        <div class="flex justify-between items-center px-2">
+                            <span class="text-xs font-mono text-emerald-400 tracking-widest ltr"><i class="fas fa-pen-nib mr-2"></i>DRAWING BOARD</span>
+                            <button onclick="clearCanvas()" class="text-xs text-slate-400 hover:text-white transition ltr"><i class="fas fa-trash-alt mr-1"></i> CLEAR</button>
+                        </div>
+                        
+                        <div class="relative border-2 border-slate-700 rounded-xl overflow-hidden bg-[#020617]" id="canvas-container">
+                            <canvas id="drawing-board"></canvas>
+                            <!-- OpenCV Style Bounding Box (hidden initially) -->
+                            <div id="bounding-box" class="absolute border-2 border-emerald-500 bg-emerald-500/10 hidden pointer-events-none transition-all duration-500">
+                                <div class="absolute -top-5 left-0 bg-emerald-500 text-cvDark text-[10px] font-bold px-1 font-mono ltr">CLASS: TEXT | 98.4%</div>
+                            </div>
+                            <!-- Scanner Line -->
+                            <div class="scan-line"></div>
+                        </div>
+
+                        <button id="process-btn" onclick="processImage()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+                            پردازش تصویر و استخراج متن (Run Inference)
+                        </button>
+                    </div>
+
+                    <!-- Right: Inference Output -->
+                    <div class="w-full lg:w-1/3 bg-[#020617] border border-slate-700 rounded-xl flex flex-col overflow-hidden relative">
+                        <div class="bg-slate-900 border-b border-slate-700 p-3 flex gap-2 items-center">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div><div class="w-3 h-3 rounded-full bg-yellow-500"></div><div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            <span class="text-[10px] text-slate-500 font-mono ml-4 ltr">inference_terminal.py</span>
+                        </div>
+                        
+                        <div class="p-6 flex-1 font-mono text-xs ltr overflow-y-auto" id="terminal-output">
+                            <div class="text-slate-500">> System Ready. Waiting for input...</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- CAPABILITIES GRID -->
+        <section class="py-24 relative">
+            <div class="max-w-7xl mx-auto px-4 reveal">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-12">
+                    <div class="mb-6 md:mb-0">
+                        <h2 class="text-3xl font-bold text-white mb-2">آرشیو پروژه‌های بینایی ماشین</h2>
+                        <p class="text-slate-400 text-sm">سیستم‌های توسعه یافته مبتنی بر OpenCV، PyTorch و شبکه‌های عصبی.</p>
+                    </div>
+                    
+                    <!-- Filters -->
+                    <div class="flex flex-wrap gap-2" id="project-filters">
+                        <button class="filter-btn active px-4 py-2 rounded-lg text-xs font-bold bg-cvEmerald text-cvDark shadow-[0_0_10px_rgba(16,185,129,0.4)] transition-all cursor-target" data-filter="all">همه</button>
+                        <button class="filter-btn px-4 py-2 rounded-lg text-xs font-bold glass-panel text-slate-300 border-slate-700 hover:border-emerald-500 transition-all cursor-target" data-filter="ocr">پردازش متن (OCR)</button>
+                        <button class="filter-btn px-4 py-2 rounded-lg text-xs font-bold glass-panel text-slate-300 border-slate-700 hover:border-emerald-500 transition-all cursor-target" data-filter="detection">تشخیص اشیا</button>
+                    </div>
+                </div>
+
+                <!-- Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="project-grid">
+                    
+                    <!-- Card 1 (Detection) -->
+                    <div class="project-card group glass-panel rounded-2xl overflow-hidden hover:border-emerald-500/50 transition-all duration-300 cursor-target" data-category="detection" data-cursor="VIEW">
+                        <div class="aspect-video bg-[#020617] relative overflow-hidden flex items-center justify-center border-b border-slate-700 p-4">
+                            <!-- Abstract Detection Grid -->
+                            <div class="w-full h-full relative">
+                                <div class="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.2)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.2)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
+                                <!-- Bounding box mock -->
+                                <div class="absolute top-[20%] left-[30%] w-[40%] h-[50%] border-2 border-emerald-500 bg-emerald-500/10 group-hover:scale-110 transition-transform">
+                                    <div class="absolute -top-4 left-0 bg-emerald-500 text-cvDark text-[8px] px-1 font-mono ltr">VEHICLE: 99%</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="text-[10px] font-bold text-emerald-400 tracking-widest ltr mb-2 font-mono">OBJECT DETECTION</div>
+                            <h3 class="font-bold text-lg text-white mb-2">سیستم تشخیص ترافیک شهری</h3>
+                            <p class="text-sm text-slate-400 mb-4 line-clamp-2">تشخیص و شمارش خودروها در زمان بلادرنگ روی پردازنده‌های Edge با استفاده از مدل‌های YOLO.</p>
+                            <div class="flex gap-2 ltr">
+                                <span class="text-[9px] px-2 py-1 bg-slate-900 border border-slate-700 text-slate-400 rounded">PyTorch</span>
+                                <span class="text-[9px] px-2 py-1 bg-slate-900 border border-slate-700 text-slate-400 rounded">YOLOv8</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 (OCR) -->
+                    <div class="project-card group glass-panel rounded-2xl overflow-hidden hover:border-emerald-500/50 transition-all duration-300 cursor-target" data-category="ocr" data-cursor="VIEW">
+                        <div class="aspect-video bg-[#020617] relative overflow-hidden flex flex-col items-center justify-center border-b border-slate-700 p-6">
+                            <div class="text-emerald-500 text-2xl font-mono tracking-widest bg-emerald-900/30 p-2 rounded border border-emerald-500/30 group-hover:bg-emerald-500 group-hover:text-cvDark transition-colors">A B C 1 2 3</div>
+                            <div class="w-full h-1 bg-emerald-500/50 mt-4 relative overflow-hidden rounded">
+                                <div class="absolute top-0 left-0 h-full bg-emerald-400 w-1/3 animate-[scanAnim_2s_infinite_linear]"></div>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div class="text-[10px] font-bold text-cyan-400 tracking-widest ltr mb-2 font-mono">OCR / NLP</div>
+                            <h3 class="font-bold text-lg text-white mb-2">سامانه پلاک‌خوان هوشمند</h3>
+                            <p class="text-sm text-slate-400 mb-4 line-clamp-2">استخراج خودکار پلاک خودروها از تصاویر دوربین‌های نظارتی با دقت بالا در شرایط نوری مختلف.</p>
+                            <div class="flex gap-2 ltr">
+                                <span class="text-[9px] px-2 py-1 bg-slate-900 border border-slate-700 text-slate-400 rounded">OpenCV</span>
+                                <span class="text-[9px] px-2 py-1 bg-slate-900 border border-slate-700 text-slate-400 rounded">Tesseract</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA SECTION -->
+        <section id="contact-section" class="py-24 relative overflow-hidden text-center bg-[#020617] border-t border-emerald-900/30">
+            <div class="max-w-3xl mx-auto px-4 relative z-10 reveal">
+                <div class="w-16 h-16 bg-emerald-900/30 border border-emerald-500/30 rounded-2xl flex items-center justify-center mx-auto mb-6 text-emerald-400 text-2xl shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                    <i class="fas fa-microchip"></i>
+                </div>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4">به چشمان هوشمند نیاز دارید؟</h2>
+                <p class="text-slate-400 text-lg mb-10">اگر برای استخراج داده از تصاویر، اسناد کاغذی یا ویدیوهای نظارتی سازمان خود به یک سیستم مبتنی بر Deep Learning نیاز دارید، تیم ما آماده توسعه آن است.</p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <button class="bg-cvEmerald text-cvDark px-8 py-4 rounded-xl font-bold shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:bg-emerald-400 transition cursor-target" data-cursor="START">درخواست مشاوره AI</button>
+                    <button class="bg-transparent border border-slate-700 text-white px-8 py-4 rounded-xl font-bold hover:bg-slate-800 transition cursor-target">بازگشت به خدمات</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#020617] text-slate-600 py-8 text-center text-sm font-mono ltr border-t border-slate-800">
+        &copy; 2026 MetaTech Engineering. All rights reserved.
+    </footer>
+
+    <script>
+        // Custom Cursor Logic
+        const cursor = document.getElementById('custom-cursor');
+        const cursorText = document.getElementById('cursor-text');
+        
+        if (window.matchMedia("(pointer: fine)").matches) {
+            document.addEventListener('mousemove', e => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+            });
+
+            document.querySelectorAll('.cursor-target').forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    cursor.classList.add('active');
+                    cursorText.innerText = el.getAttribute('data-cursor') || 'TARGET';
+                });
+                el.addEventListener('mouseleave', () => {
+                    cursor.classList.remove('active');
+                });
+            });
+        } else {
+            cursor.style.display = 'none';
+        }
+
+        // Project Filtering Logic
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const projectCards = document.querySelectorAll('.project-card');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => {
+                    b.classList.remove('bg-cvEmerald', 'text-cvDark', 'shadow-[0_0_10px_rgba(16,185,129,0.4)]');
+                    b.classList.add('glass-panel', 'text-slate-300', 'border-slate-700');
+                });
+                btn.classList.remove('glass-panel', 'text-slate-300', 'border-slate-700');
+                btn.classList.add('bg-cvEmerald', 'text-cvDark', 'shadow-[0_0_10px_rgba(16,185,129,0.4)]');
+
+                const filterValue = btn.getAttribute('data-filter');
+
+                projectCards.forEach(card => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.95)';
+                    
+                    setTimeout(() => {
+                        if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
+                            card.style.display = 'block';
+                            setTimeout(() => {
+                                card.style.opacity = '1';
+                                card.style.transform = 'scale(1)';
+                            }, 50);
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    }, 300); 
+                });
+            });
+        });
+
+        // ---------------------------------------------------------
+        // CANVAS DRAWING & OCR SIMULATION LOGIC
+        // ---------------------------------------------------------
+        const canvas = document.getElementById('drawing-board');
+        const ctx = canvas.getContext('2d');
+        const container = document.getElementById('canvas-container');
+        const bbox = document.getElementById('bounding-box');
+        const terminal = document.getElementById('terminal-output');
+        const processBtn = document.getElementById('process-btn');
+
+        let isDrawing = false;
+        let hasDrawn = false;
+        
+        // Bounding box tracking
+        let minX = 9999, minY = 9999, maxX = 0, maxY = 0;
+
+        // Resize canvas to fit container
+        function resizeCanvas() {
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = '#F8FAFC'; // White ink
+            ctx.lineWidth = 4;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function startDrawing(e) {
+            isDrawing = true;
+            hasDrawn = true;
+            draw(e);
+            bbox.classList.add('hidden'); // hide box if starting new drawing
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+            ctx.beginPath();
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+
+            // Handle touch or mouse coordinates
+            let clientX, clientY;
+            if (e.type.includes('touch')) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+                e.preventDefault(); // prevent scrolling
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+
+            const rect = canvas.getBoundingClientRect();
+            const x = clientX - rect.left;
+            const y = clientY - rect.top;
+
+            // Track min/max for bounding box
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
+
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+
+        // Event Listeners for drawing
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+
+        canvas.addEventListener('touchstart', startDrawing, {passive: false});
+        canvas.addEventListener('touchmove', draw, {passive: false});
+        canvas.addEventListener('touchend', stopDrawing);
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            minX = 9999; minY = 9999; maxX = 0; maxY = 0;
+            hasDrawn = false;
+            bbox.classList.add('hidden');
+            terminal.innerHTML = '<div class="text-slate-500">> System Ready. Waiting for input...</div>';
+            container.classList.remove('scanning');
+        }
+
+        function addTerminalLine(text, colorClass = 'text-emerald-400', isTypewriter = false) {
+            const line = document.createElement('div');
+            line.className = `${colorClass} mt-1 ${isTypewriter ? 'typewriter inline-block' : ''}`;
+            
+            if(isTypewriter) {
+                // simulate typing delay
+                line.style.animation = `blink-caret .75s step-end infinite, typing ${text.length * 0.05}s steps(${text.length}, end)`;
+            }
+            
+            line.innerText = text;
+            terminal.appendChild(line);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        async function processImage() {
+            if (!hasDrawn) {
+                addTerminalLine("> Error: Canvas is empty. Please draw something.", "text-red-400");
+                return;
+            }
+
+            processBtn.disabled = true;
+            processBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            
+            terminal.innerHTML = '';
+            addTerminalLine("> Initializing Vision Model (Python/PyTorch Backend)...", "text-slate-400");
+            addTerminalLine("> Capturing canvas frame tensor[1, 3, 300, 800]...", "text-slate-400");
+
+            // Start Visual Scanner Effect
+            container.classList.add('scanning');
+
+            // Add padding to bounding box
+            const padding = 15;
+            let bX = Math.max(0, minX - padding);
+            let bY = Math.max(0, minY - padding);
+            let bW = Math.min(canvas.width - bX, (maxX - minX) + padding*2);
+            let bH = Math.min(canvas.height - bY, (maxY - minY) + padding*2);
+
+            // Show bounding box
+            bbox.style.left = bX + 'px';
+            bbox.style.top = bY + 'px';
+            bbox.style.width = bW + 'px';
+            bbox.style.height = bH + 'px';
+            bbox.classList.remove('hidden');
+
+            addTerminalLine("> Extracting ROI (Region of Interest)...", "text-cyan-400");
+            addTerminalLine("> Sending to Deep Learning OCR API...", "text-yellow-400");
+
+            try {
+                // ساخت یک بوم موقت با پس‌زمینه تیره برای ارسال دقیق به هوش مصنوعی
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = canvas.width;
+                tempCanvas.height = canvas.height;
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCtx.fillStyle = "#020617"; 
+                tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+                tempCtx.drawImage(canvas, 0, 0);
+                
+                // دریافت تصویر به صورت Base64
+                const base64ImageData = tempCanvas.toDataURL('image/png').split(',')[1];
+                
+                const prompt = "You are an advanced OCR engine. Read the handwritten text in this image. The text can be in Persian (Farsi) or English. Return ONLY the exact extracted text. Do not add any conversational text. If you cannot read anything or it is just random scribbles, return 'متن نامشخص'.";
+                
+                const payload = {
+                    contents: [
+                        {
+                            role: "user",
+                            parts: [
+                                { text: prompt },
+                                {
+                                    inlineData: {
+                                        mimeType: "image/png",
+                                        data: base64ImageData
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                };
+
+                // فراخوانی API بینایی ماشین
+                const apiKey = ""; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                container.classList.remove('scanning');
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts) {
+                    
+                    const extractedText = result.candidates[0].content.parts[0].text.trim();
+                    
+                    addTerminalLine("> OCR Inference Complete.", "text-slate-400");
+                    addTerminalLine("> SUCCESS! Confidence: 98.7%", "text-emerald-400 font-bold");
+                    addTerminalLine("EXTRACTED TEXT:", "text-slate-500 mt-4");
+                    addTerminalLine(`« ${extractedText} »`, "text-white text-lg font-bold bg-emerald-900/40 p-2 rounded border border-emerald-500/50 mt-2", true);
+                    
+                } else {
+                    throw new Error("Invalid API response format.");
+                }
+
+            } catch (error) {
+                container.classList.remove('scanning');
+                addTerminalLine("> ERROR: OCR Processing failed.", "text-red-500 font-bold");
+                addTerminalLine("> " + error.message, "text-red-400 text-xs");
+            } finally {
+                processBtn.disabled = false;
+                processBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        // Scroll Reveal Observer
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>

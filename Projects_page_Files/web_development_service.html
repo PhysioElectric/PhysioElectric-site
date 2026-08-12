@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>طراحی و توسعه وب | MetaTech</title>
+    
+    <link href="https://cdn.fontcdn.ir/Font/Persian/Vazirmatn/Vazirmatn.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        techDark: '#07111F',
+                        techNavy: '#0B1220',
+                        techSlate: '#111827',
+                        primary: '#2563EB',
+                        cyan: '#06B6D4',
+                        violet: '#7C3AED',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #F8FAFC;
+            color: #0F172A;
+            overflow-x: hidden;
+            cursor: none; 
+            scroll-behavior: smooth;
+        }
+        .ltr { direction: ltr; display: inline-block; }
+
+        /* Custom Premium Cursor */
+        #custom-cursor {
+            position: fixed; top: 0; left: 0; width: 8px; height: 8px;
+            background-color: #2563EB; border-radius: 50%; pointer-events: none; z-index: 99999;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 15px rgba(37, 99, 235, 0.6);
+            mix-blend-mode: exclusion;
+        }
+        #custom-cursor::after {
+            content: ''; position: absolute; width: 40px; height: 40px;
+            border: 1px solid rgba(37, 99, 235, 0.3); border-radius: 50%;
+            transition: transform 0.3s ease-out, border-color 0.3s;
+        }
+        #custom-cursor span {
+            display: none; color: white; font-size: 9px; font-weight: 700;
+            letter-spacing: 1px; font-family: 'Inter', sans-serif; text-transform: uppercase;
+        }
+        #custom-cursor.active { width: 60px; height: 60px; mix-blend-mode: normal; background-color: rgba(37, 99, 235, 0.9); }
+        #custom-cursor.active::after { transform: scale(1.3); border-color: transparent; }
+        #custom-cursor.active span { display: block; }
+
+        /* Background 1: Hero Floating Code */
+        .bg-hero-web {
+            background-image: radial-gradient(#E2E8F0 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+        .floating-code {
+            position: absolute; color: #94A3B8; font-family: 'JetBrains Mono', monospace;
+            font-size: 10px; opacity: 0.3; user-select: none; pointer-events: none;
+            animation: float-random 10s infinite ease-in-out alternate;
+        }
+
+        /* Background 2: Blueprint for Process */
+        .bg-blueprint {
+            background-color: #07111F;
+            background-image: linear-gradient(rgba(37, 99, 235, 0.1) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(37, 99, 235, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+            position: relative;
+        }
+        .bg-blueprint::after {
+            content: ''; position: absolute; inset: 0;
+            background: radial-gradient(circle at center, transparent 0%, #07111F 80%);
+            pointer-events: none;
+        }
+
+        /* Background 3: Dark Glass for Featured Project */
+        .glass-dark-showcase {
+            background: rgba(11, 18, 32, 0.6);
+            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        /* Background 4: Dot Pattern for All Projects */
+        .bg-dots-light {
+            background-color: #F8FAFC;
+            background-image: radial-gradient(#CBD5E1 2px, transparent 2px);
+            background-size: 24px 24px;
+        }
+
+        /* Device Mockup Logic */
+        .device-wrapper { transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1); margin: 0 auto; }
+        .device-desktop { max-width: 1024px; border-radius: 12px; }
+        .device-mobile { max-width: 375px; border-radius: 40px; border: 12px solid #0F172A; }
+        .browser-header { transition: opacity 0.4s; }
+        .device-mobile .browser-header { display: none; }
+
+        /* Animations */
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes float-random { 0% { transform: translate(0, 0) rotate(0deg); } 100% { transform: translate(20px, -20px) rotate(5deg); } }
+        @keyframes data-flow { to { stroke-dashoffset: -40; } }
+        
+        .data-line { stroke-dasharray: 8; animation: data-flow 1.5s linear infinite; }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body class="antialiased selection:bg-blue-200 selection:text-blue-900">
+
+    <!-- Custom Cursor -->
+    <div id="custom-cursor"><span id="cursor-text">WEB</span></div>
+
+    <!-- Specific Header for Service Pages (Simplified) -->
+    <header id="main-header" class="fixed w-full z-50 transition-all duration-300 py-4 bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+            <!-- Right Side: Logo & Back Button -->
+            <div class="flex items-center gap-6">
+                <div class="font-bold text-2xl text-slate-900 ltr tracking-tighter cursor-target" data-cursor="HOME">Meta<span class="text-primary">Tech</span></div>
+                <div class="h-6 w-px bg-slate-300 hidden sm:block"></div>
+                <a href="/Projects_page_Files/main.html" class="hidden sm:flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-primary transition cursor-target" data-cursor="BACK">
+                    <i class="fas fa-arrow-right text-xs"></i> بازگشت به صفحه اصلی
+                </a>
+            </div>
+            
+            <!-- Left Side: Translate & CTA -->
+            <div class="flex items-center gap-4">
+                <button class="text-xs font-bold text-slate-400 hover:text-slate-800 transition ltr cursor-target" data-cursor="LANG">FA | EN</button>
+                <button class="bg-primary hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-bold text-sm shadow-md hover:shadow-lg transition-all cursor-target" data-cursor="START">شروع پروژه</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- HERO SECTION (Background 1: Floating Web Concepts) -->
+        <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden bg-hero-web min-h-[90vh] flex flex-col items-center justify-center">
+            
+            <!-- Atmospheric Elements -->
+            <div class="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-blue-400/20 rounded-full blur-[100px] pointer-events-none"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-cyan-300/20 rounded-full blur-[120px] pointer-events-none"></div>
+            
+            <!-- Floating Tech Tags (Background) -->
+            <div class="floating-code ltr" style="top: 20%; left: 10%; font-size: 14px;">&lt;div class="flex"&gt;</div>
+            <div class="floating-code ltr" style="top: 60%; left: 15%; font-size: 12px; animation-delay: -2s;">justify-content: center;</div>
+            <div class="floating-code ltr" style="top: 30%; right: 15%; font-size: 16px; animation-delay: -4s;">await fetch('/api/data')</div>
+            <div class="floating-code ltr" style="top: 70%; right: 10%; font-size: 12px; animation-delay: -1s;">&lt;Component /&gt;</div>
+            <div class="floating-code ltr" style="top: 80%; left: 40%; font-size: 14px; animation-delay: -5s;">module.exports = {}</div>
+
+            <div class="relative z-10 max-w-5xl mx-auto px-4 text-center reveal active">
+                <div class="inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-full bg-blue-100/80 border border-blue-200 text-blue-700 text-xs font-bold tracking-widest ltr mb-6 backdrop-blur-md">
+                    <i class="fas fa-code text-blue-600"></i> WEB DEVELOPMENT
+                </div>
+                <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold text-slate-900 mb-6 tracking-tight leading-tight">
+                    وب‌سایت فقط یک صفحه نیست؛<br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">پایگاه قدرتمند برند شماست.</span>
+                </h1>
+                <p class="text-lg md:text-xl text-slate-600 max-w-3xl mx-auto mb-10 leading-relaxed">
+                    ما در MetaTech محصولات دیجیتال را با تمرکز بر پرفورمنس بی‌نقص، معماری مقیاس‌پذیر و تجربه کاربری (UI/UX) خیره‌کننده، از صفر تا صد مهندسی می‌کنیم.
+                </p>
+                
+                <div class="flex flex-wrap justify-center gap-3">
+                    <span class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 shadow-sm"><i class="fas fa-check text-blue-500 ml-2"></i>سایت شرکتی</span>
+                    <span class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 shadow-sm"><i class="fas fa-check text-blue-500 ml-2"></i>پلتفرم فروشگاهی</span>
+                    <span class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 shadow-sm"><i class="fas fa-check text-blue-500 ml-2"></i>داشبورد مدیریتی</span>
+                    <span class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 shadow-sm"><i class="fas fa-check text-blue-500 ml-2"></i>وب‌اپلیکیشن اختصاصی</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- METHODOLOGY / HOW WE BUILD (Background 2: Blueprint) -->
+        <section class="py-24 bg-blueprint text-white relative overflow-hidden border-y border-slate-800">
+            <!-- Glowing accent line -->
+            <div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-50"></div>
+            
+            <div class="max-w-7xl mx-auto px-4 relative z-10 reveal">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">مهندسی یک محصول دیجیتال</h2>
+                    <p class="text-slate-400">فرآیند دقیق ما برای تبدیل ایده شما به یک پلتفرم پایدار و بی‌نقص.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
+                    <!-- Connection Line (Desktop) -->
+                    <div class="hidden md:block absolute top-12 left-[10%] right-[10%] h-[2px] bg-slate-800 z-0">
+                        <div class="h-full bg-blue-500 w-full opacity-50 origin-left animate-pulse"></div>
+                    </div>
+
+                    <!-- Step 1 -->
+                    <div class="relative z-10 flex flex-col items-center text-center group cursor-target" data-cursor="PROCESS">
+                        <div class="w-24 h-24 rounded-2xl bg-slate-900 border border-slate-700 shadow-[0_0_20px_rgba(37,99,235,0.1)] flex items-center justify-center mb-6 group-hover:border-blue-500 group-hover:shadow-[0_0_30px_rgba(37,99,235,0.3)] transition-all duration-300">
+                            <i class="fas fa-lightbulb text-3xl text-slate-400 group-hover:text-blue-400 transition-colors"></i>
+                        </div>
+                        <div class="text-blue-500 font-mono text-xs font-bold mb-2 ltr">01. STRATEGY</div>
+                        <h3 class="text-lg font-bold mb-2">استراتژی و معماری</h3>
+                        <p class="text-sm text-slate-400">تحلیل نیازمندی‌ها، انتخاب استک تکنولوژی و طراحی ساختار دیتابیس.</p>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="relative z-10 flex flex-col items-center text-center group cursor-target" data-cursor="PROCESS">
+                        <div class="w-24 h-24 rounded-2xl bg-slate-900 border border-slate-700 shadow-[0_0_20px_rgba(6,182,212,0.1)] flex items-center justify-center mb-6 group-hover:border-cyan-500 group-hover:shadow-[0_0_30px_rgba(6,182,212,0.3)] transition-all duration-300">
+                            <i class="fas fa-pen-nib text-3xl text-slate-400 group-hover:text-cyan-400 transition-colors"></i>
+                        </div>
+                        <div class="text-cyan-500 font-mono text-xs font-bold mb-2 ltr">02. UI / UX</div>
+                        <h3 class="text-lg font-bold mb-2">طراحی رابط کاربری</h3>
+                        <p class="text-sm text-slate-400">خلق تجربه‌ای مدرن و کاربرپسند در Figma منطبق بر هویت بصری برند.</p>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="relative z-10 flex flex-col items-center text-center group cursor-target" data-cursor="PROCESS">
+                        <div class="w-24 h-24 rounded-2xl bg-slate-900 border border-slate-700 shadow-[0_0_20px_rgba(124,58,237,0.1)] flex items-center justify-center mb-6 group-hover:border-violet-500 group-hover:shadow-[0_0_30px_rgba(124,58,237,0.3)] transition-all duration-300">
+                            <i class="fas fa-code text-3xl text-slate-400 group-hover:text-violet-400 transition-colors"></i>
+                        </div>
+                        <div class="text-violet-500 font-mono text-xs font-bold mb-2 ltr">03. DEVELOP</div>
+                        <h3 class="text-lg font-bold mb-2">توسعه فرانت و بک‌اند</h3>
+                        <p class="text-sm text-slate-400">کدنویسی تمیز با React/Next.js و اتصال به APIهای قدرتمند Node.js.</p>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="relative z-10 flex flex-col items-center text-center group cursor-target" data-cursor="PROCESS">
+                        <div class="w-24 h-24 rounded-2xl bg-slate-900 border border-slate-700 shadow-[0_0_20px_rgba(16,185,129,0.1)] flex items-center justify-center mb-6 group-hover:border-emerald-500 group-hover:shadow-[0_0_30px_rgba(16,185,129,0.3)] transition-all duration-300">
+                            <i class="fas fa-rocket text-3xl text-slate-400 group-hover:text-emerald-400 transition-colors"></i>
+                        </div>
+                        <div class="text-emerald-500 font-mono text-xs font-bold mb-2 ltr">04. DEPLOY</div>
+                        <h3 class="text-lg font-bold mb-2">تست و استقرار</h3>
+                        <p class="text-sm text-slate-400">تست پرفورمنس، امنیت و اجرای نهایی محصول روی سرورهای ابری.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FEATURED PROJECT SHOWCASE (Background 3: Dark Glassmorphism) -->
+        <section class="py-24 relative bg-techNavy overflow-hidden">
+            <!-- Deep Ambient Lights -->
+            <div class="absolute top-0 left-0 w-[600px] h-[600px] bg-blue-600/20 rounded-full blur-[150px] pointer-events-none"></div>
+            <div class="absolute bottom-0 right-0 w-[600px] h-[600px] bg-violet-600/20 rounded-full blur-[150px] pointer-events-none"></div>
+            
+            <div class="max-w-7xl mx-auto px-4 relative z-10 reveal">
+                
+                <div class="text-center mb-12">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded bg-slate-800 text-blue-400 border border-slate-700 text-xs font-bold tracking-widest ltr mb-4">
+                        FEATURED SHOWCASE
+                    </div>
+                    <h2 class="text-4xl md:text-5xl font-extrabold text-white mb-4">شاهکارهای دیجیتال</h2>
+                    <p class="text-slate-400 text-lg max-w-2xl mx-auto">نگاهی به نحوه اجرای یک پلتفرم استاندارد؛ واکنش‌گرا، سریع و مهندسی شده.</p>
+                </div>
+
+                <!-- Premium Glass Box containing the Mockup -->
+                <div class="glass-dark-showcase rounded-[40px] p-6 md:p-12 relative overflow-hidden">
+                    
+                    <!-- Decorative corner accents -->
+                    <div class="absolute top-0 left-0 w-20 h-20 border-t border-l border-blue-500/30 rounded-tl-[40px]"></div>
+                    <div class="absolute bottom-0 right-0 w-20 h-20 border-b border-r border-blue-500/30 rounded-br-[40px]"></div>
+
+                    <!-- Device Toggle Controls -->
+                    <div class="flex justify-center gap-3 mb-10 relative z-20">
+                        <button onclick="setMockupDevice('desktop')" id="btn-desktop" class="px-6 py-2.5 rounded-full text-xs font-bold bg-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.4)] cursor-target transition-all" data-cursor="DESKTOP">
+                            <i class="fas fa-desktop ml-2"></i> نمای دسکتاپ
+                        </button>
+                        <button onclick="setMockupDevice('mobile')" id="btn-mobile" class="px-6 py-2.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 cursor-target transition-all" data-cursor="MOBILE">
+                            <i class="fas fa-mobile-alt ml-2"></i> نمای موبایل
+                        </button>
+                    </div>
+
+                    <!-- The Device Frame -->
+                    <div id="mockup-frame" class="device-wrapper device-desktop bg-white shadow-2xl overflow-hidden relative cursor-target" data-cursor="BROWSE">
+                        
+                        <!-- Browser Header (Hidden on Mobile) -->
+                        <div class="browser-header h-12 bg-slate-100 border-b border-slate-200 flex items-center px-4 gap-2">
+                            <div class="flex gap-1.5 ltr">
+                                <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                                <div class="w-3 h-3 rounded-full bg-amber-400"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                            </div>
+                            <div class="mx-auto bg-white border border-slate-200 rounded text-[10px] text-slate-400 font-mono px-24 py-1 ltr">nova-engineering.com</div>
+                        </div>
+
+                        <!-- Mockup Content (NOVA ENGINEERING) -->
+                        <div class="w-full h-[500px] md:h-[600px] overflow-y-auto overflow-x-hidden bg-slate-50 relative pointer-events-none"> <!-- Pointer events none to prevent awkward iframe scrolling if not needed -->
+                            <!-- Mock Nav -->
+                            <div class="sticky top-0 bg-white/90 backdrop-blur-md border-b border-slate-200 h-16 flex items-center justify-between px-6 z-10">
+                                <div class="font-black text-slate-800 ltr text-xl tracking-tighter">NOVA<span class="text-blue-600">.</span></div>
+                                <div class="hidden md:flex gap-6 text-xs font-bold text-slate-500 ltr"><span>SERVICES</span><span>PROJECTS</span><span>ABOUT</span></div>
+                                <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white md:hidden"><i class="fas fa-bars"></i></div>
+                                <div class="hidden md:block px-4 py-1.5 bg-blue-600 text-white text-xs font-bold rounded ltr">CONTACT</div>
+                            </div>
+                            
+                            <!-- Mock Hero -->
+                            <div class="h-[400px] bg-slate-900 relative flex flex-col items-center justify-center text-center px-4 overflow-hidden">
+                                <div class="absolute inset-0" style="background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 30px 30px;"></div>
+                                <div class="absolute w-64 h-64 bg-blue-500/30 blur-[80px] rounded-full"></div>
+                                <h2 class="text-3xl md:text-5xl font-bold text-white relative z-10 mb-4 ltr">Engineering the Future.</h2>
+                                <p class="text-slate-400 text-sm max-w-md relative z-10 mb-8 ltr">Advanced structural solutions and infrastructure design for modern environments.</p>
+                                <div class="px-6 py-3 bg-white text-slate-900 text-xs font-bold rounded relative z-10 ltr">EXPLORE PROJECTS</div>
+                            </div>
+
+                            <!-- Mock Services Area -->
+                            <div class="p-8 md:p-12">
+                                <div class="text-xs font-bold text-blue-600 mb-2 ltr">OUR EXPERTISE</div>
+                                <div class="text-2xl font-bold text-slate-800 mb-8 ltr">Structural Solutions</div>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm h-32 flex flex-col justify-between">
+                                        <div class="w-8 h-8 rounded bg-blue-50 mb-2"></div>
+                                        <div class="h-2 bg-slate-200 rounded w-3/4 mb-1"></div>
+                                        <div class="h-2 bg-slate-100 rounded w-1/2"></div>
+                                    </div>
+                                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm h-32 flex flex-col justify-between">
+                                        <div class="w-8 h-8 rounded bg-blue-50 mb-2"></div>
+                                        <div class="h-2 bg-slate-200 rounded w-3/4 mb-1"></div>
+                                        <div class="h-2 bg-slate-100 rounded w-1/2"></div>
+                                    </div>
+                                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm h-32 flex flex-col justify-between">
+                                        <div class="w-8 h-8 rounded bg-blue-50 mb-2"></div>
+                                        <div class="h-2 bg-slate-200 rounded w-3/4 mb-1"></div>
+                                        <div class="h-2 bg-slate-100 rounded w-1/2"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Project Details Below Mockup -->
+                    <div class="mt-10 flex flex-col md:flex-row justify-between items-end border-t border-slate-700/50 pt-8">
+                        <div>
+                            <div class="text-cyan-400 text-[10px] font-bold tracking-widest ltr font-mono mb-2">CORPORATE PLATFORM</div>
+                            <h3 class="text-2xl font-bold text-white mb-2">پلتفرم شرکتی NOVA</h3>
+                            <p class="text-slate-400 text-sm max-w-lg">طراحی اختصاصی UI/UX و توسعه فرانت‌اند و بک‌اند برای نمایش حرفه‌ای خدمات مهندسی در سطح بین‌المللی.</p>
+                        </div>
+                        <div class="mt-4 md:mt-0 flex gap-2 ltr">
+                            <span class="px-3 py-1 bg-slate-800 text-slate-300 text-[10px] border border-slate-700 rounded">React</span>
+                            <span class="px-3 py-1 bg-slate-800 text-slate-300 text-[10px] border border-slate-700 rounded">Node.js</span>
+                            <span class="px-3 py-1 bg-slate-800 text-slate-300 text-[10px] border border-slate-700 rounded">Tailwind</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ALL PROJECTS (Background 4: Light Dots) -->
+        <section class="py-24 bg-dots-light relative border-t border-slate-200">
+            <div class="max-w-7xl mx-auto px-4 reveal">
+                
+                <div class="flex flex-col md:flex-row justify-between items-end mb-12">
+                    <div class="mb-6 md:mb-0">
+                        <h2 class="text-3xl font-bold text-slate-900 mb-2">آرشیو پروژه‌ها</h2>
+                        <p class="text-slate-500 text-sm">لیست پروژه‌های منتخب در دسته‌بندی‌های مختلف توسعه وب.</p>
+                    </div>
+                    
+                    <!-- Filters -->
+                    <div class="flex flex-wrap gap-2" id="project-filters">
+                        <button class="filter-btn active px-4 py-2 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-md transition-all cursor-target" data-filter="all" data-cursor="FILTER">همه</button>
+                        <button class="filter-btn px-4 py-2 rounded-lg text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition-all cursor-target" data-filter="corporate" data-cursor="FILTER">شرکتی</button>
+                        <button class="filter-btn px-4 py-2 rounded-lg text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition-all cursor-target" data-filter="ecommerce" data-cursor="FILTER">فروشگاهی</button>
+                        <button class="filter-btn px-4 py-2 rounded-lg text-xs font-bold bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 transition-all cursor-target" data-filter="webapp" data-cursor="FILTER">وب‌اپلیکیشن</button>
+                    </div>
+                </div>
+
+                <!-- Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="project-grid">
+                    
+                    <!-- Placeholder Card 1 -->
+                    <div class="project-card group bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-target" data-category="corporate" data-cursor="VIEW">
+                        <div class="aspect-video bg-slate-100 relative overflow-hidden flex items-center justify-center border-b border-slate-200">
+                            <div class="absolute inset-0 bg-slate-800/5 group-hover:bg-slate-800/0 transition-colors"></div>
+                            <span class="px-3 py-1 bg-white border border-slate-200 rounded text-xs font-bold text-slate-400 tracking-widest ltr">PLACEHOLDER</span>
+                            <div class="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        </div>
+                        <div class="p-6">
+                            <div class="text-[10px] font-bold text-blue-600 tracking-widest ltr mb-2 font-mono">CORPORATE</div>
+                            <h3 class="font-bold text-lg text-slate-900 mb-2">وب‌سایت شرکتی هلدینگ نمونه</h3>
+                            <p class="text-sm text-slate-500 mb-4 line-clamp-2">طراحی مینیمال و پرفورمنس بالا برای معرفی خدمات بین‌المللی.</p>
+                            <div class="flex gap-2 ltr">
+                                <span class="text-[9px] px-2 py-1 bg-slate-50 border border-slate-200 text-slate-500 rounded">Next.js</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Placeholder Card 2 -->
+                    <div class="project-card group bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-target" data-category="ecommerce" data-cursor="VIEW">
+                        <div class="aspect-video bg-slate-100 relative overflow-hidden flex items-center justify-center border-b border-slate-200">
+                            <span class="px-3 py-1 bg-white border border-slate-200 rounded text-xs font-bold text-slate-400 tracking-widest ltr">PLACEHOLDER</span>
+                        </div>
+                        <div class="p-6">
+                            <div class="text-[10px] font-bold text-cyan-600 tracking-widest ltr mb-2 font-mono">E-COMMERCE</div>
+                            <h3 class="font-bold text-lg text-slate-900 mb-2">فروشگاه آنلاین تخصصی</h3>
+                            <p class="text-sm text-slate-500 mb-4 line-clamp-2">سیستم فروشگاهی با معماری Headless و اتصال به درگاه‌های ارزی.</p>
+                            <div class="flex gap-2 ltr">
+                                <span class="text-[9px] px-2 py-1 bg-slate-50 border border-slate-200 text-slate-500 rounded">React</span>
+                                <span class="text-[9px] px-2 py-1 bg-slate-50 border border-slate-200 text-slate-500 rounded">Node.js</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Placeholder Card 3 -->
+                    <div class="project-card group bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-target" data-category="webapp" data-cursor="VIEW">
+                        <div class="aspect-video bg-slate-100 relative overflow-hidden flex items-center justify-center border-b border-slate-200">
+                            <span class="px-3 py-1 bg-white border border-slate-200 rounded text-xs font-bold text-slate-400 tracking-widest ltr">PLACEHOLDER</span>
+                        </div>
+                        <div class="p-6">
+                            <div class="text-[10px] font-bold text-violet-600 tracking-widest ltr mb-2 font-mono">WEB APP / DASHBOARD</div>
+                            <h3 class="font-bold text-lg text-slate-900 mb-2">داشبورد تحلیل داده</h3>
+                            <p class="text-sm text-slate-500 mb-4 line-clamp-2">توسعه پنل اختصاصی برای پردازش لحظه‌ای اطلاعات و چارت‌های تعاملی.</p>
+                            <div class="flex gap-2 ltr">
+                                <span class="text-[9px] px-2 py-1 bg-slate-50 border border-slate-200 text-slate-500 rounded">Vue.js</span>
+                                <span class="text-[9px] px-2 py-1 bg-slate-50 border border-slate-200 text-slate-500 rounded">Python API</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                
+                <!-- Empty State (Hidden initially) -->
+                <div id="empty-state" class="hidden text-center py-20 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50 mt-8">
+                    <div class="w-16 h-16 rounded-full bg-white border border-slate-200 flex items-center justify-center mx-auto mb-4 text-slate-400 shadow-sm">
+                        <i class="fas fa-folder-open text-2xl"></i>
+                    </div>
+                    <p class="text-slate-500 font-medium">نمونه‌کارهای این بخش به‌زودی تکمیل می‌شوند.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TECH STACK (Background 5: Data Flow) -->
+        <section class="py-24 bg-techDark relative overflow-hidden border-t border-slate-800">
+            <div class="absolute inset-0 opacity-10" style="background-image: repeating-linear-gradient(0deg, transparent, transparent 49px, #3b82f6 50px); background-size: 100% 50px;"></div>
+            
+            <div class="max-w-7xl mx-auto px-4 relative z-10 reveal text-center">
+                <h2 class="text-3xl font-bold text-white mb-12">تکنولوژی‌های مورد استفاده</h2>
+                
+                <div class="flex flex-wrap justify-center gap-4 max-w-4xl mx-auto ltr">
+                    <div class="px-6 py-3 bg-slate-900 border border-slate-700 rounded-xl text-slate-300 font-mono text-sm hover:border-cyan-500 transition-colors cursor-target" data-cursor="TECH"><i class="fab fa-react text-cyan-400 mr-2"></i> React / Next.js</div>
+                    <div class="px-6 py-3 bg-slate-900 border border-slate-700 rounded-xl text-slate-300 font-mono text-sm hover:border-green-500 transition-colors cursor-target" data-cursor="TECH"><i class="fab fa-node-js text-green-400 mr-2"></i> Node.js</div>
+                    <div class="px-6 py-3 bg-slate-900 border border-slate-700 rounded-xl text-slate-300 font-mono text-sm hover:border-blue-400 transition-colors cursor-target" data-cursor="TECH"><i class="fab fa-python text-blue-400 mr-2"></i> Python / Django</div>
+                    <div class="px-6 py-3 bg-slate-900 border border-slate-700 rounded-xl text-slate-300 font-mono text-sm hover:border-blue-500 transition-colors cursor-target" data-cursor="TECH"><i class="fas fa-database text-blue-500 mr-2"></i> PostgreSQL</div>
+                    <div class="px-6 py-3 bg-slate-900 border border-slate-700 rounded-xl text-slate-300 font-mono text-sm hover:border-cyan-400 transition-colors cursor-target" data-cursor="TECH"><i class="fas fa-wind text-cyan-400 mr-2"></i> Tailwind CSS</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FINAL CTA -->
+        <section class="py-24 relative bg-blue-600 overflow-hidden text-center">
+            <div class="absolute inset-0 bg-black/10"></div>
+            <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xNSkiLz48L3N2Zz4=')]"></div>
+            
+            <div class="max-w-3xl mx-auto px-4 relative z-10 reveal">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-white mb-4">آیا پروژه‌ای در ذهن دارید؟</h2>
+                <p class="text-blue-100 text-lg mb-10">با تیم مهندسی ما تماس بگیرید تا ایده‌ی شما را به یک محصول پایدار و بی‌نقص تبدیل کنیم.</p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <button class="bg-white text-blue-700 px-8 py-4 rounded-xl font-bold shadow-lg hover:bg-slate-50 transition cursor-target" data-cursor="START">شروع درخواست پروژه</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Global Footer (Simplified for Demo) -->
+    <footer class="bg-slate-900 text-slate-400 py-8 border-t border-slate-800 text-center text-sm font-mono ltr">
+        &copy; 2024 MetaTech Engineering. All rights reserved.
+    </footer>
+
+    <script>
+        // Custom Cursor Logic
+        const cursor = document.getElementById('custom-cursor');
+        const cursorText = document.getElementById('cursor-text');
+        
+        if (window.matchMedia("(pointer: fine)").matches) {
+            document.addEventListener('mousemove', e => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+            });
+
+            document.querySelectorAll('.cursor-target').forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    cursor.classList.add('active');
+                    cursorText.innerText = el.getAttribute('data-cursor') || 'WEB';
+                });
+                el.addEventListener('mouseleave', () => {
+                    cursor.classList.remove('active');
+                });
+            });
+        } else {
+            cursor.style.display = 'none';
+        }
+
+        // Device Mockup Toggle Logic
+        function setMockupDevice(mode) {
+            const frame = document.getElementById('mockup-frame');
+            const btnD = document.getElementById('btn-desktop');
+            const btnM = document.getElementById('btn-mobile');
+            
+            // Reset styles
+            btnD.className = 'px-6 py-2.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 cursor-target transition-all';
+            btnM.className = 'px-6 py-2.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 cursor-target transition-all';
+            
+            if (mode === 'desktop') {
+                frame.classList.remove('device-mobile');
+                frame.classList.add('device-desktop');
+                btnD.classList.remove('bg-slate-800', 'text-slate-300', 'border-slate-700', 'hover:bg-slate-700');
+                btnD.classList.add('bg-blue-600', 'text-white', 'shadow-[0_0_15px_rgba(37,99,235,0.4)]');
+            } else {
+                frame.classList.remove('device-desktop');
+                frame.classList.add('device-mobile');
+                btnM.classList.remove('bg-slate-800', 'text-slate-300', 'border-slate-700', 'hover:bg-slate-700');
+                btnM.classList.add('bg-blue-600', 'text-white', 'shadow-[0_0_15px_rgba(37,99,235,0.4)]');
+            }
+        }
+
+        // Project Filtering Logic
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const projectCards = document.querySelectorAll('.project-card');
+        const emptyState = document.getElementById('empty-state');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update button styles
+                filterBtns.forEach(b => {
+                    b.classList.remove('bg-blue-600', 'text-white', 'shadow-md');
+                    b.classList.add('bg-white', 'text-slate-600', 'border-slate-200');
+                });
+                btn.classList.remove('bg-white', 'text-slate-600', 'border-slate-200');
+                btn.classList.add('bg-blue-600', 'text-white', 'shadow-md');
+
+                const filterValue = btn.getAttribute('data-filter');
+                let visibleCount = 0;
+
+                projectCards.forEach(card => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.95)';
+                    
+                    setTimeout(() => {
+                        if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
+                            card.style.display = 'block';
+                            visibleCount++;
+                            setTimeout(() => {
+                                card.style.opacity = '1';
+                                card.style.transform = 'scale(1)';
+                            }, 50);
+                        } else {
+                            card.style.display = 'none';
+                        }
+                        
+                        if (visibleCount === 0) emptyState.classList.remove('hidden');
+                        else emptyState.classList.add('hidden');
+                    }, 300); 
+                });
+            });
+        });
+
+        // Scroll Reveal Observer
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
