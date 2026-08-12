@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پروژه های ویژه | MetaTech</title>
+    
+    <link href="https://cdn.fontcdn.ir/Font/Persian/Vazirmatn/Vazirmatn.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lalezar&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                        display: ['Lalezar', 'cursive'],
+                    },
+                    colors: {
+                        techDark: '#020617',
+                        techNavy: '#0f172a',
+                        primary: '#3b82f6',
+                        accentGlow: '#60a5fa',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* بهینه سازی پس زمینه برای رفع کندی (استفاده از گرادیانت به جای بلور سنگین) */
+        body {
+            background-color: #F8FAFC; 
+            color: #0F172A;
+            overflow: hidden; 
+            cursor: none; 
+            /* گرادیانت شعاعی سریع و بدون افت فریم */
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(191,219,254,0.4) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(233,213,255,0.4) 0%, transparent 40%);
+        }
+        .ltr { direction: ltr; display: inline-block; }
+
+        /* Custom Cursor */
+        #custom-cursor {
+            position: fixed; top: 0; left: 0; width: 10px; height: 10px;
+            background-color: #3b82f6; border-radius: 50%; pointer-events: none; z-index: 99999;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+            mix-blend-mode: exclusion;
+        }
+        #custom-cursor::after {
+            content: ''; position: absolute; width: 44px; height: 44px;
+            border: 1.5px solid rgba(59, 130, 246, 0.5); border-radius: 50%;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        #custom-cursor span { display: none; color: white; font-size: 10px; font-weight: 800; letter-spacing: 2px; font-family: 'Inter', sans-serif; text-transform: uppercase; }
+        #custom-cursor.active { width: 75px; height: 75px; mix-blend-mode: normal; background-color: rgba(59, 130, 246, 0.95); }
+        #custom-cursor.active::after { transform: scale(1.5); border-color: transparent; }
+        #custom-cursor.active span { display: block; }
+
+        /* Modified Track: ساختار جدید برای قرارگیری تضمینی در مرکز */
+        .slider-track {
+            display: flex;
+            width: 100vw;
+            flex: 1; /* گرفتن فضای باقیمانده به صورت هوشمند */
+            min-height: 0;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+            cursor: grab;
+            /* فضای خالی در دو طرف اسلایدر برای دیده شدن لبه کارت‌های بعدی در موبایل (Peeking effect) */
+            padding: 0 6vw; 
+        }
+        @media (min-width: 1024px) {
+            .slider-track { padding: 0; } /* در دسکتاپ نیازی به پدینگ نیست */
+        }
+
+        .slider-track::-webkit-scrollbar { display: none; }
+        .slider-track:active { cursor: grabbing; }
+
+        /* Container برای هر اسلاید که سایز کامل صفحه را میگیرد */
+        .slide-container {
+            /* در موبایل عرض کمتری می‌گیرد (88 درصد) تا کارت بعدی دیده شود */
+            flex: 0 0 88vw;
+            width: 88vw;
+            height: 100%;
+            scroll-snap-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1vh 2vw; 
+        }
+        @media (min-width: 1024px) {
+            .slide-container {
+                /* در دسکتاپ عرض کامل می‌گیرد */
+                flex: 0 0 100vw;
+                width: 100vw;
+                padding: 1vh 2vw; /* کاهش پدینگ برای بزرگتر شدن کارت */
+            }
+        }
+
+        /* The Card: اینک سایز کامل و بی نقص است */
+        .project-card {
+            width: 100%;
+            max-width: 1400px; /* عرض به شدت افزایش یافته (از 1200 به 1400) */
+            height: 100%;
+            max-height: 92vh; /* ارتفاع افزایش یافته برای پر کردن بهتر صفحه */
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            
+            /* سایه دیفالت */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            
+            /* پرفورمنس: بجای فیلترهای سنگین، فقط scale و opacity */
+            transform: scale(0.9);
+            opacity: 0.4;
+            transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.5s ease;
+            will-change: transform, opacity;
+            pointer-events: none;
+        }
+        
+        @media (min-width: 1024px) {
+            .project-card { flex-direction: row; }
+        }
+
+        /* Active State - سایه بسیار خاص و درخشان */
+        .slide-container.is-active .project-card {
+            transform: scale(1);
+            opacity: 1;
+            box-shadow: 
+                0 30px 60px -15px rgba(0, 0, 0, 0.2),          /* سایه عمیق */
+                0 0 45px -10px rgba(59, 130, 246, 0.3),      /* هاله آبی */
+                inset 0 2px 5px rgba(255, 255, 255, 1);      /* شاین لبه بالایی */
+            pointer-events: auto;
+        }
+
+        /* Content Areas */
+        .card-info { 
+            flex: 1.2; /* در موبایل فضای بیشتری به متن میدهیم */
+            padding: 20px 24px; /* پدینگ بهینه برای موبایل */
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            position: relative; 
+            z-index: 10; 
+            overflow-y: auto; /* اگر صفحه کوچک بود محتوا اسکرول بخورد و بیرون نزند */
+        }
+        @media (min-width: 1024px) { 
+            .card-info { flex: 1; padding: 30px 40px; } 
+        }
+
+        .card-visual {
+            flex: 0.8; /* در موبایل فضای کمتری میگیرد تا متن راحت جا شود */
+            min-height: 180px; /* جلوگیری از ناپدید شدن عکس در موبایل */
+            background: #020617; 
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            box-shadow: inset 0 20px 40px -20px rgba(0,0,0,0.5); /* سایه از بالا در حالت ستونی */
+        }
+        @media (min-width: 1024px) {
+            .card-visual {
+                flex: 1.5;
+                padding: 30px;
+                box-shadow: inset 20px 0 40px -20px rgba(0,0,0,0.5); /* سایه از کنار در حالت ردیفی */
+            }
+        }
+
+        /* Browser Mockup Floating (Optimized) */
+        @keyframes floatMockup {
+            0%, 100% { transform: translateY(0px); box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 30px rgba(59,130,246,0.2); }
+            50% { transform: translateY(-12px); box-shadow: 0 35px 60px rgba(0,0,0,0.4), 0 0 45px rgba(59,130,246,0.3); }
+        }
+
+        .browser-mockup {
+            width: 100%; max-width: 95%; height: 90%;
+            background: #0f172a; border-radius: 12px; border: 1px solid #1e293b;
+            display: flex; flex-direction: column; overflow: hidden;
+            transform: translateY(40px) scale(0.95); opacity: 0;
+            transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative; z-index: 2;
+            will-change: transform, opacity;
+        }
+        @media (min-width: 1024px) {
+            .browser-mockup { height: 85%; border-radius: 16px; }
+        }
+        
+        .slide-container.is-active .browser-mockup {
+            transform: translateY(0) scale(1); opacity: 1;
+            /* انیمیشن بعد از نیم ثانیه شروع میشود تا لودینگ اولیه سبک باشد */
+            animation: floatMockup 6s ease-in-out infinite 0.6s; 
+        }
+
+        .browser-header { height: 36px; background: #020617; border-bottom: 1px solid #1e293b; display: flex; align-items: center; padding: 0 16px; gap: 8px; }
+        .mac-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot-red { background: #ff5f56; } .dot-yel { background: #ffbd2e; } .dot-grn { background: #27c93f; }
+
+        .browser-content { flex: 1; position: relative; overflow: hidden; background: #000; }
+        .browser-content img { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; transition: opacity 0.3s, transform 0.5s; }
+        .slide-container.is-active .project-card:hover .browser-content img { opacity: 1; transform: scale(1.03); }
+
+        /* انیمیشن های متن کارت */
+        .reveal-item { opacity: 0; transform: translateY(20px); transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .slide-container.is-active .reveal-item { opacity: 1; transform: translateY(0); }
+        .slide-container.is-active .delay-1 { transition-delay: 0.1s; }
+        .slide-container.is-active .delay-2 { transition-delay: 0.2s; }
+        .slide-container.is-active .delay-3 { transition-delay: 0.3s; }
+        .slide-container.is-active .delay-4 { transition-delay: 0.4s; }
+
+        .glass-nav-pill {
+            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 1);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15), inset 0 2px 4px rgba(255,255,255,0.8);
+        }
+        .progress-track { background: rgba(15, 23, 42, 0.1); overflow: hidden; position: relative; }
+        .progress-fill { background: linear-gradient(90deg, #3b82f6, #8b5cf6); box-shadow: 0 0 15px rgba(59, 130, 246, 0.8); transition: width 0.3s ease; }
+    </style>
+</head>
+<body class="antialiased selection:bg-blue-200 selection:text-blue-900 flex flex-col h-[100dvh] overflow-hidden">
+
+    <div id="custom-cursor"><span id="cursor-text">EXPLORE</span></div>
+
+    <header id="main-header" class="fixed w-full z-50 transition-all duration-300 py-2.5 md:py-3.5 bg-white/70 backdrop-blur-xl border-b border-white/80 shadow-sm">
+        <div class="max-w-[95vw] mx-auto px-4 flex items-center justify-between">
+            <div class="flex items-center gap-8">
+                <div class="font-black text-xl md:text-2xl text-slate-900 ltr tracking-tighter cursor-target" data-cursor="HOME" style="font-family: 'Inter', sans-serif;">
+                    Meta<span class="text-primary">Tech</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3 md:gap-5">
+                <button class="hidden md:block text-xs font-black text-slate-400 hover:text-slate-800 transition ltr cursor-target font-mono">FA | EN</button>
+                <button class="bg-slate-900 hover:bg-primary hover:shadow-[0_10px_20px_rgba(59,130,246,0.3)] text-white px-4 md:px-6 py-2 md:py-2.5 rounded-xl font-bold text-xs md:text-sm transition-all duration-300 cursor-target">
+                    شروع همکاری
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 w-full flex flex-col pt-16 md:pt-20 pb-2 md:pb-3 overflow-hidden relative">
+        
+        <!-- Animated Title Section (Removed absolute to flow correctly) -->
+        <div class="w-full text-center z-10 px-4 flex flex-col items-center pointer-events-none shrink-0 mb-1 md:mb-2">
+            <div class="inline-flex items-center justify-center gap-2 px-3 md:px-4 py-1 md:py-1.5 rounded-full bg-white/80 backdrop-blur-md border border-white text-primary text-[9px] md:text-[10px] font-black tracking-[0.2em] ltr mb-2 md:mb-3 shadow-sm font-mono">
+                <i class="fas fa-sparkles text-amber-400"></i> EXCLUSIVE PROJECTS
+            </div>
+            <h1 class="text-2xl md:text-5xl font-display text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 pb-2" style="line-height: 1.2; filter: drop-shadow(0 4px 10px rgba(59,130,246,0.2));">
+                پروژه‌های شاخص ما
+            </h1>
+            
+            <!-- راهنمای بصری اسکرول برای موبایل -->
+            <div class="md:hidden flex items-center justify-center gap-2 text-slate-500 text-[10px] sm:text-[11px] font-bold mt-1 bg-white/60 backdrop-blur-sm px-3 py-1.5 rounded-full border border-slate-200 shadow-sm animate-pulse pointer-events-auto">
+                <i class="fas fa-arrows-left-right text-primary"></i>
+                برای دیدن بقیه پروژه‌ها به طرفین بکشید
+            </div>
+        </div>
+
+        <div class="slider-track cursor-target shrink-0 flex-1" id="slider-track" data-cursor="DRAG">
+            <!-- Cards Injected via JS -->
+        </div>
+
+        <!-- Controls Area (Removed absolute to avoid overlapping cards) -->
+        <div class="w-full flex justify-center flex-col items-center shrink-0 mt-2 z-20">
+            <div class="glass-nav-pill px-2 py-2 rounded-full flex items-center gap-4 sm:gap-6 mb-2">
+                <!-- Next in RTL is visual left arrow, but logically right arrow -->
+                <button id="btn-prev" class="w-12 h-12 flex items-center justify-center bg-white rounded-full text-slate-600 hover:text-primary hover:bg-blue-50 hover:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all duration-300 cursor-target group" data-cursor="PREV">
+                    <i class="fas fa-arrow-right group-hover:-translate-x-1 transition-transform"></i>
+                </button>
+                
+                <div class="flex items-center gap-3 w-32 sm:w-48 ltr">
+                    <span class="font-mono font-black text-sm text-slate-800 w-5 text-right" id="current-num">01</span>
+                    <div class="flex-1 h-1.5 rounded-full progress-track">
+                        <div class="h-full rounded-full progress-fill" id="progress-fill" style="width: 10%;"></div>
+                    </div>
+                    <span class="font-mono font-bold text-xs text-slate-400 w-5 text-left" id="total-num">10</span>
+                </div>
+                
+                <button id="btn-next" class="w-12 h-12 flex items-center justify-center bg-white rounded-full text-slate-600 hover:text-primary hover:bg-blue-50 hover:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all duration-300 cursor-target group" data-cursor="NEXT">
+                    <i class="fas fa-arrow-left group-hover:translate-x-1 transition-transform"></i>
+                </button>
+            </div>
+            
+            <div class="text-center text-slate-400 text-xs font-mono tracking-widest hidden md:block opacity-70">
+                USE <span class="bg-slate-200 text-slate-600 px-2 py-0.5 rounded border border-slate-300">←</span> <span class="bg-slate-200 text-slate-600 px-2 py-0.5 rounded border border-slate-300">→</span> TO NAVIGATE
+            </div>
+        </div>
+    </main>
+
+    <!-- DJANGO INTEGRATION: -->
+    <script id="django-projects-data" type="application/json">
+    [
+        {
+            "id": 1,
+            "title": "داشبورد هوشمند BlueCore",
+            "category": "WEB APP / SAAS",
+            "desc": "یک شاهکار مهندسی در زمینه تحلیل داده؛ معماری مقیاس‌پذیر و رابط کاربری خیره‌کننده که تجربه‌ای بی‌نقص را روی تمامی دستگاه‌ها به ارمغان می‌آورد.",
+            "tags": ["React", "Django DRF", "PostgreSQL", "Redis"],
+            "badge": "FEATURED",
+            "image": "https://placehold.co/1600x1000/0f172a/3b82f6?text=BlueCore+Dashboard",
+            "accent": "text-blue-600",
+            "bgBadge": "bg-blue-50 border-blue-200 text-blue-700"
+        },
+        {
+            "id": 2,
+            "title": "فروشگاه آنلاین Nova",
+            "category": "E-COMMERCE",
+            "desc": "تجربه خریدی لذت‌بخش و روان؛ پلتفرم فروشگاهی یکپارچه با اتصال به درگاه‌های بین‌المللی، مدیریت موجودی زنده و انیمیشن‌های مینیمال.",
+            "tags": ["Django", "Celery", "Tailwind", "PostGIS"],
+            "badge": "COMPLETED",
+            "image": "https://placehold.co/1600x1000/1e1b4b/818cf8?text=NovaShop+Commerce",
+            "accent": "text-indigo-600",
+            "bgBadge": "bg-indigo-50 border-indigo-200 text-indigo-700"
+        },
+        {
+            "id": 3,
+            "title": "کلینیک مجازی رزرو",
+            "category": "BOOKING SYSTEM",
+            "desc": "هوشمندسازی مدیریت زمان در کلینیک‌های پزشکی؛ پلتفرمی با تقویم تعاملی، سیستم یادآور پیامکی خودکار و معماری امن ابری.",
+            "tags": ["Vue.js", "Django", "Channels", "UI/UX"],
+            "badge": "NEW",
+            "image": "https://placehold.co/1600x1000/064e3b/34d399?text=Smart+Booking+App",
+            "accent": "text-emerald-600",
+            "bgBadge": "bg-emerald-50 border-emerald-200 text-emerald-700"
+        },
+        {
+            "id": 4,
+            "title": "هویت بصری هلدینگ آلفا",
+            "category": "CORPORATE",
+            "desc": "طراحی مجدد و خلق هویت دیجیتال برای یک هلدینگ بین‌المللی با تمرکز بر پرفورمنس، سئو و انیمیشن‌های سه‌بعدی اسکرول.",
+            "tags": ["Nuxt 3", "Django CMS", "GSAP"],
+            "badge": "SHOWCASE",
+            "image": "https://placehold.co/1600x1000/171717/d4d4d8?text=Alpha+Corporate",
+            "accent": "text-slate-800",
+            "bgBadge": "bg-slate-100 border-slate-300 text-slate-800"
+        }
+    ]
+    </script>
+
+    <script>
+        // Parse Django injected data
+        const djangoDataElement = document.getElementById('django-projects-data');
+        let projects = [];
+        try {
+            projects = JSON.parse(djangoDataElement.textContent);
+        } catch(e) {
+            console.error("Failed to parse Django projects JSON", e);
+        }
+
+        const sliderTrack = document.getElementById('slider-track');
+        const currentNumEl = document.getElementById('current-num');
+        const totalNumEl = document.getElementById('total-num');
+        const progressFill = document.getElementById('progress-fill');
+        const totalProjects = projects.length;
+
+        totalNumEl.innerText = totalProjects.toString().padStart(2, '0');
+
+        function renderProjects() {
+            projects.forEach((proj, index) => {
+                const tagsHtml = proj.tags.map(tag => 
+                    `<span class="px-2 md:px-3 py-1 md:py-1.5 bg-slate-100 border border-slate-200 text-slate-700 text-[9px] md:text-[11px] rounded-full font-mono shadow-sm hover:shadow-md transition-shadow cursor-default">${tag}</span>`
+                ).join('');
+
+                // ما ساختار HTML را تغییر دادیم. هر کارت داخل یک کانتینر 100vw قرار میگیرد تا کامل وسط چین شود
+                const cardHtml = `
+                    <div class="slide-container ${index === 0 ? 'is-active' : ''}" data-index="${index}">
+                        <div class="project-card">
+                            <div class="card-info">
+                                <div class="reveal-item">
+                                    <div class="inline-flex items-center gap-2 px-2.5 sm:px-3 py-1 rounded-md border ${proj.bgBadge} text-[9px] sm:text-[10px] font-black tracking-[0.15em] ltr mb-2.5 sm:mb-3 font-mono uppercase shadow-sm bg-white">
+                                        <div class="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></div>
+                                        ${proj.badge}
+                                    </div>
+                                </div>
+                                
+                                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 mb-1.5 sm:mb-2 leading-[1.15] reveal-item delay-1 tracking-tight drop-shadow-sm" style="text-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                                    ${proj.title}
+                                </h2>
+                                
+                                <div class="text-[10px] sm:text-[12px] font-black ${proj.accent} tracking-[0.2em] ltr mb-2 sm:mb-3 font-mono uppercase reveal-item delay-1 bg-slate-50 inline-block px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-slate-200 shadow-[inset_0_1px_2px_rgba(255,255,255,1)]">
+                                    ${proj.category}
+                                </div>
+                                
+                                <p class="text-slate-600 text-[12px] sm:text-sm lg:text-base leading-relaxed mb-3 sm:mb-4 reveal-item delay-2 max-w-lg font-medium">
+                                    ${proj.desc}
+                                </p>
+                                
+                                <div class="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-5 ltr reveal-item delay-3">
+                                    ${tagsHtml}
+                                </div>
+                                
+                                <div class="reveal-item delay-4 mt-auto lg:mt-0 pt-1 sm:pt-2">
+                                    <a href="#" class="group relative inline-flex items-center justify-center gap-2 sm:gap-3 bg-slate-900 text-white px-5 sm:px-8 py-2.5 sm:py-3.5 rounded-xl font-bold overflow-hidden shadow-[0_10px_20px_rgba(15,23,42,0.3)] hover:shadow-[0_15px_30px_-5px_rgba(59,130,246,0.5)] hover:-translate-y-1 transition-all duration-300 w-full sm:w-auto cursor-target" data-cursor="VIEW">
+                                        <span class="absolute inset-0 bg-gradient-to-r from-primary via-indigo-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                                        <span class="relative z-10 flex items-center gap-2 sm:gap-3 text-xs sm:text-sm lg:text-base">
+                                            مشاهده جزئیات <i class="fas fa-arrow-left text-xs sm:text-sm group-hover:-translate-x-1.5 transition-transform duration-300"></i>
+                                        </span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="card-visual">
+                                <div class="absolute inset-0 bg-gradient-to-tr from-slate-900 to-slate-800 opacity-90"></div>
+                                <div class="absolute w-48 sm:w-72 h-48 sm:h-72 bg-primary/20 blur-[80px] rounded-full pointer-events-none mix-blend-screen"></div>
+
+                                <div class="browser-mockup shadow-[0_30px_60px_rgba(0,0,0,0.6)]">
+                                    <div class="browser-header ltr">
+                                        <div class="mac-dot dot-red"></div>
+                                        <div class="mac-dot dot-yel"></div>
+                                        <div class="mac-dot dot-grn"></div>
+                                        <div class="ml-2 sm:ml-4 w-24 sm:w-48 h-3 sm:h-4 bg-slate-800/80 rounded-full"></div>
+                                    </div>
+                                    <div class="browser-content cursor-target" data-cursor="OPEN">
+                                        <img src="${proj.image}" alt="${proj.title}">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                sliderTrack.insertAdjacentHTML('beforeend', cardHtml);
+            });
+        }
+
+        renderProjects();
+        
+        const containers = document.querySelectorAll('.slide-container');
+        
+        // Intersection Observer (Responsive to Snap)
+        const observerOptions = {
+            root: sliderTrack,
+            rootMargin: '0px',
+            threshold: 0.55 // When a card is > 55% visible, it becomes active
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    containers.forEach(c => c.classList.remove('is-active'));
+                    entry.target.classList.add('is-active');
+                    
+                    const index = parseInt(entry.target.getAttribute('data-index'));
+                    const currentNum = index + 1;
+                    currentNumEl.innerText = currentNum.toString().padStart(2, '0');
+                    progressFill.style.width = ((currentNum / totalProjects) * 100) + '%';
+                }
+            });
+        }, observerOptions);
+
+        containers.forEach(container => observer.observe(container));
+
+        // استفاده از scrollIntoView که به طور قطعی باگ‌های محاسبه عرض و راست‌چین بودن را رفع می‌کند
+        function scrollToIndex(index) {
+            if(index < 0 || index >= totalProjects) return;
+            const targetContainer = containers[index];
+            // این کد در تمام مرورگرها برای گرید/اسلایدر کاملا وسط چین اسکرول میکند
+            targetContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+
+        // جلوگیری از فشردن سریع و باگ خوردن کلیدها (Debounce)
+        let isNavigating = false;
+        function handleNavigation(direction) {
+            if (isNavigating) return;
+            
+            const activeContainer = document.querySelector('.slide-container.is-active');
+            if(!activeContainer) return;
+            let idx = parseInt(activeContainer.getAttribute('data-index'));
+            
+            isNavigating = true;
+            if (direction === 'next') scrollToIndex(idx + 1); // راست چین -> بعدی میره چپ
+            if (direction === 'prev') scrollToIndex(idx - 1);
+            
+            setTimeout(() => { isNavigating = false; }, 400); // 400ms cooldown
+        }
+
+        document.getElementById('btn-next').addEventListener('click', () => handleNavigation('next'));
+        document.getElementById('btn-prev').addEventListener('click', () => handleNavigation('prev'));
+
+        // Fast Keyboard Navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault(); 
+                handleNavigation('next');
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault(); 
+                handleNavigation('prev'); 
+            }
+        });
+
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                const activeContainer = document.querySelector('.slide-container.is-active');
+                if(activeContainer) {
+                    // اسکرول آنی (auto) به مرکز برای جلوگیری از به هم ریختگی در زمان تغییر سایز
+                    activeContainer.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' });
+                }
+            }, 150);
+        });
+
+        // Drag to scroll
+        let isDown = false; let startX; let scrollLeft;
+        sliderTrack.addEventListener('mousedown', (e) => {
+            isDown = true; sliderTrack.style.cursor = 'grabbing';
+            startX = e.pageX - sliderTrack.offsetLeft;
+            scrollLeft = sliderTrack.scrollLeft;
+        });
+        sliderTrack.addEventListener('mouseleave', () => { isDown = false; sliderTrack.style.cursor = 'grab'; });
+        sliderTrack.addEventListener('mouseup', () => { isDown = false; sliderTrack.style.cursor = 'grab'; });
+        sliderTrack.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - sliderTrack.offsetLeft;
+            sliderTrack.scrollLeft = scrollLeft - ((x - startX) * 2);
+        });
+
+        const cursor = document.getElementById('custom-cursor');
+        const cursorText = document.getElementById('cursor-text');
+        
+        if (window.matchMedia("(pointer: fine)").matches) {
+            document.addEventListener('mousemove', e => {
+                cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
+            });
+            const attachCursorEvents = () => {
+                document.querySelectorAll('.cursor-target').forEach(el => {
+                    if(el.dataset.cursorAttached) return;
+                    el.dataset.cursorAttached = true;
+                    el.addEventListener('mouseenter', () => {
+                        cursor.classList.add('active');
+                        cursorText.innerText = el.getAttribute('data-cursor') || 'EXPLORE';
+                    });
+                    el.addEventListener('mouseleave', () => cursor.classList.remove('active'));
+                });
+            };
+            attachCursorEvents();
+        } else {
+            cursor.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
