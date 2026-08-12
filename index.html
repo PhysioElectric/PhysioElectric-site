@@ -1,62 +1,71 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صفحه ساده من</title>
-    <style>
-        body {
-            font-family: 'Tahoma', sans-serif;
-            background-color: #f0f8ff;
-            margin: 0;
-            padding: 20px;
-            text-align: center;
-        }
-        h1 {
-            color: #2c3e50;
-            border-bottom: 3px solid #3498db;
-            display: inline-block;
-            padding-bottom: 5px;
-        }
-        p {
-            color: #34495e;
-            font-size: 18px;
-            line-height: 1.8;
-            max-width: 600px;
-            margin: 20px auto;
-            background-color: #ffffff;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .highlight {
-            color: #e74c3c;
-            font-weight: bold;
-        }
-        footer {
-            margin-top: 40px;
-            color: #7f8c8d;
-            font-size: 14px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>پروژه چند صفحه‌ای با اسکرول</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* تنظیم کانتینر اسکرول fullscreen */
+    body, html {
+      height: 100%;
+      overflow: hidden; /* جلوگیری از اسکرول مرورگر */
+    }
+
+    .scroll-container {
+      height: 100vh;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory; /* قفل شدن روی هر صفحه هنگام اسکرول */
+      scroll-behavior: smooth;
+    }
+
+    /* بخش مربوط به هر صفحه */
+    .page-section {
+      height: 100vh;
+      width: 100%;
+      scroll-snap-align: start; /* هم‌ترازی با بالای صفحه */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  </style>
 </head>
 <body>
 
-    <h1>سلام دنیا! 🌍</h1>
-    
-    <p>
-        این یک <span class="highlight">صفحه HTML ساده</span> است که با زبان فارسی نوشته شده.
-        <br>
-        از <strong>CSS</strong> برای زیباسازی استفاده شده است.
-    </p>
+  <div class="scroll-container">
+    <!-- بخش‌هایی که محتوای صفحات مجزا داخلشان بارگذاری می‌شود -->
+    <section class="page-section" data-page="page1.html"></section>
+    <section class="page-section" data-page="page2.html"></section>
+    <section class="page-section" data-page="page3.html"></section>
+  </div>
 
-    <p>
-        می‌توانید این کد را کپی کنید و در مرورگر خود باز کنید.
-    </p>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const sections = document.querySelectorAll('.page-section');
 
-    <footer>
-        ساخته شده با ❤️ توسط شما
-    </footer>
+      // لود کردن محتوای هر فایل HTML در بخش مربوط به خودش
+      sections.forEach(section => {
+        const pageUrl = section.getAttribute('data-page');
 
+        fetch(pageUrl)
+          .then(response => {
+            if (!response.ok) throw new Error('صفحه یافت نشد');
+            return response.text();
+          })
+          .then(html => {
+            section.innerHTML = html;
+          })
+          .catch(error => {
+            section.innerHTML = `<p>خطا در بارگذاری ${pageUrl}</p>`;
+            console.error(error);
+          });
+      });
+    });
+  </script>
 </body>
 </html>
