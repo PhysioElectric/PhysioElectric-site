@@ -1,0 +1,36 @@
+{
+  "name": "physio-electric-lab",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Physio Electric — Simulation Laboratory",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "dev:server": "node --watch server/index.js",
+    "dev:client": "vite --host 0.0.0.0 --port 5173",
+    "build": "vite build",
+    "start": "node server/index.js",
+    "preview": "npm run build && npm start"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@fontsource-variable/geist": "^5.2.8",
+    "@fontsource-variable/geist-mono": "^5.2.7",
+    "@fontsource-variable/vazirmatn": "^5.2.8",
+    "compression": "^1.8.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "ws": "^8.18.1",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.2.1"
+  }
+}
