@@ -3,69 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>پروژه چند صفحه‌ای با اسکرول</title>
+  <title>Sampatec</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    /* تنظیم کانتینر اسکرول fullscreen */
-    body, html {
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
       height: 100%;
-      overflow: hidden; /* جلوگیری از اسکرول مرورگر */
+      overflow: hidden;
+      background: #05060a;
     }
-
     .scroll-container {
       height: 100vh;
       overflow-y: scroll;
-      scroll-snap-type: y mandatory; /* قفل شدن روی هر صفحه هنگام اسکرول */
+      scroll-snap-type: y mandatory;
       scroll-behavior: smooth;
     }
-
-    /* بخش مربوط به هر صفحه */
     .page-section {
       height: 100vh;
       width: 100%;
-      scroll-snap-align: start; /* هم‌ترازی با بالای صفحه */
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      scroll-snap-align: start;
+    }
+    .page-section iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #05060a;
     }
   </style>
 </head>
 <body>
-
   <div class="scroll-container">
-    <!-- بخش‌هایی که محتوای صفحات مجزا داخلشان بارگذاری می‌شود -->
-    <section class="page-section" data-page="page1.html"></section>
-    <section class="page-section" data-page="page2.html"></section>
-    <section class="page-section" data-page="page3.html"></section>
+    <section class="page-section"><iframe src="page1.html" title="صفحه ۱"></iframe></section>
+    <section class="page-section"><iframe src="page2.html" title="صفحه ۲"></iframe></section>
+    <section class="page-section"><iframe src="page3.html" title="پروژه‌ها"></iframe></section>
+    <section class="page-section"><iframe src="page4.html" title="آزمایشگاه شبیه‌سازی Physio Electric"></iframe></section>
   </div>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const sections = document.querySelectorAll('.page-section');
-
-      // لود کردن محتوای هر فایل HTML در بخش مربوط به خودش
-      sections.forEach(section => {
-        const pageUrl = section.getAttribute('data-page');
-
-        fetch(pageUrl)
-          .then(response => {
-            if (!response.ok) throw new Error('صفحه یافت نشد');
-            return response.text();
-          })
-          .then(html => {
-            section.innerHTML = html;
-          })
-          .catch(error => {
-            section.innerHTML = `<p>خطا در بارگذاری ${pageUrl}</p>`;
-            console.error(error);
-          });
-      });
-    });
-  </script>
 </body>
 </html>
