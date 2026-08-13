@@ -1,22 +1,38 @@
-# Sampatec
+# Physio Electric
 
-سایت چندصفحه‌ای. اسکرول عمودی بین صفحات:
+سایت گروه + آزمایشگاه شبیه‌سازی (IoT / MATLAB / COMSOL).
 
-1. `page1.html`
-2. `page2.html`
-3. `page3.html` — پروژه‌های شاخص
-4. `page4.html` — آزمایشگاه شبیه‌سازی **Physio Electric** (IoT / MATLAB / COMSOL)
+## اگر شبیه‌سازها را نمی‌بینی
 
-## اجرا
+فایل HTML را با دابل‌کلیک یا Preview خود VS Code باز نکن. باید سرور اجرا شود.
+
+### در VS Code
+
+```bash
+git clone https://github.com/sympathiccore/PhysioElectric-site.git
+cd PhysioElectric-site
+```
+
+سپس **File → Open Folder** روی همین پوشه.
+
+ترمینال:
 
 ```bash
 cd lab
 npm install
 npm run build
-NODE_ENV=production PORT=8080 npm start
+npm start
 ```
 
-- کل سایت: http://localhost:8080
-- فقط آزمایشگاه: http://localhost:8080/page4.html
+مرورگر:
 
-کد لاب داخل پوشهٔ `lab/` است.
+- http://localhost:8080
+- http://localhost:8080/simulations.html   ← شبیه‌سازها اینجاست
+
+ویندوز: می‌توانی `start.bat` را دابل‌کلیک کنی.
+
+## ساختار
+
+- `simulations.html` — آزمایشگاه
+- `lab/` — کد React + Express
+- `scroll_page/scroll.html` — صفحه پروژه‌ها

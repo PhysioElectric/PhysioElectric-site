@@ -1,42 +1,65 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sampatec</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Physio Electric</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body {
-      height: 100%;
-      overflow: hidden;
-      background: #05060a;
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      font-family: Tahoma, Vazirmatn, sans-serif;
+      color: #eef4ff;
+      background:
+        radial-gradient(900px 500px at 10% -10%, rgba(90,210,255,.22), transparent 55%),
+        radial-gradient(800px 500px at 100% 0%, rgba(180,120,255,.16), transparent 50%),
+        #07080d;
+      display: grid;
+      place-items: center;
+      padding: 32px 16px;
     }
-    .scroll-container {
-      height: 100vh;
-      overflow-y: scroll;
-      scroll-snap-type: y mandatory;
-      scroll-behavior: smooth;
+    .card {
+      width: min(640px, 100%);
+      padding: 32px 28px;
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(255,255,255,.1), rgba(255,255,255,.03));
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: 0 24px 60px rgba(0,0,0,.35);
+      backdrop-filter: blur(18px);
     }
-    .page-section {
-      height: 100vh;
-      width: 100%;
-      scroll-snap-align: start;
+    .kicker { color: #7ef0dc; font-size: 12px; letter-spacing: .12em; }
+    h1 { margin: 10px 0 8px; font-size: clamp(28px, 6vw, 42px); letter-spacing: -.03em; }
+    p { color: rgba(255,255,255,.66); line-height: 1.8; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+    a {
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 46px; padding: 0 18px; border-radius: 999px;
+      text-decoration: none; color: #04120f; font-weight: 700;
+      background: linear-gradient(180deg, #7ef0dc, #3ec8b4);
     }
-    .page-section iframe {
-      display: block;
-      width: 100%;
-      height: 100%;
-      border: 0;
-      background: #05060a;
-    }
+    a.ghost { color: #fff; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); }
+    code { font-size: 12px; color: #ffc37a; }
   </style>
 </head>
 <body>
-  <div class="scroll-container">
-    <section class="page-section"><iframe src="page1.html" title="صفحه ۱"></iframe></section>
-    <section class="page-section"><iframe src="page2.html" title="صفحه ۲"></iframe></section>
-    <section class="page-section"><iframe src="page3.html" title="پروژه‌ها"></iframe></section>
-    <section class="page-section"><iframe src="page4.html" title="آزمایشگاه شبیه‌سازی Physio Electric"></iframe></section>
-  </div>
+  <main class="card">
+    <div class="kicker">PHYSIO ELECTRIC</div>
+    <h1>آزمایشگاه شبیه‌سازی</h1>
+    <p>
+      اگر صفحه سیاه یا خالی دیدی، احتمالاً فایل را مستقیم باز کرده‌ای.
+      اول سرور را اجرا کن، بعد این دکمه را بزن.
+    </p>
+    <div class="actions">
+      <a href="simulations.html">ورود به شبیه‌سازها</a>
+      <a class="ghost" href="scroll_page/scroll.html">صفحه پروژه‌ها</a>
+    </div>
+    <p style="margin-top:22px;font-size:13px">
+      در ترمینال VS Code:<br />
+      <code>npm start</code><br />
+      بعد برو به <code>http://localhost:8080/simulations.html</code>
+    </p>
+  </main>
 </body>
 </html>
