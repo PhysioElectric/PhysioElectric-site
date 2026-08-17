@@ -5,6 +5,9 @@
 محتوای سایت در دیتابیس نگه‌داری می‌شود و از پنل ادمین ویرایش می‌شود — بدون
 نیاز به دست‌زدن به HTML یا دیپلوی مجدد.
 
+> 🖥️ راهنمای گام‌به‌گام اجرا روی VS Code (همراه رفع خطاهای رایج Pylance):
+> [`RUN_ON_VSCODE.md`](RUN_ON_VSCODE.md)
+
 ## راه‌اندازی
 
 ```bash
@@ -39,6 +42,17 @@ python manage.py runserver
 - **۵۳ تست** · `check --deploy` بدون هشدار
 
 جزئیات کامل: [`backend/README.md`](backend/README.md)
+
+## VS Code
+
+پوشهٔ `.vscode/` آماده است:
+
+- **F5** → اجرای سرور با دیباگر (یا اجرای تست‌ها)
+- **Ctrl+Shift+P → Tasks: Run Task** → `setup` کل نصب و migrate و seed را یک‌جا انجام می‌دهد
+- قالب‌های `templates/` به‌صورت `django-html` شناسایی می‌شوند
+
+بعد از ساخت محیط مجازی، حتماً **Ctrl+Shift+P → Python: Select Interpreter** را
+بزن و `.venv` را انتخاب کن.
 
 ## دیتابیس
 
