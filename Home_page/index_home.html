@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhysioElectric | Engineering Ideas. Building Intelligent Solutions.</title>
+
+    <link rel="stylesheet" href="style_home.css">
+    
+    <!-- Fonts: Inter for EN, Vazirmatn for FA -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Vazirmatn', 'sans-serif'],
+                    },
+                    colors: {
+                        physio: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9', // Subtle cyan/blue accent
+                            600: '#0284c7',
+                            900: '#0f172a', // Deep navy/almost black for text
+                            950: '#020617',
+                        }
+                    },
+                    boxShadow: {
+                        'premium': '0 4px 24px -4px rgba(0, 0, 0, 0.05), 0 16px 32px -8px rgba(0, 0, 0, 0.02)',
+                        'glow': '0 0 40px -10px rgba(14, 165, 233, 0.5)',
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+</head>
+<body class="antialiased font-sans transition-colors duration-300">
+
+    <nav id="navbar" class="fixed w-full z-50 glass-nav transition-all duration-300 py-4">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between">
+            <!-- Logo -->
+            <a href="#" class="flex items-center gap-2 group">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-physio-500 to-physio-900 flex items-center justify-center text-white font-bold text-xl shadow-glow group-hover:scale-105 transition-transform">
+                    P
+                </div>
+                <span class="text-xl font-bold tracking-tight text-physio-900">PhysioElectric</span>
+            </a>
+
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#home" class="text-sm font-medium text-slate-600 hover:text-physio-600 transition-colors" data-i18n="nav.home">Home</a>
+                <a href="#capabilities" class="text-sm font-medium text-slate-600 hover:text-physio-600 transition-colors" data-i18n="nav.capabilities">Capabilities</a>
+                <a href="#projects" class="text-sm font-medium text-slate-600 hover:text-physio-600 transition-colors" data-i18n="nav.projects">Projects</a>
+                <a href="#about" class="text-sm font-medium text-slate-600 hover:text-physio-600 transition-colors" data-i18n="nav.about">About</a>
+                <a href="#faq" class="text-sm font-medium text-slate-600 hover:text-physio-600 transition-colors" data-i18n="nav.faq">FAQ</a>
+            </div>
+
+            <!-- Right Actions -->
+            <div class="flex items-center gap-4">
+                <!-- Lang Switcher -->
+                <button id="langToggle" class="text-sm font-medium text-slate-500 hover:text-physio-900 transition-colors flex items-center gap-1">
+                    <i data-lucide="globe" class="w-4 h-4"></i>
+                    <span id="currentLang">EN</span>
+                </button>
+                
+                <a href="#contact" class="hidden sm:inline-flex items-center justify-center px-5 py-2.5 text-sm font-medium text-white bg-physio-900 hover:bg-physio-950 rounded-full shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5" data-i18n="nav.cta">
+                    Start a Project
+                </a>
+
+                <!-- Mobile Menu Button -->
+                <button class="md:hidden text-slate-600" id="mobileMenuBtn">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="relative min-h-screen flex items-center pt-20 overflow-hidden">
+        <!-- Interactive Canvas Background -->
+        <canvas id="hero-canvas"></canvas>
+        
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 w-full text-center">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-physio-100/50 border border-physio-200 text-physio-600 text-xs font-semibold uppercase tracking-wider mb-8 reveal">
+                <span class="w-2 h-2 rounded-full bg-physio-500 animate-pulse"></span>
+                <span data-i18n="hero.badge">Technology & Engineering Studio</span>
+            </div>
+            
+            <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-physio-950 max-w-5xl mx-auto leading-[1.1] reveal reveal-delay-1" data-i18n="hero.title">
+                Engineering Ideas.<br>
+                <span class="text-gradient">Building Intelligent Solutions.</span>
+            </h1>
+            
+            <p class="mt-8 text-lg md:text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed reveal reveal-delay-2" data-i18n="hero.subtitle">
+                PhysioElectric combines software engineering, advanced simulations, artificial intelligence, and digital technologies to transform complex ideas into practical solutions.
+            </p>
+            
+            <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 reveal reveal-delay-3">
+                <a href="#capabilities" class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-medium text-white bg-physio-900 hover:bg-physio-950 rounded-full shadow-lg hover:shadow-xl transition-all hover:-translate-y-1" data-i18n="hero.ctaPrimary">
+                    Explore Capabilities
+                </a>
+                <a href="#projects" class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-medium text-physio-900 bg-white hover:bg-slate-50 border border-slate-200 rounded-full shadow-sm hover:shadow-md transition-all" data-i18n="hero.ctaSecondary">
+                    View Projects
+                </a>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-50 animate-bounce">
+            <span class="text-xs font-medium tracking-widest uppercase text-slate-400" data-i18n="hero.scroll">Scroll</span>
+            <i data-lucide="mouse" class="w-5 h-5 text-slate-400"></i>
+        </div>
+    </section>
+
+    <section id="capabilities" class="py-24 md:py-32 bg-white relative z-20">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="mb-16 md:mb-24 reveal">
+                <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-physio-950" data-i18n="cap.title">What We Build</h2>
+                <p class="mt-4 text-lg text-slate-500 max-w-2xl" data-i18n="cap.subtitle">From intelligent software to advanced engineering simulations, we turn complex technical challenges into engineered solutions.</p>
+            </div>
+
+            <div class="space-y-32">
+                <!-- Capability 0: Core Technologies -->
+                <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24 reveal">
+                    <div class="w-full lg:w-1/2">
+                        <span class="text-physio-500 font-bold text-xl mb-2 block">01</span>
+                        <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4" data-i18n="cap.c0.title">Core Tech & Engineering</h3>
+                        <p class="text-slate-600 mb-8 text-lg leading-relaxed" data-i18n="cap.c0.desc">We build robust architectures using modern languages and frameworks including Python, C++, React, Django, and OpenCV for specialized solutions.</p>
+                        <a href="#" class="inline-flex items-center text-physio-600 font-semibold group" data-i18n="cap.c0.link">
+                            Explore Technologies <i data-lucide="arrow-right" class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180"></i>
+                        </a>
+                    </div>
+                    <div class="w-full lg:w-1/2">
+                         <!-- CSS Art: Tech Cloud -->
+                         <div class="bg-slate-900 rounded-2xl h-[300px] flex items-center justify-center relative overflow-hidden shadow-lg p-6">
+                            <div class="absolute inset-0 bg-gradient-radial from-physio-600/20 to-transparent"></div>
+                            <div class="relative z-10 flex flex-wrap justify-center gap-3">
+                                <span class="tech-tag" style="animation-delay: 0s;">Python</span>
+                                <span class="tech-tag" style="animation-delay: 0.5s;">C++</span>
+                                <span class="tech-tag" style="animation-delay: 1.2s;">React</span>
+                                <span class="tech-tag" style="animation-delay: 0.8s;">Django</span>
+                                <span class="tech-tag" style="animation-delay: 0.2s;">OpenCV</span>
+                                <span class="tech-tag" style="animation-delay: 1.5s;">JavaScript</span>
+                                <span class="tech-tag" style="animation-delay: 0.6s;">HTML / CSS</span>
+                            </div>
+                         </div>
+                    </div>
+                </div>
+
+                <!-- Capability 1: Web Dev -->
+                <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24 reveal">
+                    <div class="w-full lg:w-1/2 order-2 lg:order-1">
+                        <!-- CSS Art: Mock Browser -->
+                        <div class="mock-browser w-full h-[300px] flex flex-col transform transition-transform hover:scale-[1.02] duration-500">
+                            <div class="mock-browser-header">
+                                <div class="mock-dot"></div><div class="mock-dot"></div><div class="mock-dot"></div>
+                            </div>
+                            <div class="p-6 flex-1 bg-slate-50 flex flex-col gap-4">
+                                <div class="w-1/3 h-4 bg-slate-200 rounded"></div>
+                                <div class="w-full h-32 bg-white border border-slate-100 rounded-lg shadow-sm flex items-center justify-center">
+                                    <div class="w-1/2 h-2/3 flex flex-col gap-2">
+                                        <div class="w-full h-2 bg-physio-100 rounded"></div>
+                                        <div class="w-3/4 h-2 bg-physio-100 rounded"></div>
+                                        <div class="w-5/6 h-2 bg-physio-100 rounded"></div>
+                                    </div>
+                                </div>
+                                <div class="flex gap-4">
+                                    <div class="w-1/2 h-16 bg-white border border-slate-100 rounded shadow-sm"></div>
+                                    <div class="w-1/2 h-16 bg-white border border-slate-100 rounded shadow-sm"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-1/2 order-1 lg:order-2">
+                        <span class="text-physio-500 font-bold text-xl mb-2 block">02</span>
+                        <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4" data-i18n="cap.c1.title">Web Development</h3>
+                        <p class="text-slate-600 mb-8 text-lg leading-relaxed" data-i18n="cap.c1.desc">High-performance digital experiences engineered for modern businesses. We build scalable frontends and robust backends.</p>
+                        <a href="#" class="inline-flex items-center text-physio-600 font-semibold group" data-i18n="cap.c1.link">
+                            Explore Web Development <i data-lucide="arrow-right" class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Capability 2: MATLAB -->
+                <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24 reveal">
+                    <div class="w-full lg:w-1/2">
+                        <span class="text-physio-500 font-bold text-xl mb-2 block">03</span>
+                        <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4" data-i18n="cap.c2.title">MATLAB Engineering</h3>
+                        <p class="text-slate-600 mb-8 text-lg leading-relaxed" data-i18n="cap.c2.desc">From mathematical modeling to advanced numerical analysis and engineering computation for complex scientific challenges.</p>
+                        <a href="#" class="inline-flex items-center text-physio-600 font-semibold group" data-i18n="cap.c2.link">
+                            Explore MATLAB Projects <i data-lucide="arrow-right" class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1"></i>
+                        </a>
+                    </div>
+                    <div class="w-full lg:w-1/2">
+                         <!-- CSS Art: Mathematical Workspace -->
+                         <div class="glass-card rounded-2xl p-8 h-[300px] flex items-center justify-center relative overflow-hidden bg-slate-900 text-physio-50">
+                            <!-- Grid background -->
+                            <div class="absolute inset-0" style="background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 20px 20px;"></div>
+                            
+                            <svg class="w-full h-full relative z-10" viewBox="0 0 100 50" preserveAspectRatio="none">
+                                <path class="wave-path" d="M0,25 Q12.5,0 25,25 T50,25 T75,25 T100,25" fill="none" stroke="#0ea5e9" stroke-width="2" />
+                                <path class="wave-path" d="M0,25 Q12.5,50 25,25 T50,25 T75,25 T100,25" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1" style="animation-delay: 1s;" />
+                            </svg>
+                            <div class="absolute bottom-4 left-4 text-xs font-mono text-physio-500">f(x) = sin(x) * e^(-0.1x)</div>
+                         </div>
+                    </div>
+                </div>
+
+                <!-- Capability 3: COMSOL -->
+                <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24 reveal">
+                     <div class="w-full lg:w-1/2 order-2 lg:order-1">
+                        <!-- CSS Art: 3D Simulation -->
+                        <div class="bg-slate-50 rounded-2xl h-[300px] border border-slate-200 flex items-center justify-center overflow-hidden relative">
+                            <div class="absolute inset-0 bg-gradient-radial from-transparent to-slate-100"></div>
+                            <div class="cube-container z-10">
+                                <div class="cube">
+                                    <div class="cube-face face-front"></div>
+                                    <div class="cube-face face-back"></div>
+                                    <div class="cube-face face-right"></div>
+                                    <div class="cube-face face-left"></div>
+                                    <div class="cube-face face-top"></div>
+                                    <div class="cube-face face-bottom"></div>
+                                </div>
+                            </div>
+                            <div class="absolute top-4 right-4 flex flex-col gap-1">
+                                <div class="w-16 h-1 bg-gradient-to-r from-red-500 to-blue-500 rounded"></div>
+                                <div class="text-[10px] text-slate-400 font-mono text-right">Mesh: Fine</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-1/2 order-1 lg:order-2">
+                        <span class="text-physio-500 font-bold text-xl mb-2 block">04</span>
+                        <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4" data-i18n="cap.c3.title">COMSOL Simulation</h3>
+                        <p class="text-slate-600 mb-8 text-lg leading-relaxed" data-i18n="cap.c3.desc">Advanced multiphysics simulation for complex engineering problems. We visualize and analyze thermal, structural, and electromagnetic fields.</p>
+                        <a href="#" class="inline-flex items-center text-physio-600 font-semibold group" data-i18n="cap.c3.link">
+                            Explore COMSOL Projects <i data-lucide="arrow-right" class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Capability 4: AI Agents -->
+                <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24 reveal">
+                    <div class="w-full lg:w-1/2">
+                        <span class="text-physio-500 font-bold text-xl mb-2 block">05</span>
+                        <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4" data-i18n="cap.c4.title">AI Agents & Automation</h3>
+                        <p class="text-slate-600 mb-8 text-lg leading-relaxed" data-i18n="cap.c4.desc">Intelligent agents and automated workflows designed to solve real business problems, connecting tools, knowledge, and decision-making.</p>
+                        <a href="#" class="inline-flex items-center text-physio-600 font-semibold group" data-i18n="cap.c4.link">
+                            Explore AI Solutions <i data-lucide="arrow-right" class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1"></i>
+                        </a>
+                    </div>
+                    <div class="w-full lg:w-1/2">
+                         <!-- CSS Art: Nodes/Workflow -->
+                         <div class="bg-slate-900 rounded-2xl p-8 h-[300px] flex items-center justify-center relative shadow-lg">
+                            <svg class="w-full h-full" viewBox="0 0 200 100">
+                                <!-- Lines -->
+                                <path d="M30 50 L80 50 L120 20 L170 20" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-dasharray="4,4" class="animate-[dash_2s_linear_infinite]" />
+                                <path d="M80 50 L120 80 L170 80" fill="none" stroke="#0ea5e9" stroke-width="2" />
+                                
+                                <!-- Nodes -->
+                                <circle cx="30" cy="50" r="8" fill="#fff" />
+                                <text x="30" y="70" fill="#94a3b8" font-size="8" text-anchor="middle" font-family="monospace">Input</text>
+                                
+                                <rect x="70" y="40" width="20" height="20" rx="4" fill="#0284c7" />
+                                <text x="80" y="70" fill="#94a3b8" font-size="8" text-anchor="middle" font-family="monospace">Agent</text>
+
+                                <circle cx="120" cy="20" r="6" fill="#64748b" />
+                                <circle cx="120" cy="80" r="6" fill="#fff" />
+
+                                <rect x="160" y="10" width="20" height="20" rx="2" fill="none" stroke="#64748b" stroke-width="2"/>
+                                <circle cx="170" cy="80" r="8" fill="#0ea5e9" />
+                                <text x="170" y="100" fill="#0ea5e9" font-size="8" text-anchor="middle" font-family="monospace">Output</text>
+                            </svg>
+                         </div>
+                    </div>
+                </div>
+
+                <!-- Capability 5: Embedded / IoT -->
+                <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24 reveal">
+                    <div class="w-full lg:w-1/2 order-2 lg:order-1">
+                        <!-- CSS Art: Microchip / IoT -->
+                        <div class="bg-slate-900 rounded-2xl h-[300px] flex items-center justify-center relative overflow-hidden shadow-lg border border-slate-800">
+                            <!-- Circuit Traces -->
+                            <svg class="absolute inset-0 w-full h-full opacity-30" viewBox="0 0 200 200" preserveAspectRatio="none">
+                                <path d="M0 50 L50 50 L70 70 L100 70" fill="none" stroke="#0ea5e9" stroke-width="1.5" />
+                                <path d="M200 150 L150 150 L130 130 L100 130" fill="none" stroke="#0ea5e9" stroke-width="1.5" />
+                                <path d="M50 200 L50 150 L70 130 L100 130" fill="none" stroke="#0284c7" stroke-width="1.5" />
+                                <path d="M150 0 L150 50 L130 70 L100 70" fill="none" stroke="#0284c7" stroke-width="1.5" />
+                                <circle cx="100" cy="100" r="45" fill="none" stroke="rgba(14,165,233,0.3)" stroke-width="1" stroke-dasharray="4,4"/>
+                            </svg>
+
+                            <!-- The Microchip -->
+                            <div class="relative z-10 w-32 h-32 bg-slate-800 rounded-lg border-2 border-slate-700 shadow-[0_0_25px_rgba(14,165,233,0.2)] flex items-center justify-center flex-col transform hover:scale-105 transition-transform duration-500">
+                                <!-- Chip Pins (Top) -->
+                                <div class="absolute -top-2.5 w-full flex justify-around px-3"><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div></div>
+                                <!-- Chip Pins (Bottom) -->
+                                <div class="absolute -bottom-2.5 w-full flex justify-around px-3"><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div></div>
+                                <!-- Chip Pins (Left) -->
+                                <div class="absolute -left-2.5 h-full flex flex-col justify-around py-3"><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div></div>
+                                <!-- Chip Pins (Right) -->
+                                <div class="absolute -right-2.5 h-full flex flex-col justify-around py-3"><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div></div>
+                                
+                                <div class="text-physio-500 font-mono text-lg font-bold tracking-wider mb-1">STM32</div>
+                                <div class="w-12 h-px bg-slate-600 my-1"></div>
+                                <div class="text-slate-400 font-mono text-sm">ESP32</div>
+                            </div>
+                            
+                            <!-- IoT Signal Waves -->
+                            <div class="absolute top-8 left-8 flex gap-1.5 items-end h-8">
+                                <div class="w-1.5 bg-physio-500 rounded-full signal-bar-1"></div>
+                                <div class="w-1.5 bg-physio-400 rounded-full signal-bar-2"></div>
+                                <div class="w-1.5 bg-physio-300 rounded-full signal-bar-3"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-1/2 order-1 lg:order-2">
+                        <span class="text-physio-500 font-bold text-xl mb-2 block">06</span>
+                        <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4" data-i18n="cap.c5.title">Embedded Systems & IoT</h3>
+                        <p class="text-slate-600 mb-8 text-lg leading-relaxed" data-i18n="cap.c5.desc">Designing and programming embedded hardware using STM32 and ESP32. We create smart connected devices, sensor networks, and IoT solutions for real-time control and automation.</p>
+                        <a href="#" class="inline-flex items-center text-physio-600 font-semibold group" data-i18n="cap.c5.link">
+                            Explore IoT Solutions <i data-lucide="arrow-right" class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="py-24 bg-slate-900 text-white overflow-hidden relative">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 reveal">
+            <div class="max-w-2xl">
+                <h2 class="text-3xl md:text-5xl font-bold tracking-tight" data-i18n="proj.title">Selected Projects</h2>
+                <p class="mt-4 text-lg text-slate-400" data-i18n="proj.subtitle">Explore some of the engineering, software and AI solutions we have developed.</p>
+            </div>
+            <!-- Slider Controls Desktop (Grouped Design) -->
+            <div class="hidden md:flex p-1.5 bg-slate-800/60 border border-slate-700/80 rounded-full items-center gap-1 shrink-0 backdrop-blur-md shadow-lg">
+                <button id="prevBtn" class="w-12 h-12 rounded-full flex items-center justify-center hover:bg-slate-700 text-slate-400 hover:text-white transition-all">
+                    <i data-lucide="chevron-left" class="w-5 h-5 rtl:rotate-180"></i>
+                </button>
+                <div class="w-px h-5 bg-slate-700"></div>
+                <button id="nextBtn" class="w-12 h-12 rounded-full flex items-center justify-center hover:bg-slate-700 text-slate-400 hover:text-white transition-all">
+                    <i data-lucide="chevron-right" class="w-5 h-5 rtl:rotate-180"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Slider Container -->
+        <div class="slider-container flex gap-6 px-6 md:px-8 lg:px-12 overflow-x-auto hide-scrollbar snap-x snap-mandatory py-8 cursor-grab" id="projectSlider">
+            
+            <!-- Project Card 1 -->
+            <div class="min-w-[85vw] md:min-w-[600px] flex-shrink-0 snap-center group">
+                <div class="relative bg-slate-800 rounded-2xl overflow-hidden aspect-[16/9] border border-slate-700 transition-transform duration-500 group-hover:scale-[1.02]">
+                    <!-- Abstract Placeholder Visual -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center">
+                        <div class="w-32 h-32 border-4 border-physio-500/30 rounded-full flex items-center justify-center animate-spin-slow">
+                            <div class="w-16 h-16 bg-physio-500/20 rounded-full blur-xl"></div>
+                        </div>
+                    </div>
+                    <!-- Overlay -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/50 to-transparent opacity-80"></div>
+                    <!-- Content -->
+                    <div class="absolute bottom-0 left-0 p-8 w-full">
+                        <div class="flex justify-between items-end">
+                            <div>
+                                <span class="text-physio-400 text-sm font-semibold uppercase tracking-wider mb-2 block">Web Application</span>
+                                <h3 class="text-2xl md:text-3xl font-bold text-white mb-2">Automated Data Dashboard</h3>
+                                <div class="flex gap-2">
+                                    <span class="px-2 py-1 bg-slate-800/80 rounded text-xs text-slate-300 backdrop-blur">React</span>
+                                    <span class="px-2 py-1 bg-slate-800/80 rounded text-xs text-slate-300 backdrop-blur">Node.js</span>
+                                </div>
+                            </div>
+                            <button class="w-12 h-12 rounded-full bg-white text-slate-900 flex items-center justify-center opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-lg">
+                                <i data-lucide="arrow-up-right" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Card 2 -->
+            <div class="min-w-[85vw] md:min-w-[600px] flex-shrink-0 snap-center group">
+                <div class="relative bg-slate-800 rounded-2xl overflow-hidden aspect-[16/9] border border-slate-700 transition-transform duration-500 group-hover:scale-[1.02]">
+                    <div class="absolute inset-0 bg-gradient-to-bl from-blue-900/40 to-slate-900 flex items-center justify-center">
+                        <svg class="w-1/2 h-1/2 opacity-50" viewBox="0 0 100 100">
+                             <polygon points="50,10 90,90 10,90" fill="none" stroke="#0ea5e9" stroke-width="2" />
+                             <polygon points="50,30 70,80 30,80" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1" />
+                        </svg>
+                    </div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/50 to-transparent opacity-80"></div>
+                    <div class="absolute bottom-0 left-0 p-8 w-full">
+                        <div class="flex justify-between items-end">
+                            <div>
+                                <span class="text-physio-400 text-sm font-semibold uppercase tracking-wider mb-2 block">MATLAB / COMSOL</span>
+                                <h3 class="text-2xl md:text-3xl font-bold text-white mb-2">Thermal Fluid Simulation</h3>
+                                <div class="flex gap-2">
+                                    <span class="px-2 py-1 bg-slate-800/80 rounded text-xs text-slate-300 backdrop-blur">COMSOL</span>
+                                    <span class="px-2 py-1 bg-slate-800/80 rounded text-xs text-slate-300 backdrop-blur">Analysis</span>
+                                </div>
+                            </div>
+                            <button class="w-12 h-12 rounded-full bg-white text-slate-900 flex items-center justify-center opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-lg">
+                                <i data-lucide="arrow-up-right" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Card 3 -->
+            <div class="min-w-[85vw] md:min-w-[600px] flex-shrink-0 snap-center group">
+                <div class="relative bg-slate-800 rounded-2xl overflow-hidden aspect-[16/9] border border-slate-700 transition-transform duration-500 group-hover:scale-[1.02]">
+                    <div class="absolute inset-0 bg-slate-900 flex items-center justify-center" style="background-image: radial-gradient(circle at 50% 50%, #1e293b 2px, transparent 2px); background-size: 20px 20px;">
+                        <div class="text-physio-500 font-mono text-xl opacity-50">&lt; / &gt;</div>
+                    </div>
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/50 to-transparent opacity-80"></div>
+                    <div class="absolute bottom-0 left-0 p-8 w-full">
+                        <div class="flex justify-between items-end">
+                            <div>
+                                <span class="text-physio-400 text-sm font-semibold uppercase tracking-wider mb-2 block">AI Agent</span>
+                                <h3 class="text-2xl md:text-3xl font-bold text-white mb-2">Support Workflow Automator</h3>
+                                <div class="flex gap-2">
+                                    <span class="px-2 py-1 bg-slate-800/80 rounded text-xs text-slate-300 backdrop-blur">Python</span>
+                                    <span class="px-2 py-1 bg-slate-800/80 rounded text-xs text-slate-300 backdrop-blur">LLM APIs</span>
+                                </div>
+                            </div>
+                            <button class="w-12 h-12 rounded-full bg-white text-slate-900 flex items-center justify-center opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-lg">
+                                <i data-lucide="arrow-up-right" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Spacing for end of scroll -->
+            <div class="min-w-[20px] flex-shrink-0"></div>
+        </div>
+    </section>
+
+    <section id="about" class="py-24 md:py-32 bg-white relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="reveal">
+                    <!-- Adjusted Title with extra spacing for the second part -->
+                    <h2 class="text-4xl md:text-6xl font-bold tracking-tight text-physio-950 leading-tight mb-8">
+                        <span class="block" data-i18n="about.title_part1">Engineering Technology</span>
+                        <span class="block text-slate-400 mt-10" data-i18n="about.title_part2">With Purpose.</span>
+                    </h2>
+                    
+                    <!-- Expanded Description -->
+                    <p class="text-xl text-slate-600 mb-6 font-light leading-relaxed" data-i18n="about.desc1">
+                        PhysioElectric operates at the exact intersection where advanced engineering meets modern software development. Founded on the principle that true innovation requires both deep domain expertise and cutting-edge technology, our team consists of multidisciplinary experts.
+                    </p>
+                    <p class="text-lg text-slate-500 mb-8 leading-relaxed" data-i18n="about.desc2">
+                        We don't just write code; we build robust systems. Whether it's a high-performance web application, a complex multiphysics simulation, or an intelligent automation agent, our approach is always rooted in precision and scientific methodology. We partner with forward-thinking enterprises to solve their most challenging bottlenecks, transforming theoretical models into deployable, scalable real-world solutions.
+                    </p>
+                    
+                    <blockquote class="border-l-4 border-physio-500 pl-6 rtl:border-l-0 rtl:border-r-4 rtl:pl-0 rtl:pr-6 italic text-slate-700 font-medium text-lg bg-slate-50 py-4 rounded-r-lg rtl:rounded-r-none rtl:rounded-l-lg mb-10">
+                        "We don't just build software. We engineer solutions."
+                    </blockquote>
+
+                    <!-- Added Attractive Button -->
+                    <div class="pt-2">
+                        <a href="about.html" class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-physio-600 to-physio-900 text-white font-bold rounded-full shadow-lg hover:shadow-glow hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group btn-shine">
+                            <span data-i18n="about.btn" class="relative z-10">More About Our Company</span>
+                            <i data-lucide="arrow-right" class="w-5 h-5 relative z-10 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Geometric Intersection Visual -->
+                <div class="flex justify-center reveal reveal-delay-2 h-[400px] relative w-full">
+                    <style>
+                        @keyframes dash-flow {
+                            to { stroke-dashoffset: -24; }
+                        }
+                        .line-dashed {
+                            stroke-dasharray: 6, 6;
+                            animation: dash-flow 2s linear infinite;
+                        }
+                        .line-dashed-reverse {
+                            stroke-dasharray: 6, 6;
+                            animation: dash-flow 2s linear infinite reverse;
+                        }
+                    </style>
+                    <div class="relative w-full max-w-[400px] h-[400px] flex items-center justify-center">
+                        
+                        <!-- SVG Connecting Lines -->
+                        <svg class="absolute inset-0 w-full h-full pointer-events-none z-0" viewBox="0 0 400 400">
+                            <!-- Center is (200, 200) -->
+                            <!-- Line to Code -->
+                            <line x1="200" y1="200" x2="110" y2="110" stroke="#cbd5e1" stroke-width="2" class="line-dashed" />
+                            <!-- Line to Simulation -->
+                            <line x1="200" y1="200" x2="300" y2="130" stroke="#cbd5e1" stroke-width="2" class="line-dashed-reverse" />
+                            <!-- Line to Math -->
+                            <line x1="200" y1="200" x2="290" y2="290" stroke="#cbd5e1" stroke-width="2" class="line-dashed" />
+                            <!-- Line to AI -->
+                            <line x1="200" y1="200" x2="100" y2="270" stroke="#0ea5e9" stroke-width="2" class="line-dashed-reverse opacity-60" />
+                        </svg>
+
+                        <div class="w-64 h-64 border border-slate-200 rounded-full absolute animate-[spin_20s_linear_infinite] z-0"></div>
+                        <div class="w-48 h-48 border border-physio-200 rounded-full absolute animate-[spin_15s_linear_infinite_reverse] z-0"></div>
+                        
+                        <!-- Core -->
+                        <div class="w-32 h-32 bg-gradient-to-br from-slate-100 to-slate-200 rounded-3xl rotate-45 shadow-premium flex items-center justify-center overflow-hidden z-10 relative border border-white">
+                            <div class="w-full h-full bg-physio-500/10 backdrop-blur flex items-center justify-center -rotate-45 font-bold text-physio-900 text-3xl tracking-tighter">PE</div>
+                        </div>
+                        
+                        <!-- Floating labels (positioned exactly at the end of the SVG lines) -->
+                        <div class="absolute bg-white/90 backdrop-blur shadow-md border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold text-slate-700 z-20" style="top: 110px; left: 110px; transform: translate(-50%, -50%);">Code</div>
+                        <div class="absolute bg-white/90 backdrop-blur shadow-md border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold text-slate-700 z-20" style="top: 130px; left: 300px; transform: translate(-50%, -50%);">Simulation</div>
+                        <div class="absolute bg-white/90 backdrop-blur shadow-md border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold text-slate-700 z-20" style="top: 290px; left: 290px; transform: translate(-50%, -50%);">Math</div>
+                        <div class="absolute bg-white/90 backdrop-blur shadow-md border border-physio-200 px-4 py-2 rounded-xl text-sm font-bold text-physio-600 z-20" style="top: 270px; left: 100px; transform: translate(-50%, -50%);">AI</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="process" class="py-24 bg-slate-50 relative">
+        <div class="max-w-4xl mx-auto px-6 lg:px-8 relative">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-physio-950" data-i18n="process.title">From Idea to Solution</h2>
+            </div>
+            
+            <div class="relative">
+                <!-- Timeline Lines -->
+                <div class="timeline-line hidden md:block"></div>
+                <div class="timeline-progress hidden md:block" id="timelineProgress"></div>
+
+                <div class="space-y-12 md:space-y-0 md:pl-20 rtl:md:pl-0 rtl:md:pr-20 relative">
+                    
+                    <!-- Step 1 -->
+                    <div class="relative md:py-8 reveal process-step">
+                        <div class="hidden md:flex absolute -left-16 rtl:-left-auto rtl:-right-16 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border-4 border-slate-200 z-10 items-center justify-center step-dot transition-colors duration-500"></div>
+                        <span class="text-physio-500 font-bold text-sm mb-1 block">01 — Phase</span>
+                        <h3 class="text-2xl font-bold text-physio-950 mb-2" data-i18n="process.s1.title">Understand</h3>
+                        <p class="text-slate-600" data-i18n="process.s1.desc">Deep analysis of the problem, requirements gathering, and establishing the technical feasibility of the project.</p>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="relative md:py-8 reveal process-step">
+                         <div class="hidden md:flex absolute -left-16 rtl:-left-auto rtl:-right-16 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border-4 border-slate-200 z-10 items-center justify-center step-dot transition-colors duration-500"></div>
+                        <span class="text-physio-500 font-bold text-sm mb-1 block">02 — Phase</span>
+                        <h3 class="text-2xl font-bold text-physio-950 mb-2" data-i18n="process.s2.title">Design</h3>
+                        <p class="text-slate-600" data-i18n="process.s2.desc">Architecting the solution. Creating data models, simulation setups, wireframes, and defining the technology stack.</p>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="relative md:py-8 reveal process-step">
+                         <div class="hidden md:flex absolute -left-16 rtl:-left-auto rtl:-right-16 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border-4 border-slate-200 z-10 items-center justify-center step-dot transition-colors duration-500"></div>
+                        <span class="text-physio-500 font-bold text-sm mb-1 block">03 — Phase</span>
+                        <h3 class="text-2xl font-bold text-physio-950 mb-2" data-i18n="process.s3.title">Engineer</h3>
+                        <p class="text-slate-600" data-i18n="process.s3.desc">The core development phase. Writing clean code, building models, and integrating AI agents into the workflow.</p>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="relative md:py-8 reveal process-step">
+                         <div class="hidden md:flex absolute -left-16 rtl:-left-auto rtl:-right-16 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border-4 border-slate-200 z-10 items-center justify-center step-dot transition-colors duration-500"></div>
+                        <span class="text-physio-500 font-bold text-sm mb-1 block">04 — Phase</span>
+                        <h3 class="text-2xl font-bold text-physio-950 mb-2" data-i18n="process.s4.title">Validate</h3>
+                        <p class="text-slate-600" data-i18n="process.s4.desc">Rigorous testing, simulation verification, and optimization to ensure the solution meets engineering standards.</p>
+                    </div>
+
+                    <!-- Step 5 -->
+                    <div class="relative md:py-8 reveal process-step">
+                         <div class="hidden md:flex absolute -left-16 rtl:-left-auto rtl:-right-16 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white border-4 border-slate-200 z-10 items-center justify-center step-dot transition-colors duration-500"></div>
+                        <span class="text-physio-500 font-bold text-sm mb-1 block">05 — Phase</span>
+                        <h3 class="text-2xl font-bold text-physio-950 mb-2" data-i18n="process.s5.title">Deliver</h3>
+                        <p class="text-slate-600" data-i18n="process.s5.desc">Deploying the final product to production environments, handing over documentation, and providing support.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="articles" class="py-24 bg-white relative z-20 border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <!-- Header -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6 reveal">
+                <div class="max-w-2xl">
+                    <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-physio-950" data-i18n="blog.title">Latest Insights</h2>
+                    <p class="mt-4 text-lg text-slate-500" data-i18n="blog.subtitle">Our thoughts on software, advanced engineering, and artificial intelligence.</p>
+                </div>
+                <a href="#" class="hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 text-physio-900 font-medium transition-all group shrink-0">
+                    <span data-i18n="blog.viewAll">View All Articles</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4 text-physio-500 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180"></i>
+                </a>
+            </div>
+
+            <!-- Articles Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- Article Card 1 -->
+                <a href="#" class="group block reveal">
+                    <div class="relative overflow-hidden rounded-2xl mb-6 aspect-[4/3] bg-slate-100 border border-slate-200 shadow-sm transition-all duration-500 group-hover:shadow-md">
+                        <!-- Abstract Visual: AI / Networks -->
+                        <div class="absolute inset-0 bg-slate-900 transition-transform duration-700 group-hover:scale-105 flex items-center justify-center">
+                            <div class="absolute inset-0" style="background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 16px 16px;"></div>
+                            <div class="w-24 h-24 rounded-full border border-physio-500/30 flex items-center justify-center relative">
+                                <div class="w-16 h-16 rounded-full bg-physio-500/20 blur-md absolute"></div>
+                                <div class="w-2 h-2 rounded-full bg-physio-400 shadow-[0_0_15px_#0ea5e9]"></div>
+                                <!-- Connecting lines -->
+                                <svg class="absolute inset-0 w-full h-full -rotate-45 opacity-50" viewBox="0 0 100 100">
+                                    <line x1="50" y1="50" x2="10" y2="10" stroke="#0ea5e9" stroke-width="1"></line>
+                                    <line x1="50" y1="50" x2="90" y2="20" stroke="#0ea5e9" stroke-width="1"></line>
+                                    <line x1="50" y1="50" x2="80" y2="90" stroke="#0ea5e9" stroke-width="1"></line>
+                                </svg>
+                            </div>
+                        </div>
+                        <!-- Tag -->
+                        <div class="absolute top-4 left-4 rtl:left-auto rtl:right-4 z-10">
+                            <span class="px-3 py-1.5 bg-white/10 backdrop-blur-md border border-white/20 text-xs font-medium text-white rounded-full tracking-wide" data-i18n="blog.c1">AI Research</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col pr-4 rtl:pr-0 rtl:pl-4">
+                        <span class="text-sm text-slate-400 mb-3 font-mono" data-i18n="blog.d1">Aug 12, 2026</span>
+                        <h3 class="text-xl font-bold text-physio-950 mb-3 leading-snug group-hover:text-physio-600 transition-colors" data-i18n="blog.t1">The Future of Agentic Workflows in Engineering</h3>
+                        <div class="mt-2 flex items-center text-sm font-semibold text-physio-600 opacity-0 -translate-x-2 rtl:translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 rtl:group-hover:translate-x-0 transition-all duration-300">
+                            <span data-i18n="blog.read">Read Article</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4 ml-1 rtl:ml-0 rtl:mr-1 rtl:rotate-180"></i>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Article Card 2 -->
+                <a href="#" class="group block reveal reveal-delay-1">
+                    <div class="relative overflow-hidden rounded-2xl mb-6 aspect-[4/3] bg-slate-100 border border-slate-200 shadow-sm transition-all duration-500 group-hover:shadow-md">
+                        <!-- Abstract Visual: Simulation/Waves -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-slate-100 to-slate-200 transition-transform duration-700 group-hover:scale-105 flex items-center justify-center overflow-hidden">
+                            <svg class="w-full h-full opacity-40 text-physio-500" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                <path d="M0,50 Q25,20 50,50 T100,50 L100,100 L0,100 Z" fill="currentColor" opacity="0.1"></path>
+                                <path d="M0,60 Q35,30 65,60 T100,40 L100,100 L0,100 Z" fill="currentColor" opacity="0.15"></path>
+                                <path d="M0,50 Q25,20 50,50 T100,50" fill="none" stroke="currentColor" stroke-width="0.5"></path>
+                            </svg>
+                        </div>
+                        <!-- Tag -->
+                        <div class="absolute top-4 left-4 rtl:left-auto rtl:right-4 z-10">
+                            <span class="px-3 py-1.5 bg-white/80 backdrop-blur-md border border-slate-200/50 text-xs font-medium text-slate-800 rounded-full tracking-wide" data-i18n="blog.c2">Simulation</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col pr-4 rtl:pr-0 rtl:pl-4">
+                        <span class="text-sm text-slate-400 mb-3 font-mono" data-i18n="blog.d2">Jul 28, 2026</span>
+                        <h3 class="text-xl font-bold text-physio-950 mb-3 leading-snug group-hover:text-physio-600 transition-colors" data-i18n="blog.t2">Optimizing Thermal Dynamics using COMSOL</h3>
+                        <div class="mt-2 flex items-center text-sm font-semibold text-physio-600 opacity-0 -translate-x-2 rtl:translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 rtl:group-hover:translate-x-0 transition-all duration-300">
+                            <span data-i18n="blog.read">Read Article</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4 ml-1 rtl:ml-0 rtl:mr-1 rtl:rotate-180"></i>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Article Card 3 -->
+                <a href="#" class="group block reveal reveal-delay-2">
+                    <div class="relative overflow-hidden rounded-2xl mb-6 aspect-[4/3] bg-slate-100 border border-slate-200 shadow-sm transition-all duration-500 group-hover:shadow-md">
+                        <!-- Abstract Visual: Architecture/Code -->
+                        <div class="absolute inset-0 bg-slate-50 transition-transform duration-700 group-hover:scale-105 flex items-center justify-center p-6">
+                            <div class="w-full h-full border-2 border-dashed border-slate-300 rounded-xl flex flex-col p-4 gap-3 opacity-60">
+                                <div class="w-1/3 h-2 bg-slate-300 rounded-full"></div>
+                                <div class="flex gap-2">
+                                    <div class="w-1/2 h-12 bg-physio-100 rounded-lg border border-physio-200"></div>
+                                    <div class="w-1/2 h-12 bg-slate-200 rounded-lg"></div>
+                                </div>
+                                <div class="w-3/4 h-2 bg-slate-200 rounded-full mt-auto"></div>
+                            </div>
+                        </div>
+                        <!-- Tag -->
+                        <div class="absolute top-4 left-4 rtl:left-auto rtl:right-4 z-10">
+                            <span class="px-3 py-1.5 bg-white/80 backdrop-blur-md border border-slate-200/50 text-xs font-medium text-slate-800 rounded-full tracking-wide" data-i18n="blog.c3">System Architecture</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col pr-4 rtl:pr-0 rtl:pl-4">
+                        <span class="text-sm text-slate-400 mb-3 font-mono" data-i18n="blog.d3">Jul 15, 2026</span>
+                        <h3 class="text-xl font-bold text-physio-950 mb-3 leading-snug group-hover:text-physio-600 transition-colors" data-i18n="blog.t3">Building Scalable Microservices for High-Load Systems</h3>
+                        <div class="mt-2 flex items-center text-sm font-semibold text-physio-600 opacity-0 -translate-x-2 rtl:translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 rtl:group-hover:translate-x-0 transition-all duration-300">
+                            <span data-i18n="blog.read">Read Article</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4 ml-1 rtl:ml-0 rtl:mr-1 rtl:rotate-180"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            
+            <!-- Mobile View All Button -->
+            <div class="mt-10 flex justify-center md:hidden reveal">
+                <a href="#" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-slate-50 border border-slate-200 text-physio-900 font-medium transition-all group w-full justify-center">
+                    <span data-i18n="blog.viewAll">View All Articles</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4 text-physio-500 rtl:rotate-180"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="faq" class="py-24 bg-white">
+        <div class="max-w-3xl mx-auto px-6 lg:px-8">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-physio-950 mb-12 reveal" data-i18n="faq.title">Frequently Asked Questions</h2>
+            
+            <div class="space-y-4 reveal reveal-delay-1" id="faqContainer">
+                <div class="border-b border-slate-200 pb-4">
+                    <button class="faq-btn w-full flex justify-between items-center py-4 text-left font-semibold text-lg text-slate-800 hover:text-physio-600 transition-colors">
+                        <span data-i18n="faq.q1">What type of projects does PhysioElectric accept?</span>
+                        <i data-lucide="plus" class="w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-content h-0 overflow-hidden transition-all duration-300 opacity-0">
+                        <p class="text-slate-600 pb-4 pr-8 rtl:pr-0 rtl:pl-8" data-i18n="faq.a1">We specialize in complex web applications, scientific computing using MATLAB/COMSOL, AI integration, and custom engineering software solutions.</p>
+                    </div>
+                </div>
+                
+                <div class="border-b border-slate-200 pb-4">
+                    <button class="faq-btn w-full flex justify-between items-center py-4 text-left rtl:text-right font-semibold text-lg text-slate-800 hover:text-physio-600 transition-colors">
+                        <span data-i18n="faq.q2">Do you work with international clients?</span>
+                        <i data-lucide="plus" class="w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-content h-0 overflow-hidden transition-all duration-300 opacity-0">
+                        <p class="text-slate-600 pb-4 pr-8 rtl:pr-0 rtl:pl-8" data-i18n="faq.a2">Yes, we operate globally and provide services to businesses and engineering firms worldwide.</p>
+                    </div>
+                </div>
+
+                <div class="border-b border-slate-200 pb-4">
+                    <button class="faq-btn w-full flex justify-between items-center py-4 text-left rtl:text-right font-semibold text-lg text-slate-800 hover:text-physio-600 transition-colors">
+                        <span data-i18n="faq.q3">Can you build AI agents and automation workflows?</span>
+                        <i data-lucide="plus" class="w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-content h-0 overflow-hidden transition-all duration-300 opacity-0">
+                        <p class="text-slate-600 pb-4 pr-8 rtl:pr-0 rtl:pl-8" data-i18n="faq.a3">Absolutely. We design AI agents that can automate tasks, analyze data, and integrate seamlessly with your existing software ecosystem.</p>
+                    </div>
+                </div>
+
+                <div class="border-b border-slate-200 pb-4">
+                    <button class="faq-btn w-full flex justify-between items-center py-4 text-left rtl:text-right font-semibold text-lg text-slate-800 hover:text-physio-600 transition-colors">
+                        <span data-i18n="faq.q4">Can you develop custom software for a specific engineering problem?</span>
+                        <i data-lucide="plus" class="w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-content h-0 overflow-hidden transition-all duration-300 opacity-0">
+                        <p class="text-slate-600 pb-4 pr-8 rtl:pr-0 rtl:pl-8" data-i18n="faq.a4">Yes, we specialize in bridging the gap between complex engineering requirements and modern software development. We build custom solutions tailored to specialized scientific needs.</p>
+                    </div>
+                </div>
+
+                <div class="border-b border-slate-200 pb-4">
+                    <button class="faq-btn w-full flex justify-between items-center py-4 text-left rtl:text-right font-semibold text-lg text-slate-800 hover:text-physio-600 transition-colors">
+                        <span data-i18n="faq.q5">How does the project process work and how can I start?</span>
+                        <i data-lucide="plus" class="w-5 h-5 text-slate-400 transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-content h-0 overflow-hidden transition-all duration-300 opacity-0">
+                        <p class="text-slate-600 pb-4 pr-8 rtl:pr-0 rtl:pl-8" data-i18n="faq.a5">Our process starts with understanding your requirements, followed by design, engineering, validation, and delivery. Reach out via our contact section to schedule an initial consultation.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="banner" class="w-full h-[50vh] md:h-[70vh] relative overflow-hidden flex items-center justify-center">
+        <!-- Ultra-wide Parallax Photo (Unsplash Tech/Space Network) -->
+        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2672&auto=format&fit=crop')] bg-cover bg-center bg-fixed bg-no-repeat transition-transform duration-[10s] hover:scale-105"></div>
+        <!-- Overlays for sophisticated deep look -->
+        <div class="absolute inset-0 bg-physio-950/70 backdrop-blur-[2px] mix-blend-multiply"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-physio-950 via-transparent to-physio-950/40"></div>
+        
+        <!-- Content inside Banner -->
+        <div class="relative z-10 text-center px-6 reveal">
+            <h2 class="text-3xl md:text-5xl lg:text-7xl font-bold text-white tracking-widest uppercase mb-6" data-i18n="banner.title">Precision at Scale</h2>
+            <p class="text-physio-100/80 text-lg md:text-xl font-light tracking-wide max-w-2xl mx-auto mb-8" data-i18n="banner.subtitle">Redefining the boundaries of engineering and technology.</p>
+            <div class="w-24 h-1 bg-gradient-to-r from-physio-500 to-blue-500 mx-auto rounded-full shadow-glow"></div>
+        </div>
+    </section>
+
+    <section id="contact" class="py-32 relative overflow-hidden bg-physio-950 text-white">
+        <!-- Abstract Background for CTA -->
+        <div class="absolute inset-0 opacity-20">
+            <div class="absolute w-[500px] h-[500px] bg-physio-500 rounded-full blur-[120px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 mix-blend-screen"></div>
+            <!-- Grid overlay -->
+            <div class="absolute inset-0" style="background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 40px 40px;"></div>
+        </div>
+        
+        <div class="max-w-4xl mx-auto px-6 text-center relative z-10 reveal">
+            <h2 class="text-4xl md:text-6xl font-bold tracking-tight mb-6" data-i18n="cta.title">Have a Complex Idea? <br/>Let's Engineer It.</h2>
+            <p class="text-xl text-slate-400 mb-10 max-w-2xl mx-auto" data-i18n="cta.desc">Tell us what you're building. We'll help turn the idea into a practical technical solution.</p>
+            
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <button class="px-8 py-4 bg-white text-physio-950 font-bold rounded-full hover:bg-slate-100 transition-colors shadow-glow" data-i18n="cta.btnPrimary">
+                    Start a Project
+                </button>
+                <button class="px-8 py-4 border border-slate-700 bg-slate-900/50 backdrop-blur text-white font-medium rounded-full hover:bg-slate-800 transition-colors" data-i18n="cta.btnSecondary">
+                    Contact Us
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-slate-50 border-t border-slate-200 pt-20 pb-10">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
+                
+                <div class="lg:col-span-2">
+                    <a href="#" class="flex items-center gap-2 mb-6">
+                        <div class="w-8 h-8 rounded-lg bg-physio-900 flex items-center justify-center text-white font-bold text-xl">P</div>
+                        <span class="text-xl font-bold tracking-tight text-physio-900">PhysioElectric</span>
+                    </a>
+                    <p class="text-slate-500 max-w-sm mb-6" data-i18n="footer.desc">Engineering Technology. Building Intelligent Solutions for modern businesses and scientific challenges.</p>
+                    <div class="flex gap-4 text-slate-400">
+                        <a href="#" class="hover:text-physio-600 transition-colors"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                        <a href="#" class="hover:text-physio-600 transition-colors"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                        <a href="#" class="hover:text-physio-600 transition-colors"><i data-lucide="github" class="w-5 h-5"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4" data-i18n="footer.nav">Navigation</h4>
+                    <ul class="space-y-3 text-sm text-slate-600">
+                        <li><a href="#home" class="hover:text-physio-600">Home</a></li>
+                        <li><a href="#capabilities" class="hover:text-physio-600">Capabilities</a></li>
+                        <li><a href="#projects" class="hover:text-physio-600">Projects</a></li>
+                        <li><a href="#about" class="hover:text-physio-600">About</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4" data-i18n="footer.serv">Services</h4>
+                    <ul class="space-y-3 text-sm text-slate-600">
+                        <li><a href="#" class="hover:text-physio-600">Web Development</a></li>
+                        <li><a href="#" class="hover:text-physio-600">MATLAB / COMSOL</a></li>
+                        <li><a href="#" class="hover:text-physio-600">AI Agents</a></li>
+                        <li><a href="#" class="hover:text-physio-600">Custom Software</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4" data-i18n="footer.lang">Language</h4>
+                    <ul class="space-y-3 text-sm text-slate-600">
+                        <li><button class="hover:text-physio-600 font-medium" onclick="setLanguage('en')">English (LTR)</button></li>
+                        <li><button class="hover:text-physio-600 font-medium font-['Vazirmatn']" onclick="setLanguage('fa')">فارسی (RTL)</button></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-slate-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
+                <p>&copy; 2026 PhysioElectric. All rights reserved.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="hover:text-slate-800">Privacy Policy</a>
+                    <a href="#" class="hover:text-slate-800">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script_home.js"></script>
+
+</body>
+</html>

@@ -33,7 +33,7 @@
                     },
                     boxShadow: {
                         'premium': '0 4px 24px -4px rgba(0, 0, 0, 0.05), 0 16px 32px -8px rgba(0, 0, 0, 0.02)',
-                        'glow': '0 0 40px -10px rgba(14, 165, 233, 0.3)',
+                        'glow': '0 0 40px -10px rgba(14, 165, 233, 0.5)',
                     },
                     backgroundImage: {
                         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
@@ -221,6 +221,32 @@
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
         }
+
+        /* Shine animation for attractive buttons */
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        .btn-shine::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+            transform: translateX(-100%);
+            animation: shine 3s infinite;
+        }
+
+        /* IoT Signal Animation */
+        @keyframes signal-wave {
+            0%, 100% { height: 30%; opacity: 0.3; }
+            50% { height: 100%; opacity: 1; }
+        }
+        .signal-bar-1 { animation: signal-wave 1.5s ease-in-out infinite; }
+        .signal-bar-2 { animation: signal-wave 1.5s ease-in-out 0.2s infinite; }
+        .signal-bar-3 { animation: signal-wave 1.5s ease-in-out 0.4s infinite; }
     </style>
 </head>
 <body class="antialiased font-sans transition-colors duration-300">
@@ -461,6 +487,55 @@
                          </div>
                     </div>
                 </div>
+
+                <!-- Capability 5: Embedded / IoT -->
+                <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24 reveal">
+                    <div class="w-full lg:w-1/2 order-2 lg:order-1">
+                        <!-- CSS Art: Microchip / IoT -->
+                        <div class="bg-slate-900 rounded-2xl h-[300px] flex items-center justify-center relative overflow-hidden shadow-lg border border-slate-800">
+                            <!-- Circuit Traces -->
+                            <svg class="absolute inset-0 w-full h-full opacity-30" viewBox="0 0 200 200" preserveAspectRatio="none">
+                                <path d="M0 50 L50 50 L70 70 L100 70" fill="none" stroke="#0ea5e9" stroke-width="1.5" />
+                                <path d="M200 150 L150 150 L130 130 L100 130" fill="none" stroke="#0ea5e9" stroke-width="1.5" />
+                                <path d="M50 200 L50 150 L70 130 L100 130" fill="none" stroke="#0284c7" stroke-width="1.5" />
+                                <path d="M150 0 L150 50 L130 70 L100 70" fill="none" stroke="#0284c7" stroke-width="1.5" />
+                                <circle cx="100" cy="100" r="45" fill="none" stroke="rgba(14,165,233,0.3)" stroke-width="1" stroke-dasharray="4,4"/>
+                            </svg>
+
+                            <!-- The Microchip -->
+                            <div class="relative z-10 w-32 h-32 bg-slate-800 rounded-lg border-2 border-slate-700 shadow-[0_0_25px_rgba(14,165,233,0.2)] flex items-center justify-center flex-col transform hover:scale-105 transition-transform duration-500">
+                                <!-- Chip Pins (Top) -->
+                                <div class="absolute -top-2.5 w-full flex justify-around px-3"><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div></div>
+                                <!-- Chip Pins (Bottom) -->
+                                <div class="absolute -bottom-2.5 w-full flex justify-around px-3"><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div></div>
+                                <!-- Chip Pins (Left) -->
+                                <div class="absolute -left-2.5 h-full flex flex-col justify-around py-3"><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div></div>
+                                <!-- Chip Pins (Right) -->
+                                <div class="absolute -right-2.5 h-full flex flex-col justify-around py-3"><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div></div>
+                                
+                                <div class="text-physio-500 font-mono text-lg font-bold tracking-wider mb-1">STM32</div>
+                                <div class="w-12 h-px bg-slate-600 my-1"></div>
+                                <div class="text-slate-400 font-mono text-sm">ESP32</div>
+                            </div>
+                            
+                            <!-- IoT Signal Waves -->
+                            <div class="absolute top-8 left-8 flex gap-1.5 items-end h-8">
+                                <div class="w-1.5 bg-physio-500 rounded-full signal-bar-1"></div>
+                                <div class="w-1.5 bg-physio-400 rounded-full signal-bar-2"></div>
+                                <div class="w-1.5 bg-physio-300 rounded-full signal-bar-3"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full lg:w-1/2 order-1 lg:order-2">
+                        <span class="text-physio-500 font-bold text-xl mb-2 block">06</span>
+                        <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4" data-i18n="cap.c5.title">Embedded Systems & IoT</h3>
+                        <p class="text-slate-600 mb-8 text-lg leading-relaxed" data-i18n="cap.c5.desc">Designing and programming embedded hardware using STM32 and ESP32. We create smart connected devices, sensor networks, and IoT solutions for real-time control and automation.</p>
+                        <a href="#" class="inline-flex items-center text-physio-600 font-semibold group" data-i18n="cap.c5.link">
+                            Explore IoT Solutions <i data-lucide="arrow-right" class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1"></i>
+                        </a>
+                    </div>
+                </div>
+
             </div>
         </div>
     </section>
@@ -578,18 +653,31 @@
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                 <div class="reveal">
-                    <h2 class="text-4xl md:text-6xl font-bold tracking-tight text-physio-950 leading-tight mb-8" data-i18n="about.title">
-                        Engineering Technology <br/><span class="text-slate-400">With Purpose.</span>
+                    <!-- Adjusted Title with extra spacing for the second part -->
+                    <h2 class="text-4xl md:text-6xl font-bold tracking-tight text-physio-950 leading-tight mb-8">
+                        <span class="block" data-i18n="about.title_part1">Engineering Technology</span>
+                        <span class="block text-slate-400 mt-10" data-i18n="about.title_part2">With Purpose.</span>
                     </h2>
-                    <p class="text-xl text-slate-600 mb-6 font-light" data-i18n="about.desc1">
-                        PhysioElectric operates at the exact intersection where advanced engineering meets modern software development.
+                    
+                    <!-- Expanded Description -->
+                    <p class="text-xl text-slate-600 mb-6 font-light leading-relaxed" data-i18n="about.desc1">
+                        PhysioElectric operates at the exact intersection where advanced engineering meets modern software development. Founded on the principle that true innovation requires both deep domain expertise and cutting-edge technology, our team consists of multidisciplinary experts.
                     </p>
-                    <p class="text-lg text-slate-500 mb-8" data-i18n="about.desc2">
-                        We don't just write code; we build robust systems. Whether it's a high-performance web application, a complex multiphysics simulation, or an intelligent automation agent, our approach is always rooted in precision and scientific methodology.
+                    <p class="text-lg text-slate-500 mb-8 leading-relaxed" data-i18n="about.desc2">
+                        We don't just write code; we build robust systems. Whether it's a high-performance web application, a complex multiphysics simulation, or an intelligent automation agent, our approach is always rooted in precision and scientific methodology. We partner with forward-thinking enterprises to solve their most challenging bottlenecks, transforming theoretical models into deployable, scalable real-world solutions.
                     </p>
-                    <blockquote class="border-l-4 border-physio-500 pl-6 rtl:border-l-0 rtl:border-r-4 rtl:pl-0 rtl:pr-6 italic text-slate-700 font-medium">
+                    
+                    <blockquote class="border-l-4 border-physio-500 pl-6 rtl:border-l-0 rtl:border-r-4 rtl:pl-0 rtl:pr-6 italic text-slate-700 font-medium text-lg bg-slate-50 py-4 rounded-r-lg rtl:rounded-r-none rtl:rounded-l-lg mb-10">
                         "We don't just build software. We engineer solutions."
                     </blockquote>
+
+                    <!-- Added Attractive Button -->
+                    <div class="pt-2">
+                        <a href="about.html" class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-physio-600 to-physio-900 text-white font-bold rounded-full shadow-lg hover:shadow-glow hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group btn-shine">
+                            <span data-i18n="about.btn" class="relative z-10">More About Our Company</span>
+                            <i data-lucide="arrow-right" class="w-5 h-5 relative z-10 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180"></i>
+                        </a>
+                    </div>
                 </div>
                 
                 <!-- Geometric Intersection Visual -->
@@ -818,7 +906,6 @@
             <h2 class="text-3xl md:text-4xl font-bold text-center text-physio-950 mb-12 reveal" data-i18n="faq.title">Frequently Asked Questions</h2>
             
             <div class="space-y-4 reveal reveal-delay-1" id="faqContainer">
-                <!-- FAQs will be injected via JS to handle translations easier, but for structure I'll hardcode the first one as template -->
                 <div class="border-b border-slate-200 pb-4">
                     <button class="faq-btn w-full flex justify-between items-center py-4 text-left font-semibold text-lg text-slate-800 hover:text-physio-600 transition-colors">
                         <span data-i18n="faq.q1">What type of projects does PhysioElectric accept?</span>
@@ -921,7 +1008,6 @@
                     </a>
                     <p class="text-slate-500 max-w-sm mb-6" data-i18n="footer.desc">Engineering Technology. Building Intelligent Solutions for modern businesses and scientific challenges.</p>
                     <div class="flex gap-4 text-slate-400">
-                        <!-- Social Placeholders using Lucide -->
                         <a href="#" class="hover:text-physio-600 transition-colors"><i data-lucide="twitter" class="w-5 h-5"></i></a>
                         <a href="#" class="hover:text-physio-600 transition-colors"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
                         <a href="#" class="hover:text-physio-600 transition-colors"><i data-lucide="github" class="w-5 h-5"></i></a>
@@ -985,10 +1071,15 @@
                 'cap.c2.title': 'MATLAB Engineering', 'cap.c2.desc': 'From mathematical modeling to advanced numerical analysis and engineering computation for complex scientific challenges.', 'cap.c2.link': 'Explore MATLAB Projects <i data-lucide="arrow-right" class="w-4 h-4 mx-1 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180"></i>',
                 'cap.c3.title': 'COMSOL Simulation', 'cap.c3.desc': 'Advanced multiphysics simulation for complex engineering problems. We visualize and analyze thermal, structural, and electromagnetic fields.', 'cap.c3.link': 'Explore COMSOL Projects <i data-lucide="arrow-right" class="w-4 h-4 mx-1 transition-transform group-hover:translate-x-1 rtl:rotate-180"></i>',
                 'cap.c4.title': 'AI Agents & Automation', 'cap.c4.desc': 'Intelligent agents and automated workflows designed to solve real business problems, connecting tools, knowledge, and decision-making.', 'cap.c4.link': 'Explore AI Solutions <i data-lucide="arrow-right" class="w-4 h-4 mx-1 transition-transform group-hover:translate-x-1 rtl:rotate-180"></i>',
+                'cap.c5.title': 'Embedded Systems & IoT', 'cap.c5.desc': 'Designing and programming embedded hardware using STM32 and ESP32. We create smart connected devices, sensor networks, and IoT solutions for real-time control and automation.', 'cap.c5.link': 'Explore IoT Solutions <i data-lucide="arrow-right" class="w-4 h-4 mx-1 transition-transform group-hover:translate-x-1 rtl:rotate-180"></i>',
                 'proj.title': 'Selected Projects', 'proj.subtitle': 'Explore some of the engineering, software and AI solutions we have developed.',
                 'about.title': 'Engineering Technology <br/><span class="text-slate-400">With Purpose.</span>',
-                'about.desc1': 'PhysioElectric operates at the exact intersection where advanced engineering meets modern software development.',
-                'about.desc2': 'We don\'t just write code; we build robust systems. Whether it\'s a high-performance web application, a complex multiphysics simulation, or an intelligent automation agent, our approach is always rooted in precision and scientific methodology.',
+                'about.title_part1': 'Engineering Technology',
+                'about.title_part2': 'With Purpose.',
+                'about.desc1': 'PhysioElectric operates at the exact intersection where advanced engineering meets modern software development. Founded on the principle that true innovation requires both deep domain expertise and cutting-edge technology, our team consists of multidisciplinary experts.',
+                'about.desc2': 'We don\'t just write code; we build robust systems. Whether it\'s a high-performance web application, a complex multiphysics simulation, or an intelligent automation agent, our approach is always rooted in precision and scientific methodology. We partner with forward-thinking enterprises to solve their most challenging bottlenecks, transforming theoretical models into deployable, scalable real-world solutions.',
+                'about.btn': 'More About Our Company',
+                
                 'process.title': 'From Idea to Solution',
                 'process.s1.title': 'Understand', 'process.s1.desc': 'Deep analysis of the problem, requirements gathering, and establishing the technical feasibility.',
                 'process.s2.title': 'Design', 'process.s2.desc': 'Architecting the solution. Creating data models, simulation setups, wireframes, and tech stack.',
@@ -1023,10 +1114,15 @@
                 'cap.c2.title': 'مهندسی متلب (MATLAB)', 'cap.c2.desc': 'از مدل‌سازی ریاضی تا تحلیل عددی پیشرفته و محاسبات مهندسی برای چالش‌های پیچیده علمی.', 'cap.c2.link': '<i data-lucide="arrow-left" class="w-4 h-4 mx-1 transition-transform group-hover:-translate-x-1"></i> بررسی پروژه‌های متلب',
                 'cap.c3.title': 'شبیه‌سازی کامسول (COMSOL)', 'cap.c3.desc': 'شبیه‌سازی پیشرفته چندفیزیکی برای مسائل پیچیده مهندسی. ما میدان‌های حرارتی، ساختاری و الکترومغناطیسی را تحلیل می‌کنیم.', 'cap.c3.link': '<i data-lucide="arrow-left" class="w-4 h-4 mx-1 transition-transform group-hover:-translate-x-1"></i> بررسی پروژه‌های کامسول',
                 'cap.c4.title': 'عوامل هوش مصنوعی و اتوماسیون', 'cap.c4.desc': 'عوامل هوشمند و جریان‌های کاری خودکار طراحی شده برای حل مشکلات واقعی کسب‌وکار با اتصال ابزارها و داده‌ها.', 'cap.c4.link': '<i data-lucide="arrow-left" class="w-4 h-4 mx-1 transition-transform group-hover:-translate-x-1"></i> بررسی راهکارهای AI',
+                'cap.c5.title': 'سیستم‌های نهفته و اینترنت اشیا (IoT)', 'cap.c5.desc': 'طراحی و برنامه‌نویسی بردهای Embedded با استفاده از میکروکنترلرهای STM32 و ماژول‌های ESP32. ما تجهیزات هوشمند، شبکه‌های حسگر و سیستم‌های کنترل بلادرنگ را برای پروژه‌های هوشمندسازی توسعه می‌دهیم.', 'cap.c5.link': '<i data-lucide="arrow-left" class="w-4 h-4 mx-1 transition-transform group-hover:-translate-x-1"></i> بررسی سیستم‌های هوشمند',
                 'proj.title': 'پروژه‌های منتخب', 'proj.subtitle': 'برخی از راهکارهای مهندسی، نرم‌افزاری و هوش مصنوعی که توسعه داده‌ایم را بررسی کنید.',
                 'about.title': 'تکنولوژی مهندسی <br/><span class="text-slate-400">با هدف مشخص.</span>',
-                'about.desc1': 'فیزیوالکتریک دقیقاً در نقطه تلاقی مهندسی پیشرفته و توسعه نرم‌افزار مدرن فعالیت می‌کند.',
-                'about.desc2': 'ما فقط کد نمی‌نویسیم؛ ما سیستم‌های پایدار می‌سازیم. چه یک برنامه وب با کارایی بالا، چه یک شبیه‌سازی پیچیده چندفیزیکی، یا یک عامل اتوماسیون هوشمند، رویکرد ما همیشه ریشه در دقت و روش‌شناسی علمی دارد.',
+                'about.title_part1': 'تکنولوژی مهندسی',
+                'about.title_part2': 'با هدف مشخص.',
+                'about.desc1': 'فیزیوالکتریک دقیقاً در نقطه تلاقی مهندسی پیشرفته و توسعه نرم‌افزار مدرن فعالیت می‌کند. تیم ما متشکل از متخصصان چندرشته‌ای است و بر این اصل بنا شده که نوآوری واقعی نیازمند تخصص عمیق در دامنه دانش و فناوری‌های روز دنیاست.',
+                'about.desc2': 'ما فقط کد نمی‌نویسیم؛ بلکه سیستم‌های پایدار و مقاوم می‌سازیم. چه یک برنامه وب با کارایی بالا، چه یک شبیه‌سازی پیچیده چندفیزیکی، یا یک عامل اتوماسیون هوشمند، رویکرد ما همیشه ریشه در دقت و روش‌شناسی علمی دارد. ما در کنار شرکت‌های پیشرو قرار می‌گیریم تا پیچیده‌ترین چالش‌هایشان را حل کرده و مدل‌های تئوری را به راهکارهای عملیاتی و مقیاس‌پذیر در دنیای واقعی تبدیل کنیم.',
+                'about.btn': 'اطلاعات بیشتر درباره مجموعه',
+                
                 'process.title': 'از ایده تا راهکار',
                 'process.s1.title': 'درک مسئله', 'process.s1.desc': 'تحلیل عمیق مشکل، جمع‌آوری نیازمندی‌ها و بررسی امکان‌سنجی فنی پروژه.',
                 'process.s2.title': 'طراحی', 'process.s2.desc': 'معماری راهکار. ایجاد مدل‌های داده، تنظیمات شبیه‌سازی، وایرفریم‌ها و تعیین پشته فناوری (Tech Stack).',
@@ -1296,7 +1392,6 @@
         faqBtns.forEach(btn => {
             btn.addEventListener('click', function() {
                 const content = this.nextElementSibling;
-                // تغییر 'i' به '[data-lucide]' چون تگ i پس از رندر به svg تبدیل می‌شود
                 const icon = this.querySelector('[data-lucide]');
                 const isOpen = content.style.height && content.style.height !== '0px';
 

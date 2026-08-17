@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | PhysioElectric</title>
+    
+    <!-- Fonts: Inter for EN, Vazirmatn for FA -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Vazirmatn', 'sans-serif'],
+                    },
+                    colors: {
+                        physio: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    },
+                    boxShadow: {
+                        'premium': '0 4px 24px -4px rgba(0, 0, 0, 0.05), 0 16px 32px -8px rgba(0, 0, 0, 0.02)',
+                        'glow': '0 0 40px -10px rgba(14, 165, 233, 0.5)',
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --text-main: #0f172a;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #0284c7, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        #hero-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        /* Timeline Process */
+        .timeline-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e2e8f0;
+            left: 31px;
+        }
+        .timeline-progress {
+            position: absolute;
+            top: 0;
+            width: 2px;
+            background: #0ea5e9;
+            left: 31px;
+            height: 0%;
+            transition: height 0.3s ease;
+        }
+        html[dir="rtl"] .timeline-line, html[dir="rtl"] .timeline-progress {
+            left: auto;
+            right: 31px;
+        }
+
+        /* Connecting Flow Lines */
+        .flow-line {
+            stroke-dasharray: 8;
+            animation: dashFlow 3s linear infinite;
+        }
+        @keyframes dashFlow {
+            to { stroke-dashoffset: -16; }
+        }
+
+        html[dir="rtl"] .ltr-only { display: none; }
+        html[dir="ltr"] .rtl-only { display: none; }
+    </style>
+</head>
+<body class="antialiased font-sans transition-colors duration-300">
+
+    <!-- Global Header -->
+    <nav id="navbar" class="fixed w-full z-50 glass-nav transition-all duration-300 py-4">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2 group">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-physio-500 to-physio-900 flex items-center justify-center text-white font-bold text-xl shadow-glow group-hover:scale-105 transition-transform">
+                    P
+                </div>
+                <span class="text-xl font-bold tracking-tight text-physio-900">PhysioElectric</span>
+            </a>
+
+            <div class="hidden md:flex items-center gap-8">
+                <a href="index.html#home" class="text-sm font-medium text-slate-600 hover:text-physio-600 transition-colors" data-i18n="nav.home">Home</a>
+                <a href="index.html#capabilities" class="text-sm font-medium text-slate-600 hover:text-physio-600 transition-colors" data-i18n="nav.capabilities">Capabilities</a>
+                <a href="index.html#projects" class="text-sm font-medium text-slate-600 hover:text-physio-600 transition-colors" data-i18n="nav.projects">Projects</a>
+                <div class="relative">
+                    <a href="about.html" class="text-sm font-semibold text-physio-600 transition-colors" data-i18n="nav.about">About</a>
+                    <!-- Active Indicator -->
+                    <div class="absolute -bottom-1.5 left-0 w-full h-0.5 bg-physio-600 rounded-full"></div>
+                </div>
+                <a href="index.html#faq" class="text-sm font-medium text-slate-600 hover:text-physio-600 transition-colors" data-i18n="nav.faq">FAQ</a>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <button id="langToggle" class="text-sm font-medium text-slate-500 hover:text-physio-900 transition-colors flex items-center gap-1">
+                    <i data-lucide="globe" class="w-4 h-4"></i>
+                    <span id="currentLang">EN</span>
+                </button>
+                <a href="#contact" class="hidden sm:inline-flex items-center justify-center px-5 py-2.5 text-sm font-medium text-white bg-physio-900 hover:bg-physio-950 rounded-full shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5" data-i18n="nav.cta">
+                    Start a Project
+                </a>
+                <button class="md:hidden text-slate-600" id="mobileMenuBtn">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- About Hero -->
+    <section class="relative min-h-[90vh] flex flex-col justify-center pt-24 overflow-hidden">
+        <!-- Abstract Engineering Grid Canvas -->
+        <canvas id="hero-canvas"></canvas>
+
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 w-full">
+            <!-- Back to Home -->
+            <a href="index.html" class="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-physio-600 transition-all group mb-16 reveal">
+                <i data-lucide="arrow-left" class="w-4 h-4 transition-transform group-hover:-translate-x-1 rtl:rotate-180 rtl:group-hover:translate-x-1 rtl:group-hover:-translate-x-0"></i>
+                <span data-i18n="about.back">Back to Home</span>
+            </a>
+
+            <div class="max-w-4xl reveal reveal-delay-1">
+                <h1 class="text-[5.8vw] sm:text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tight text-physio-950 leading-[1.1] mb-6 whitespace-nowrap" data-i18n="about.hero.title">
+                    The People Behind <span class="text-gradient">PhysioElectric</span>
+                </h1>
+                <p class="text-xl md:text-2xl text-slate-500 font-light leading-relaxed max-w-2xl text-justify" data-i18n="about.hero.subtitle">
+                    PhysioElectric is a technology and engineering team focused on building intelligent software, advanced simulations, AI-driven systems and digital solutions.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Introduction -->
+    <section class="py-24 bg-white relative z-20">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="mb-16 md:mb-24 reveal">
+                <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-physio-950" data-i18n="team.title">Meet the Team</h2>
+                <p class="mt-4 text-lg text-slate-500 max-w-2xl text-justify" data-i18n="team.subtitle">Behind every project is a team of people who combine engineering thinking, creativity and technology.</p>
+            </div>
+
+            <!-- Team Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                
+                <!-- Member 1 -->
+                <div class="group cursor-pointer reveal">
+                    <a href="#profile-link" class="block">
+                        <div class="relative overflow-hidden rounded-2xl aspect-[3/4] bg-slate-100 mb-6">
+                            <!-- Premium Placeholder Image -->
+                            <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=800&auto=format&fit=crop" alt="Team Member" class="w-full h-full object-cover filter grayscale opacity-90 transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105 group-hover:opacity-100">
+                            <!-- Subtle Gradient Overlay -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        </div>
+                        <div class="transform transition-transform duration-300 group-hover:-translate-y-1">
+                            <h3 class="text-xl font-bold text-physio-950 group-hover:text-physio-600 transition-colors" data-i18n="team.m1.name">Dr. Amir Hosseini</h3>
+                            <p class="text-sm font-semibold text-physio-500 uppercase tracking-wider mt-1 mb-3" data-i18n="team.m1.role">Lead Engineer / AI Systems</p>
+                            <p class="text-slate-600 text-sm leading-relaxed mb-4 line-clamp-2 text-justify" data-i18n="team.m1.desc">Architecting intelligent systems and overseeing complex computational models.</p>
+                            <div class="flex items-center text-sm font-semibold text-slate-400 group-hover:text-physio-600 transition-colors">
+                                <span data-i18n="team.viewProfile">View Profile</span>
+                                <i data-lucide="arrow-right" class="w-4 h-4 ml-1 rtl:ml-0 rtl:mr-1 rtl:rotate-180 transform opacity-0 -translate-x-2 rtl:translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"></i>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Member 2 -->
+                <div class="group cursor-pointer reveal reveal-delay-1">
+                    <a href="#profile-link" class="block">
+                        <div class="relative overflow-hidden rounded-2xl aspect-[3/4] bg-slate-100 mb-6">
+                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop" alt="Team Member" class="w-full h-full object-cover filter grayscale opacity-90 transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105 group-hover:opacity-100">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        </div>
+                        <div class="transform transition-transform duration-300 group-hover:-translate-y-1">
+                            <h3 class="text-xl font-bold text-physio-950 group-hover:text-physio-600 transition-colors" data-i18n="team.m2.name">Sara Radmanesh</h3>
+                            <p class="text-sm font-semibold text-physio-500 uppercase tracking-wider mt-1 mb-3" data-i18n="team.m2.role">Software Architect</p>
+                            <p class="text-slate-600 text-sm leading-relaxed mb-4 line-clamp-2 text-justify" data-i18n="team.m2.desc">Designing scalable web infrastructure and bridging the gap between math and code.</p>
+                            <div class="flex items-center text-sm font-semibold text-slate-400 group-hover:text-physio-600 transition-colors">
+                                <span data-i18n="team.viewProfile">View Profile</span>
+                                <i data-lucide="arrow-right" class="w-4 h-4 ml-1 rtl:ml-0 rtl:mr-1 rtl:rotate-180 transform opacity-0 -translate-x-2 rtl:translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"></i>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Member 3 -->
+                <div class="group cursor-pointer reveal reveal-delay-2">
+                    <a href="#profile-link" class="block">
+                        <div class="relative overflow-hidden rounded-2xl aspect-[3/4] bg-slate-100 mb-6">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop" alt="Team Member" class="w-full h-full object-cover filter grayscale opacity-90 transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105 group-hover:opacity-100">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        </div>
+                        <div class="transform transition-transform duration-300 group-hover:-translate-y-1">
+                            <h3 class="text-xl font-bold text-physio-950 group-hover:text-physio-600 transition-colors" data-i18n="team.m3.name">Mohammad Reza Afraz</h3>
+                            <p class="text-sm font-semibold text-physio-500 uppercase tracking-wider mt-1 mb-3" data-i18n="team.m3.role">Simulation & Analysis</p>
+                            <p class="text-slate-600 text-sm leading-relaxed mb-4 line-clamp-2 text-justify" data-i18n="team.m3.desc">Translating real-world physical phenomena into highly accurate COMSOL models.</p>
+                            <div class="flex items-center text-sm font-semibold text-slate-400 group-hover:text-physio-600 transition-colors">
+                                <span data-i18n="team.viewProfile">View Profile</span>
+                                <i data-lucide="arrow-right" class="w-4 h-4 ml-1 rtl:ml-0 rtl:mr-1 rtl:rotate-180 transform opacity-0 -translate-x-2 rtl:translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"></i>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Member 4 -->
+                <div class="group cursor-pointer reveal reveal-delay-3">
+                    <a href="#profile-link" class="block">
+                        <div class="relative overflow-hidden rounded-2xl aspect-[3/4] bg-slate-100 mb-6">
+                            <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=800&auto=format&fit=crop" alt="Team Member" class="w-full h-full object-cover filter grayscale opacity-90 transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105 group-hover:opacity-100">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        </div>
+                        <div class="transform transition-transform duration-300 group-hover:-translate-y-1">
+                            <h3 class="text-xl font-bold text-physio-950 group-hover:text-physio-600 transition-colors" data-i18n="team.m4.name">Neda Vahdati</h3>
+                            <p class="text-sm font-semibold text-physio-500 uppercase tracking-wider mt-1 mb-3" data-i18n="team.m4.role">Embedded Systems</p>
+                            <p class="text-slate-600 text-sm leading-relaxed mb-4 line-clamp-2 text-justify" data-i18n="team.m4.desc">Developing IoT hardware and optimizing microcontrollers for edge computing.</p>
+                            <div class="flex items-center text-sm font-semibold text-slate-400 group-hover:text-physio-600 transition-colors">
+                                <span data-i18n="team.viewProfile">View Profile</span>
+                                <i data-lucide="arrow-right" class="w-4 h-4 ml-1 rtl:ml-0 rtl:mr-1 rtl:rotate-180 transform opacity-0 -translate-x-2 rtl:translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"></i>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Company Purpose -->
+    <section class="py-24 bg-slate-50 border-y border-slate-200/50">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <span class="text-physio-500 font-bold text-sm uppercase tracking-widest mb-6 block reveal" data-i18n="purpose.tag">Why PhysioElectric Exists</span>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="reveal">
+                    <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-physio-950 leading-tight" data-i18n="purpose.title">
+                        We believe complex problems deserve engineered solutions.
+                    </h2>
+                </div>
+                <div class="reveal reveal-delay-1 space-y-6 text-lg text-slate-600 leading-relaxed font-light">
+                    <p class="text-justify" data-i18n="purpose.p1">
+                        PhysioElectric was created around a unique intersection: engineering, programming, artificial intelligence, scientific computing, and digital technologies.
+                    </p>
+                    <p class="text-justify" data-i18n="purpose.p2">
+                        Our goal is not simply to produce software or write code in isolation. We aim to deeply understand the core problem, engineer a suitable methodology, and deliver something that is profoundly practical, reliable, and scientifically sound.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Motivation (What Drives Us) -->
+    <section class="py-32 bg-white">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-physio-950 mb-20 reveal" data-i18n="motivation.title">What Drives Us</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-y-20 gap-x-16">
+                <!-- Principle 1 -->
+                <div class="reveal">
+                    <div class="text-physio-100 text-7xl md:text-8xl font-bold mb-4 -ml-2 rtl:-ml-0 rtl:-mr-2 tracking-tighter">01</div>
+                    <h3 class="text-2xl font-bold text-physio-950 mb-4" data-i18n="motivation.p1.title">Curiosity</h3>
+                    <p class="text-slate-600 text-lg leading-relaxed text-justify" data-i18n="motivation.p1.desc">We constantly explore new technologies, advanced algorithms, and engineering methods to stay at the cutting edge of digital science.</p>
+                </div>
+                
+                <!-- Principle 2 -->
+                <div class="reveal reveal-delay-1">
+                    <div class="text-physio-100 text-7xl md:text-8xl font-bold mb-4 -ml-2 rtl:-ml-0 rtl:-mr-2 tracking-tighter">02</div>
+                    <h3 class="text-2xl font-bold text-physio-950 mb-4" data-i18n="motivation.p2.title">Precision</h3>
+                    <p class="text-slate-600 text-lg leading-relaxed text-justify" data-i18n="motivation.p2.desc">We believe good engineering begins with understanding the details. Rigor and exactness define every model and line of code we write.</p>
+                </div>
+
+                <!-- Principle 3 -->
+                <div class="reveal">
+                    <div class="text-physio-100 text-7xl md:text-8xl font-bold mb-4 -ml-2 rtl:-ml-0 rtl:-mr-2 tracking-tighter">03</div>
+                    <h3 class="text-2xl font-bold text-physio-950 mb-4" data-i18n="motivation.p3.title">Innovation</h3>
+                    <p class="text-slate-600 text-lg leading-relaxed text-justify" data-i18n="motivation.p3.desc">We look for smarter ways to solve complex problems, combining disciplines like AI and multiphysics to unlock new possibilities.</p>
+                </div>
+
+                <!-- Principle 4 -->
+                <div class="reveal reveal-delay-1">
+                    <div class="text-physio-100 text-7xl md:text-8xl font-bold mb-4 -ml-2 rtl:-ml-0 rtl:-mr-2 tracking-tighter">04</div>
+                    <h3 class="text-2xl font-bold text-physio-950 mb-4" data-i18n="motivation.p4.title">Impact</h3>
+                    <p class="text-slate-600 text-lg leading-relaxed text-justify" data-i18n="motivation.p4.desc">Theoretical brilliance is not enough. We build solutions that are highly practical, useful, and meaningful for the enterprises we partner with.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Engineering Mindset & Tech Domains -->
+    <section class="py-32 bg-slate-50 relative border-b border-slate-200/50 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 text-center mb-20 reveal">
+            <h2 class="text-4xl md:text-6xl font-bold tracking-tight text-physio-950 mb-6" data-i18n="mindset.title">
+                Think. Engineer. Build. Improve.
+            </h2>
+            <p class="text-xl text-slate-500 max-w-3xl mx-auto font-light leading-relaxed text-justify" data-i18n="mindset.subtitle">
+                From mathematical models and simulations to software systems and intelligent agents, we approach every project as an engineering problem.
+            </p>
+        </div>
+
+        <!-- Mindset Flowchart Visual -->
+        <div class="max-w-5xl mx-auto px-6 lg:px-8 mb-32 reveal reveal-delay-1">
+            <div class="relative w-full h-[300px] md:h-[150px] flex flex-col md:flex-row items-center justify-between">
+                
+                <!-- Desktop SVGs Lines -->
+                <svg class="hidden md:block absolute top-1/2 left-0 w-full h-10 -translate-y-1/2 z-0" preserveAspectRatio="none">
+                    <line x1="10%" y1="50%" x2="90%" y2="50%" stroke="#cbd5e1" stroke-width="2" class="flow-line" />
+                </svg>
+                <!-- Mobile SVGs Lines -->
+                <svg class="md:hidden absolute left-1/2 top-0 w-10 h-full -translate-x-1/2 z-0" preserveAspectRatio="none">
+                    <line x1="50%" y1="10%" x2="50%" y2="90%" stroke="#cbd5e1" stroke-width="2" class="flow-line" />
+                </svg>
+
+                <!-- Nodes -->
+                <div class="bg-white border border-slate-200 shadow-sm rounded-xl px-6 py-3 z-10 text-sm font-bold text-slate-700" data-i18n="node.problem">Problem</div>
+                <i data-lucide="arrow-down" class="md:hidden w-4 h-4 text-slate-400 z-10 bg-slate-50"></i>
+                <div class="bg-white border border-slate-200 shadow-sm rounded-xl px-6 py-3 z-10 text-sm font-bold text-slate-700" data-i18n="node.analysis">Analysis</div>
+                <i data-lucide="arrow-down" class="md:hidden w-4 h-4 text-slate-400 z-10 bg-slate-50"></i>
+                <div class="bg-white border border-slate-200 shadow-sm rounded-xl px-6 py-3 z-10 text-sm font-bold text-slate-700" data-i18n="node.model">Model</div>
+                <i data-lucide="arrow-down" class="md:hidden w-4 h-4 text-slate-400 z-10 bg-slate-50"></i>
+                <div class="bg-white border border-slate-200 shadow-sm rounded-xl px-6 py-3 z-10 text-sm font-bold text-slate-700" data-i18n="node.implementation">Implementation</div>
+                <i data-lucide="arrow-down" class="md:hidden w-4 h-4 text-slate-400 z-10 bg-slate-50"></i>
+                <div class="bg-white border border-slate-200 shadow-sm rounded-xl px-6 py-3 z-10 text-sm font-bold text-slate-700" data-i18n="node.validation">Validation</div>
+                <i data-lucide="arrow-down" class="md:hidden w-4 h-4 text-slate-400 z-10 bg-slate-50"></i>
+                <div class="bg-physio-900 border border-physio-800 shadow-glow rounded-xl px-6 py-3 z-10 text-sm font-bold text-white" data-i18n="node.solution">Solution</div>
+            </div>
+        </div>
+
+        <!-- Tech Domains Interconnected Grid -->
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 reveal reveal-delay-2">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center justify-center text-center gap-3">
+                    <i data-lucide="braces" class="w-6 h-6 text-physio-500"></i>
+                    <span class="font-semibold text-slate-800" data-i18n="domain.sw">Software Engineering</span>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center justify-center text-center gap-3">
+                    <i data-lucide="brain-circuit" class="w-6 h-6 text-physio-500"></i>
+                    <span class="font-semibold text-slate-800" data-i18n="domain.ai">Artificial Intelligence</span>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center justify-center text-center gap-3">
+                    <i data-lucide="function-square" class="w-6 h-6 text-physio-500"></i>
+                    <span class="font-semibold text-slate-800" data-i18n="domain.math">Scientific Computing</span>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center justify-center text-center gap-3">
+                    <i data-lucide="cpu" class="w-6 h-6 text-physio-500"></i>
+                    <span class="font-semibold text-slate-800" data-i18n="domain.matlab">MATLAB / COMSOL</span>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center justify-center text-center gap-3">
+                    <i data-lucide="layout" class="w-6 h-6 text-physio-500"></i>
+                    <span class="font-semibold text-slate-800" data-i18n="domain.web">Web Technologies</span>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center justify-center text-center gap-3">
+                    <i data-lucide="workflow" class="w-6 h-6 text-physio-500"></i>
+                    <span class="font-semibold text-slate-800" data-i18n="domain.automation">Automation Agents</span>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center justify-center text-center gap-3">
+                    <i data-lucide="satellite-dish" class="w-6 h-6 text-physio-500"></i>
+                    <span class="font-semibold text-slate-800" data-i18n="domain.iot">Embedded / IoT</span>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex flex-col items-center justify-center text-center gap-3">
+                    <i data-lucide="layers" class="w-6 h-6 text-physio-500"></i>
+                    <span class="font-semibold text-slate-800" data-i18n="domain.digital">Digital Systems</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Company Philosophy -->
+    <section class="py-40 bg-white">
+        <div class="max-w-5xl mx-auto px-6 lg:px-8 text-center reveal">
+            <h2 class="text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight text-physio-950 leading-[1.1] mb-10" data-i18n="phil.title">
+                Technology is powerful when <span class="text-physio-600">engineering</span> gives it direction.
+            </h2>
+            <p class="text-xl md:text-2xl text-slate-500 font-light leading-relaxed max-w-3xl mx-auto text-justify" data-i18n="phil.desc">
+                We refuse to build fragile code or untested concepts. At PhysioElectric, every piece of software, every automation node, and every mathematical model is crafted with absolute precision. We exist to engineer the future, not just write it.
+            </p>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section id="contact" class="py-32 relative overflow-hidden bg-physio-950 text-white border-t border-slate-800">
+        <!-- Abstract Background for CTA -->
+        <div class="absolute inset-0 opacity-20">
+            <div class="absolute w-[500px] h-[500px] bg-physio-500 rounded-full blur-[120px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 mix-blend-screen"></div>
+            <!-- Grid overlay -->
+            <div class="absolute inset-0" style="background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 40px 40px;"></div>
+        </div>
+        
+        <div class="max-w-4xl mx-auto px-6 text-center relative z-10 reveal">
+            <h2 class="text-4xl md:text-6xl font-bold tracking-tight mb-6" data-i18n="cta.title">Let's Build Something Meaningful.</h2>
+            <p class="text-xl text-slate-400 mb-10 max-w-2xl mx-auto text-justify" data-i18n="cta.desc">Have an idea, a technical challenge or a project in mind? Let's talk.</p>
+            
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <button class="px-8 py-4 bg-white text-physio-950 font-bold rounded-full hover:bg-slate-100 transition-colors shadow-glow" data-i18n="cta.btnPrimary">
+                    Start a Project
+                </button>
+                <a href="index.html#projects" class="inline-flex items-center justify-center px-8 py-4 border border-slate-700 bg-slate-900/50 backdrop-blur text-white font-medium rounded-full hover:bg-slate-800 transition-colors" data-i18n="cta.btnSecondary">
+                    Explore Our Projects
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Global Footer -->
+    <footer class="bg-slate-50 border-t border-slate-200 pt-20 pb-10">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
+                
+                <div class="lg:col-span-2">
+                    <a href="index.html" class="flex items-center gap-2 mb-6">
+                        <div class="w-8 h-8 rounded-lg bg-physio-900 flex items-center justify-center text-white font-bold text-xl">P</div>
+                        <span class="text-xl font-bold tracking-tight text-physio-900">PhysioElectric</span>
+                    </a>
+                    <p class="text-slate-500 max-w-sm mb-6" data-i18n="footer.desc">Engineering Technology. Building Intelligent Solutions for modern businesses and scientific challenges.</p>
+                    <div class="flex gap-4 text-slate-400">
+                        <a href="#" class="hover:text-physio-600 transition-colors"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                        <a href="#" class="hover:text-physio-600 transition-colors"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                        <a href="#" class="hover:text-physio-600 transition-colors"><i data-lucide="github" class="w-5 h-5"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4" data-i18n="footer.nav">Navigation</h4>
+                    <ul class="space-y-3 text-sm text-slate-600">
+                        <li><a href="index.html#home" class="hover:text-physio-600">Home</a></li>
+                        <li><a href="index.html#capabilities" class="hover:text-physio-600">Capabilities</a></li>
+                        <li><a href="index.html#projects" class="hover:text-physio-600">Projects</a></li>
+                        <li><a href="about.html" class="hover:text-physio-600 text-physio-600 font-medium">About</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4" data-i18n="footer.serv">Services</h4>
+                    <ul class="space-y-3 text-sm text-slate-600">
+                        <li><a href="#" class="hover:text-physio-600">Web Development</a></li>
+                        <li><a href="#" class="hover:text-physio-600">MATLAB / COMSOL</a></li>
+                        <li><a href="#" class="hover:text-physio-600">AI Agents</a></li>
+                        <li><a href="#" class="hover:text-physio-600">Custom Software</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4" data-i18n="footer.lang">Language</h4>
+                    <ul class="space-y-3 text-sm text-slate-600">
+                        <li><button class="hover:text-physio-600 font-medium" onclick="setLanguage('en')">English (LTR)</button></li>
+                        <li><button class="hover:text-physio-600 font-medium font-['Vazirmatn']" onclick="setLanguage('fa')">فارسی (RTL)</button></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-slate-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
+                <p>&copy; 2026 PhysioElectric. All rights reserved.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="hover:text-slate-800">Privacy Policy</a>
+                    <a href="#" class="hover:text-slate-800">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        /* --- Bilingual System (EN/FA) --- */
+        const dictionary = {
+            en: {
+                'nav.home': 'Home', 'nav.capabilities': 'Capabilities', 'nav.projects': 'Projects', 'nav.about': 'About', 'nav.faq': 'FAQ', 'nav.cta': 'Start a Project',
+                'about.back': 'Back to Home',
+                'about.hero.title': 'The People Behind <span class="text-gradient">PhysioElectric</span>',
+                'about.hero.subtitle': 'PhysioElectric is a technology and engineering team focused on building intelligent software, advanced simulations, AI-driven systems and digital solutions.',
+                
+                'team.title': 'Meet the Team',
+                'team.subtitle': 'Behind every project is a team of people who combine engineering thinking, creativity and technology.',
+                'team.viewProfile': 'View Profile',
+                'team.m1.name': 'Dr. Amir Hosseini', 'team.m1.role': 'Lead Engineer / AI Systems', 'team.m1.desc': 'Architecting intelligent systems and overseeing complex computational models.',
+                'team.m2.name': 'Sara Radmanesh', 'team.m2.role': 'Software Architect', 'team.m2.desc': 'Designing scalable web infrastructure and bridging the gap between math and code.',
+                'team.m3.name': 'Mohammad Reza Afraz', 'team.m3.role': 'Simulation & Analysis', 'team.m3.desc': 'Translating real-world physical phenomena into highly accurate COMSOL models.',
+                'team.m4.name': 'Neda Vahdati', 'team.m4.role': 'Embedded Systems', 'team.m4.desc': 'Developing IoT hardware and optimizing microcontrollers for edge computing.',
+                
+                'purpose.tag': 'Why PhysioElectric Exists',
+                'purpose.title': 'We believe complex problems deserve engineered solutions.',
+                'purpose.p1': 'PhysioElectric was created around a unique intersection: engineering, programming, artificial intelligence, scientific computing, and digital technologies.',
+                'purpose.p2': 'Our goal is not simply to produce software or write code in isolation. We aim to deeply understand the core problem, engineer a suitable methodology, and deliver something that is profoundly practical, reliable, and scientifically sound.',
+                
+                'motivation.title': 'What Drives Us',
+                'motivation.p1.title': 'Curiosity', 'motivation.p1.desc': 'We constantly explore new technologies, advanced algorithms, and engineering methods to stay at the cutting edge of digital science.',
+                'motivation.p2.title': 'Precision', 'motivation.p2.desc': 'We believe good engineering begins with understanding the details. Rigor and exactness define every model and line of code we write.',
+                'motivation.p3.title': 'Innovation', 'motivation.p3.desc': 'We look for smarter ways to solve complex problems, combining disciplines like AI and multiphysics to unlock new possibilities.',
+                'motivation.p4.title': 'Impact', 'motivation.p4.desc': 'Theoretical brilliance is not enough. We build solutions that are highly practical, useful, and meaningful for the enterprises we partner with.',
+                
+                'process.title': 'How We Work', 'process.subtitle': 'Every project starts with understanding the problem.',
+                'process.s1.title': 'Understand', 'process.s1.desc': 'We first understand the problem, goals, constraints and core requirements of the system.',
+                'process.s2.title': 'Analyze', 'process.s2.desc': 'We investigate the technical challenges, math models, and determine the appropriate approach.',
+                'process.s3.title': 'Design', 'process.s3.desc': 'We design the overarching architecture, engineering methodology, and precise technical solution.',
+                'process.s4.title': 'Build', 'process.s4.desc': 'We implement code, run simulations, test edge cases, and continuously improve the prototype.',
+                'process.s5.title': 'Deliver', 'process.s5.desc': 'We finalize, rigorously validate, deploy to production and deliver a truly reliable solution.',
+
+                'mindset.title': 'Think. Engineer. Build. Improve.',
+                'mindset.subtitle': 'From mathematical models and simulations to software systems and intelligent agents, we approach every project as an engineering problem.',
+                
+                'node.problem': 'Problem', 'node.analysis': 'Analysis', 'node.model': 'Model', 'node.implementation': 'Implementation', 'node.validation': 'Validation', 'node.solution': 'Solution',
+
+                'domain.sw': 'Software Engineering', 'domain.ai': 'Artificial Intelligence', 'domain.math': 'Scientific Computing', 'domain.matlab': 'MATLAB / COMSOL', 'domain.web': 'Web Technologies', 'domain.automation': 'Automation Agents', 'domain.iot': 'Embedded / IoT', 'domain.digital': 'Digital Systems',
+
+                'phil.title': 'Technology is powerful when <span class="text-physio-600">engineering</span> gives it direction.',
+                'phil.desc': 'We refuse to build fragile code or untested concepts. At PhysioElectric, every piece of software, every automation node, and every mathematical model is crafted with absolute precision. We exist to engineer the future, not just write it.',
+
+                'cta.title': 'Let\'s Build Something Meaningful.', 'cta.desc': 'Have an idea, a technical challenge or a project in mind? Let\'s talk.',
+                'cta.btnPrimary': 'Start a Project', 'cta.btnSecondary': 'Explore Our Projects',
+                'footer.desc': 'Engineering Technology. Building Intelligent Solutions for modern businesses and scientific challenges.',
+                'footer.nav': 'Navigation', 'footer.serv': 'Services', 'footer.lang': 'Language',
+            },
+            fa: {
+                'nav.home': 'خانه', 'nav.capabilities': 'توانمندی‌ها', 'nav.projects': 'پروژه‌ها', 'nav.about': 'درباره ما', 'nav.faq': 'سوالات متداول', 'nav.cta': 'شروع پروژه',
+                'about.back': 'بازگشت به صفحه اصلی',
+                'about.hero.title': 'افرادِ پشت پرده <span class="text-gradient">فیزیوالکتریک</span>',
+                'about.hero.subtitle': 'فیزیوالکتریک یک تیم تکنولوژی و مهندسی است که بر ساخت نرم‌افزارهای هوشمند، شبیه‌سازی‌های پیشرفته، سیستم‌های مبتنی بر AI و راهکارهای دیجیتال تمرکز دارد.',
+                
+                'team.title': 'آشنایی با تیم',
+                'team.subtitle': 'پشت هر پروژه، تیمی از افراد قرار دارند که تفکر مهندسی، خلاقیت و تکنولوژی را در هم می‌آمیزند.',
+                'team.viewProfile': 'مشاهده پروفایل',
+                'team.m1.name': 'دکتر امیر حسینی', 'team.m1.role': 'مهندس ارشد / سیستم‌های AI', 'team.m1.desc': 'طراحی معماری سیستم‌های هوشمند و نظارت بر مدل‌های پیچیده محاسباتی.',
+                'team.m2.name': 'سارا رادمنش', 'team.m2.role': 'آرشیتکت نرم‌افزار', 'team.m2.desc': 'طراحی زیرساخت‌های مقیاس‌پذیر وب و پر کردن شکاف بین ریاضیات و کد.',
+                'team.m3.name': 'محمدرضا افراز', 'team.m3.role': 'شبیه‌سازی و تحلیل', 'team.m3.desc': 'تبدیل پدیده‌های فیزیکی دنیای واقعی به مدل‌های کامسول (COMSOL) با دقت بالا.',
+                'team.m4.name': 'ندا وحدتی', 'team.m4.role': 'سیستم‌های نهفته (Embedded)', 'team.m4.desc': 'توسعه سخت‌افزارهای IoT و بهینه‌سازی میکروکنترلرها برای محاسبات لبه.',
+                
+                'purpose.tag': 'چرا فیزیوالکتریک وجود دارد؟',
+                'purpose.title': 'ما معتقدیم مسائل پیچیده، شایسته راهکارهای مهندسی‌شده هستند.',
+                'purpose.p1': 'فیزیوالکتریک در یک نقطه تلاقی منحصربه‌فرد شکل گرفت: مهندسی، برنامه‌نویسی، هوش مصنوعی، محاسبات علمی و تکنولوژی‌های دیجیتال.',
+                'purpose.p2': 'هدف ما صرفاً تولید نرم‌افزار یا نوشتن کدهای ایزوله نیست. هدف ما درک عمیق هسته مسئله، مهندسی یک روش‌شناسی مناسب و ارائه محصولی است که کاملاً کاربردی، قابل‌اتکا و از نظر علمی معتبر باشد.',
+                
+                'motivation.title': 'محرک‌های ما',
+                'motivation.p1.title': 'کنجکاوی', 'motivation.p1.desc': 'ما پیوسته تکنولوژی‌های جدید، الگوریتم‌های پیشرفته و روش‌های مهندسی را کاوش می‌کنیم تا در لبه علم دیجیتال باقی بمانیم.',
+                'motivation.p2.title': 'دقت', 'motivation.p2.desc': 'ما معتقدیم مهندسی خوب با درک جزئیات آغاز می‌شود. سخت‌گیری و دقت، تعریف‌کننده تک‌تک مدل‌ها و خطوط کدی است که می‌نویسیم.',
+                'motivation.p3.title': 'نوآوری', 'motivation.p3.desc': 'ما به دنبال راه‌های هوشمندانه‌تر برای حل مسائل پیچیده هستیم و دیسیپلین‌هایی مانند AI و چندفیزیکی را برای خلق امکانات جدید ترکیب می‌کنیم.',
+                'motivation.p4.title': 'تاثیرگذاری', 'motivation.p4.desc': 'نبوغ تئوریک کافی نیست. ما راهکارهایی می‌سازیم که برای سازمان‌هایی که با آن‌ها شراکت داریم، کاملاً عملی، مفید و معنادار باشند.',
+                
+                'process.title': 'نحوه کار ما', 'process.subtitle': 'هر پروژه با درک مسئله آغاز می‌شود.',
+                'process.s1.title': 'درک مسئله', 'process.s1.desc': 'ما ابتدا مشکل، اهداف، محدودیت‌ها و نیازمندی‌های کلیدی سیستم را درک می‌کنیم.',
+                'process.s2.title': 'تحلیل', 'process.s2.desc': 'چالش‌های فنی و مدل‌های ریاضی را بررسی کرده و رویکرد مناسب را تعیین می‌کنیم.',
+                'process.s3.title': 'طراحی', 'process.s3.desc': 'معماری کلی، متدولوژی مهندسی و راهکار فنی دقیق را طراحی می‌کنیم.',
+                'process.s4.title': 'ساخت', 'process.s4.desc': 'کدها را پیاده‌سازی، شبیه‌سازی‌ها را اجرا، موارد خاص را تست و پروتوتایپ را بهبود می‌بخشیم.',
+                'process.s5.title': 'تحویل', 'process.s5.desc': 'راهکار را نهایی، به دقت اعتبارسنجی، در محیط عملیاتی مستقر و یک سیستم کاملاً قابل‌اتکا تحویل می‌دهیم.',
+
+                'mindset.title': 'تفکر. مهندسی. ساخت. بهبود.',
+                'mindset.subtitle': 'از مدل‌های ریاضی و شبیه‌سازی‌ها گرفته تا سیستم‌های نرم‌افزاری و عوامل هوشمند، ما با هر پروژه به عنوان یک مسئله مهندسی برخورد می‌کنیم.',
+                
+                'node.problem': 'مسئله', 'node.analysis': 'تحلیل', 'node.model': 'مدل‌سازی', 'node.implementation': 'پیاده‌سازی', 'node.validation': 'اعتبارسنجی', 'node.solution': 'راهکار',
+
+                'domain.sw': 'مهندسی نرم‌افزار', 'domain.ai': 'هوش مصنوعی', 'domain.math': 'محاسبات علمی', 'domain.matlab': 'متلب / کامسول', 'domain.web': 'تکنولوژی‌های وب', 'domain.automation': 'عوامل اتوماسیون', 'domain.iot': 'اینترنت اشیا (IoT)', 'domain.digital': 'سیستم‌های دیجیتال',
+
+                'phil.title': 'تکنولوژی زمانی قدرتمند است که <span class="text-physio-600">مهندسی</span> به آن جهت دهد.',
+                'phil.desc': 'ما از ساخت کدهای شکننده یا مفاهیم تست‌نشده اجتناب می‌کنیم. در فیزیوالکتریک، هر قطعه نرم‌افزار، هر نود اتوماسیون و هر مدل ریاضی با دقت مطلق ساخته می‌شود. ما اینجا هستیم تا آینده را مهندسی کنیم، نه اینکه فقط آن را بنویسیم.',
+
+                'cta.title': 'بیایید محصولی معنادار بسازیم.', 'cta.desc': 'ایده، چالش فنی یا پروژه‌ای در ذهن دارید؟ بیایید صحبت کنیم.',
+                'cta.btnPrimary': 'شروع پروژه', 'cta.btnSecondary': 'بررسی پروژه‌های ما',
+                'footer.desc': 'تکنولوژی مهندسی. خلق راهکارهای هوشمند برای کسب‌وکارهای مدرن و چالش‌های علمی.',
+                'footer.nav': 'دسترسی سریع', 'footer.serv': 'خدمات', 'footer.lang': 'زبان',
+            }
+        };
+
+        let currentLang = 'fa';
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            const htmlTag = document.documentElement;
+            const langToggleTxt = document.getElementById('currentLang');
+            
+            if (lang === 'fa') {
+                htmlTag.setAttribute('dir', 'rtl');
+                htmlTag.setAttribute('lang', 'fa');
+                htmlTag.classList.remove('font-sans');
+                htmlTag.style.fontFamily = "'Vazirmatn', sans-serif";
+                langToggleTxt.innerText = 'EN';
+            } else {
+                htmlTag.setAttribute('dir', 'ltr');
+                htmlTag.setAttribute('lang', 'en');
+                htmlTag.classList.add('font-sans');
+                htmlTag.style.fontFamily = "'Inter', sans-serif";
+                langToggleTxt.innerText = 'FA';
+            }
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dictionary[lang][key]) {
+                    el.innerHTML = dictionary[lang][key];
+                }
+            });
+            lucide.createIcons();
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            setLanguage('fa');
+        });
+
+        document.getElementById('langToggle').addEventListener('click', () => {
+            setLanguage(currentLang === 'en' ? 'fa' : 'en');
+        });
+
+        /* --- Scroll Animations (Intersection Observer) --- */
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        window.addEventListener('scroll', () => {
+            // Navbar Blur effect
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                nav.classList.add('py-2', 'shadow-sm');
+                nav.classList.remove('py-4');
+            } else {
+                nav.classList.remove('py-2', 'shadow-sm');
+                nav.classList.add('py-4');
+            }
+        });
+
+        /* --- Interactive Hero Canvas (Engineering Grids) --- */
+        const canvas = document.getElementById('hero-canvas');
+        const ctx = canvas.getContext('2d');
+        let particlesArray;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        let mouse = { x: null, y: null, radius: 200 };
+        window.addEventListener('mousemove', (event) => {
+            mouse.x = event.x;
+            mouse.y = event.y;
+        });
+        window.addEventListener('mouseout', () => { mouse.x = undefined; mouse.y = undefined; });
+
+        class NodeParticle {
+            constructor(x, y, dx, dy, size) {
+                this.x = x; this.y = y;
+                this.dx = dx; this.dy = dy;
+                this.size = size;
+                this.baseX = this.x;
+                this.baseY = this.y;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = '#cbd5e1'; // slate-300
+                ctx.fill();
+            }
+            update() {
+                // Extremely slow drift
+                this.baseX += this.dx;
+                this.baseY += this.dy;
+
+                if(this.baseX > canvas.width || this.baseX < 0) this.dx = -this.dx;
+                if(this.baseY > canvas.height || this.baseY < 0) this.dy = -this.dy;
+
+                // Mouse interaction - subtle repel
+                if(mouse.x != null) {
+                    let dx = mouse.x - this.baseX;
+                    let dy = mouse.y - this.baseY;
+                    let distance = Math.sqrt(dx*dx + dy*dy);
+                    let maxDist = mouse.radius;
+                    if(distance < maxDist) {
+                        let force = (maxDist - distance) / maxDist;
+                        this.x = this.baseX - (dx * force * 0.1);
+                        this.y = this.baseY - (dy * force * 0.1);
+                    } else {
+                        this.x = this.baseX;
+                        this.y = this.baseY;
+                    }
+                } else {
+                    this.x = this.baseX;
+                    this.y = this.baseY;
+                }
+                this.draw();
+            }
+        }
+
+        function initCanvas() {
+            particlesArray = [];
+            // Less nodes for a more structured, engineering grid feel
+            let numberOfParticles = (canvas.height * canvas.width) / 25000; 
+            for (let i = 0; i < numberOfParticles; i++) {
+                let size = 1.5;
+                let x = Math.random() * canvas.width;
+                let y = Math.random() * canvas.height;
+                let dx = (Math.random() - 0.5) * 0.2; // very slow
+                let dy = (Math.random() - 0.5) * 0.2;
+                particlesArray.push(new NodeParticle(x, y, dx, dy, size));
+            }
+        }
+
+        function connectParticles() {
+            for (let a = 0; a < particlesArray.length; a++) {
+                for (let b = a; b < particlesArray.length; b++) {
+                    let distance = ((particlesArray[a].x - particlesArray[b].x) ** 2) + ((particlesArray[a].y - particlesArray[b].y) ** 2);
+                    if (distance < 25000) { // connection threshold
+                        let opacity = 1 - (distance / 25000);
+                        ctx.strokeStyle = `rgba(14, 165, 233, ${opacity * 0.15})`; // physio-500
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                        ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animateCanvas() {
+            requestAnimationFrame(animateCanvas);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+            }
+            connectParticles();
+        }
+
+        window.onload = function() {
+            initCanvas();
+            animateCanvas();
+        }
+    </script>
+</body>
+</html>
