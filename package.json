@@ -1,9 +1,0 @@
-{
-  "name": "physio-electric-site",
-  "private": true,
-  "scripts": {
-    "postinstall": "npm install --prefix lab --omit=dev=false",
-    "start": "npm start --prefix lab",
-    "build": "npm run build --prefix lab"
-  }
-}

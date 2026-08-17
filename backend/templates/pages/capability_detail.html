@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}{% if is_rtl %}{{ capability.title_fa }}{% else %}{{ capability.title_en }}{% endif %} · {{ site.brand_name }}{% endblock %}
+
+{% block content %}
+<article class="pt-32 pb-24">
+  <div class="max-w-3xl mx-auto px-6 lg:px-8">
+    <a href="{% url 'content:home' %}?lang={{ lang }}#capabilities" class="text-sm text-physio-600 hover:text-physio-900">
+      {% if is_rtl %}← بازگشت{% else %}← Back{% endif %}
+    </a>
+
+    <div class="mt-8 w-14 h-14 rounded-2xl bg-physio-50 border border-physio-100 flex items-center justify-center text-physio-600">
+      <i data-lucide="{{ capability.icon }}" class="w-7 h-7" aria-hidden="true"></i>
+    </div>
+
+    <h1 class="mt-6 text-4xl md:text-5xl font-bold tracking-tight text-physio-950">
+      {% if is_rtl %}{{ capability.title_fa }}{% else %}{{ capability.title_en }}{% endif %}
+    </h1>
+    <p class="mt-6 text-lg text-slate-500 leading-relaxed">
+      {% if is_rtl %}{{ capability.description_fa }}{% else %}{{ capability.description_en }}{% endif %}
+    </p>
+
+    <h2 class="mt-16 mb-6 text-xl font-bold text-physio-950">
+      {% if is_rtl %}پروژه‌های مرتبط{% else %}Related work{% endif %}
+    </h2>
+    <div class="grid sm:grid-cols-2 gap-4">
+      {% for p in projects %}
+        <a href="{{ p.get_absolute_url }}?lang={{ lang }}"
+           class="p-5 rounded-2xl border border-slate-100 hover:border-physio-200 transition-colors">
+          <h3 class="font-semibold text-physio-950">{% if is_rtl %}{{ p.title_fa }}{% else %}{{ p.title_en }}{% endif %}</h3>
+          <p class="mt-2 text-sm text-slate-500">{% if is_rtl %}{{ p.summary_fa|truncatechars:90 }}{% else %}{{ p.summary_en|truncatechars:90 }}{% endif %}</p>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</article>
+{% endblock %}
