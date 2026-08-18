@@ -1,38 +1,75 @@
-# Physio Electric
+# PhysioElectric — Backend
 
-سایت گروه + آزمایشگاه شبیه‌سازی (IoT / MATLAB / COMSOL).
+بک‌اند جنگو برای سایت PhysioElectric.
 
-## اگر شبیه‌سازها را نمی‌بینی
+محتوای سایت در دیتابیس نگه‌داری می‌شود و از پنل ادمین ویرایش می‌شود — بدون
+نیاز به دست‌زدن به HTML یا دیپلوی مجدد.
 
-فایل HTML را با دابل‌کلیک یا Preview خود VS Code باز نکن. باید سرور اجرا شود.
+> 🖥️ راهنمای گام‌به‌گام اجرا روی VS Code (همراه رفع خطاهای رایج Pylance):
+> [`RUN_ON_VSCODE.md`](RUN_ON_VSCODE.md)
 
-### در VS Code
-
-```bash
-git clone https://github.com/sympathiccore/PhysioElectric-site.git
-cd PhysioElectric-site
-```
-
-سپس **File → Open Folder** روی همین پوشه.
-
-ترمینال:
+## راه‌اندازی
 
 ```bash
-cd lab
-npm install
-npm run build
-npm start
+cd backend
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+
+cp .env.example .env          # و SECRET_KEY را عوض کن
+python manage.py migrate
+python manage.py seed_content
+python manage.py createsuperuser
+python manage.py runserver
 ```
 
-مرورگر:
+| آدرس | توضیح |
+|---|---|
+| `/` | صفحه اصلی، رندرشده از دیتابیس |
+| `/?lang=en` | نسخه انگلیسی |
+| `/admin/` | پنل مدیریت محتوا |
+| `/api/docs/` | مستندات تعاملی API |
+| `/api/v1/health/` | سلامت سرویس |
 
-- http://localhost:8080
-- http://localhost:8080/simulations.html   ← شبیه‌سازها اینجاست
+## امکانات
 
-ویندوز: می‌توانی `start.bat` را دابل‌کلیک کنی.
+- **۱۵ مدل** — تنظیمات سایت، توانمندی‌ها، پروژه‌ها، مقالات، مراحل فرایند،
+  سوالات متداول، تیم، نظرات، آمار، بازدید، پیام تماس، مشترکین خبرنامه
+- **دوزبانه** — ستون‌های فارسی و انگلیسی جدا، با `?lang=` در API
+- **REST API نسخه‌بندی‌شده** با OpenAPI 3، فیلتر، جستجو، صفحه‌بندی و throttling
+- **فرم تماس** با honeypot، محدودیت نرخ و هش‌کردن IP
+- **کش** با باطل‌سازی خودکار — `/api/v1/home/` روی cache hit صفر کوئری می‌زند
+- **سئو** — `sitemap.xml`، `robots.txt`، متای Open Graph
+- **۵۳ تست** · `check --deploy` بدون هشدار
 
-## ساختار
+جزئیات کامل: [`backend/README.md`](backend/README.md)
 
-- `simulations.html` — آزمایشگاه
-- `lab/` — کد React + Express
-- `scroll_page/scroll.html` — صفحه پروژه‌ها
+## VS Code
+
+پوشهٔ `.vscode/` آماده است:
+
+- **F5** → اجرای سرور با دیباگر (یا اجرای تست‌ها)
+- **Ctrl+Shift+P → Tasks: Run Task** → `setup` کل نصب و migrate و seed را یک‌جا انجام می‌دهد
+- قالب‌های `templates/` به‌صورت `django-html` شناسایی می‌شوند
+
+بعد از ساخت محیط مجازی، حتماً **Ctrl+Shift+P → Python: Select Interpreter** را
+بزن و `.venv` را انتخاب کن.
+
+## دیتابیس
+
+پیش‌فرض SQLite، بدون هیچ تنظیمی. برای PostgreSQL فقط در `.env`:
+
+```
+DATABASE_URL=postgres://user:pass@localhost:5432/physioelectric
+```
+
+و `psycopg[binary]` را در `requirements.txt` از کامنت خارج کن. تغییر کد لازم نیست.
+
+## استقرار
+
+```bash
+export DJANGO_SETTINGS_MODULE=config.settings.prod
+export SECRET_KEY="..."
+python manage.py migrate
+python manage.py collectstatic --noinput
+gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 4
+```
