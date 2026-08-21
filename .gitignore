@@ -8,6 +8,4 @@ media/
 staticfiles/
 .DS_Store
 .vscode/
-Dockerfile
-.dockerignore
 .aider*
