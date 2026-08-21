@@ -10,3 +10,4 @@ staticfiles/
 .vscode/
 Dockerfile
 .dockerignore
+.aider*
