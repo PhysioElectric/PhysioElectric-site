@@ -12,6 +12,8 @@ services:
       - ./backend:/app
     environment:
       - DEBUG=1
+    networks:
+      - physio_net
 
   frontend:
     build:
@@ -20,5 +22,13 @@ services:
     container_name: physio_frontend
     ports:
       - "80:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
     depends_on:
       - backend
+    networks:
+      - physio_net
+
+networks:
+  physio_net:
+    driver: bridge
