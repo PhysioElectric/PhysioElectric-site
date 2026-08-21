@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start a Project | PhysioElectric</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Vazirmatn', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        physio: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    },
+                    boxShadow: {
+                        'premium': '0 4px 24px -4px rgba(0, 0, 0, 0.05), 0 16px 32px -8px rgba(0, 0, 0, 0.02)',
+                        'glow': '0 0 40px -10px rgba(14, 165, 233, 0.5)',
+                        'card-active': '0 0 0 2px #0ea5e9, 0 8px 25px rgba(14, 165, 233, 0.25)',
+                    },
+                    backgroundImage: {
+                        'grid-pattern': 'linear-gradient(to right, #f1f5f9 1px, transparent 1px), linear-gradient(to bottom, #f1f5f9 1px, transparent 1px)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --text-main: #0f172a;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        /* Abstract Tech Background */
+        .tech-bg {
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            background-size: 40px 40px;
+            opacity: 0.5;
+            mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+            -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+        }
+
+        /* Form Steps Animation */
+        .form-step {
+            display: none;
+            opacity: 0;
+            transform: translateY(15px) scale(0.98);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .form-step.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Enhanced Selection Cards */
+        .selection-card {
+            border: 1.5px solid #e2e8f0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            background-color: #ffffff;
+            overflow: hidden;
+        }
+        .selection-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: transparent;
+            transition: background 0.3s ease;
+        }
+        .selection-card:hover {
+            border-color: #bae6fd;
+            transform: translateY(-4px);
+            box-shadow: 0 12px 20px -8px rgba(14, 165, 233, 0.15);
+        }
+        .selection-card.selected {
+            border-color: #0ea5e9;
+            background: linear-gradient(145deg, #f0f9ff 0%, #ffffff 100%);
+            box-shadow: var(--tw-shadow-card-active);
+            transform: translateY(-2px);
+        }
+        .selection-card.selected::before {
+            background: linear-gradient(90deg, #0ea5e9, #38bdf8);
+        }
+        .selection-card.selected .icon-wrap {
+            background-color: #0ea5e9;
+            color: white;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+        }
+        
+        /* Enhanced Input Focus Styles */
+        .custom-input {
+            background-color: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        .custom-input:hover {
+            border-color: #cbd5e1;
+            background-color: #ffffff;
+        }
+        .custom-input:focus {
+            outline: none;
+            background-color: #ffffff;
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15);
+        }
+
+        /* Error States */
+        .error-field { border-color: #ef4444 !important; background-color: #fef2f2 !important; }
+        .error-message { color: #ef4444; font-size: 0.875rem; margin-top: 0.35rem; display: none; font-weight: 500; }
+
+        /* File Dropzone */
+        .dropzone {
+            border: 2px dashed #cbd5e1;
+            transition: all 0.3s ease;
+            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+        .dropzone:hover {
+            border-color: #94a3b8;
+        }
+        .dropzone.dragover {
+            border-color: #0ea5e9;
+            background: #f0f9ff;
+            transform: scale(1.02);
+        }
+
+        /* Loading Spinner */
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .spinner { animation: spin 1s linear infinite; }
+
+        /* Blueprint Tracking Line */
+        .blueprint-line {
+            position: absolute;
+            top: 24px;
+            bottom: 24px;
+            width: 2px;
+            background: #e2e8f0;
+            left: 11px;
+            z-index: 0;
+        }
+        html[dir="rtl"] .blueprint-line { left: auto; right: 11px; }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #0284c7, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        html[dir="rtl"] .ltr-only { display: none; }
+        html[dir="ltr"] .rtl-only { display: none; }
+    </style>
+</head>
+<body class="antialiased font-sans transition-colors duration-300 relative">
+
+    <!-- Global Header -->
+    <nav id="navbar" class="fixed w-full z-50 glass-nav transition-all duration-300 py-4">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2 group">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-physio-500 to-physio-900 flex items-center justify-center text-white font-bold text-xl shadow-glow group-hover:scale-105 transition-transform">P</div>
+                <span class="text-xl font-bold tracking-tight text-physio-900">PhysioElectric</span>
+            </a>
+
+            <div class="hidden md:flex items-center gap-8">
+                <a href="index.html#home" class="text-sm font-medium text-slate-600 hover:text-physio-600 transition-colors" data-i18n="nav.home">Home</a>
+                <a href="index.html#capabilities" class="text-sm font-medium text-slate-600 hover:text-physio-600 transition-colors" data-i18n="nav.capabilities">Capabilities</a>
+                <a href="index.html#projects" class="text-sm font-medium text-slate-600 hover:text-physio-600 transition-colors" data-i18n="nav.projects">Projects</a>
+                <a href="about.html" class="text-sm font-medium text-slate-600 hover:text-physio-600 transition-colors" data-i18n="nav.about">About</a>
+                <a href="index.html#faq" class="text-sm font-medium text-slate-600 hover:text-physio-600 transition-colors" data-i18n="nav.faq">FAQ</a>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <button id="langToggle" class="text-sm font-medium text-slate-500 hover:text-physio-900 transition-colors flex items-center gap-1">
+                    <i data-lucide="globe" class="w-4 h-4"></i>
+                    <span id="currentLang">EN</span>
+                </button>
+                <div class="relative hidden sm:block">
+                    <span class="inline-flex items-center justify-center px-5 py-2.5 text-sm font-medium text-physio-900 bg-physio-50 rounded-full border border-physio-200 shadow-sm" data-i18n="nav.cta_active">
+                        Project Request
+                    </span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Hero -->
+    <header class="pt-32 pb-16 relative overflow-hidden">
+        <div class="tech-bg bg-grid-pattern"></div>
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+            <!-- Back to Home -->
+            <a href="index.html" class="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-physio-600 transition-all group mb-12">
+                <i data-lucide="arrow-left" class="w-4 h-4 transition-transform group-hover:-translate-x-1 rtl:rotate-180 rtl:group-hover:translate-x-1 rtl:group-hover:-translate-x-0"></i>
+                <span data-i18n="hero.back">Back to Home</span>
+            </a>
+
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
+                <div class="max-w-3xl">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-white border border-slate-200 text-slate-700 text-xs font-mono font-medium uppercase tracking-wider mb-6 shadow-sm">
+                        <i data-lucide="cpu" class="w-3.5 h-3.5 text-physio-500"></i>
+                        <span data-i18n="hero.badge">Project Inquiry Workspace</span>
+                    </div>
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-physio-950 leading-[1.1] mb-6" data-i18n="hero.title">
+                        Let's Build Something <span class="text-gradient">Together.</span>
+                    </h1>
+                    <p class="text-lg text-slate-500 leading-relaxed max-w-2xl text-justify" data-i18n="hero.subtitle">
+                        Tell us about your project, challenge or idea. Our team will review your request and get back to you with an engineering approach.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace Area -->
+    <main class="max-w-7xl mx-auto px-6 lg:px-8 pb-32">
+        
+        <!-- Mobile Progress Bar -->
+        <div class="lg:hidden mb-8 bg-white p-4 rounded-xl border border-slate-200 shadow-sm sticky top-20 z-40">
+            <div class="flex justify-between items-end mb-2">
+                <span class="text-sm font-bold text-slate-800" id="mobile-step-text">Step 1 / 6</span>
+                <span class="text-xs font-mono text-slate-500" id="mobile-percent-text">16%</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-1.5">
+                <div class="bg-gradient-to-r from-physio-400 to-physio-600 h-1.5 rounded-full transition-all duration-500" id="mobile-progress-bar" style="width: 16%"></div>
+            </div>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-12 items-start relative">
+            
+            <!-- Left: Project Blueprint (Desktop) -->
+            <aside class="hidden lg:block w-1/3 sticky top-32">
+                <div class="bg-white/60 backdrop-blur-xl rounded-3xl border border-slate-200 p-8 shadow-sm">
+                    <h3 class="font-mono text-sm font-bold text-slate-400 uppercase tracking-widest mb-8 flex items-center gap-2">
+                        <i data-lucide="map" class="w-4 h-4"></i>
+                        <span data-i18n="blueprint.title">Project Blueprint</span>
+                    </h3>
+                    
+                    <div class="relative">
+                        <div class="blueprint-line"></div>
+                        <ul class="space-y-8 relative z-10" id="blueprint-list">
+                            <!-- Populated via JS -->
+                        </ul>
+                    </div>
+
+                    <div class="mt-12 pt-6 border-t border-slate-100 flex items-center gap-3 bg-slate-50/50 p-4 rounded-xl">
+                        <div class="bg-green-100 text-green-600 p-1.5 rounded-full"><i data-lucide="shield-check" class="w-4 h-4"></i></div>
+                        <span class="text-xs text-slate-600 font-medium leading-relaxed" data-i18n="blueprint.secure">Secure & Confidential<br>Your data is encrypted.</span>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Right: Form Area -->
+            <section class="w-full lg:w-2/3 bg-white rounded-3xl border-0 shadow-[0_0_40px_-10px_rgba(0,0,0,0.05)] ring-1 ring-slate-200 p-6 sm:p-10 min-h-[500px] relative overflow-hidden" id="form-container">
+                
+                <div id="step-1" class="form-step active">
+                    <h2 class="text-2xl sm:text-3xl font-bold text-physio-950 mb-3" data-i18n="step1.title">What would you like us to build?</h2>
+                    <p class="text-slate-500 mb-8 text-lg" data-i18n="step1.subtitle">Select one or more categories that apply to your project.</p>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8" id="category-grid">
+                        <!-- Cards -->
+                        <div class="selection-card rounded-2xl p-6" data-value="web">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="icon-wrap w-12 h-12 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center transition-all duration-300 border border-slate-100"><i data-lucide="layout" class="w-6 h-6"></i></div>
+                                <div class="check-circle w-6 h-6 rounded-full border-2 border-slate-200 flex items-center justify-center text-white transition-all bg-white"><i data-lucide="check" class="w-3.5 h-3.5 opacity-0 text-physio-600"></i></div>
+                            </div>
+                            <h4 class="font-bold text-slate-800 mb-2 text-lg" data-i18n="cat.web">Web Development</h4>
+                            <p class="text-sm text-slate-500 leading-relaxed" data-i18n="cat.web.desc">Website design, scalable frontends, and robust backends.</p>
+                        </div>
+                        <div class="selection-card rounded-2xl p-6" data-value="matlab">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="icon-wrap w-12 h-12 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center transition-all duration-300 border border-slate-100"><i data-lucide="function-square" class="w-6 h-6"></i></div>
+                                <div class="check-circle w-6 h-6 rounded-full border-2 border-slate-200 flex items-center justify-center text-white transition-all bg-white"><i data-lucide="check" class="w-3.5 h-3.5 opacity-0 text-physio-600"></i></div>
+                            </div>
+                            <h4 class="font-bold text-slate-800 mb-2 text-lg" data-i18n="cat.matlab">MATLAB</h4>
+                            <p class="text-sm text-slate-500 leading-relaxed" data-i18n="cat.matlab.desc">Engineering, numerical and scientific computing projects.</p>
+                        </div>
+                        <div class="selection-card rounded-2xl p-6" data-value="comsol">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="icon-wrap w-12 h-12 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center transition-all duration-300 border border-slate-100"><i data-lucide="box" class="w-6 h-6"></i></div>
+                                <div class="check-circle w-6 h-6 rounded-full border-2 border-slate-200 flex items-center justify-center text-white transition-all bg-white"><i data-lucide="check" class="w-3.5 h-3.5 opacity-0 text-physio-600"></i></div>
+                            </div>
+                            <h4 class="font-bold text-slate-800 mb-2 text-lg" data-i18n="cat.comsol">COMSOL</h4>
+                            <p class="text-sm text-slate-500 leading-relaxed" data-i18n="cat.comsol.desc">Multiphysics simulation and engineering modeling.</p>
+                        </div>
+                        <div class="selection-card rounded-2xl p-6" data-value="ai">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="icon-wrap w-12 h-12 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center transition-all duration-300 border border-slate-100"><i data-lucide="brain-circuit" class="w-6 h-6"></i></div>
+                                <div class="check-circle w-6 h-6 rounded-full border-2 border-slate-200 flex items-center justify-center text-white transition-all bg-white"><i data-lucide="check" class="w-3.5 h-3.5 opacity-0 text-physio-600"></i></div>
+                            </div>
+                            <h4 class="font-bold text-slate-800 mb-2 text-lg" data-i18n="cat.ai">AI Agents</h4>
+                            <p class="text-sm text-slate-500 leading-relaxed" data-i18n="cat.ai.desc">Intelligent workflows, LLMs and automation agents.</p>
+                        </div>
+                        <div class="selection-card rounded-2xl p-6" data-value="wordpress">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="icon-wrap w-12 h-12 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center transition-all duration-300 border border-slate-100"><i data-lucide="monitor" class="w-6 h-6"></i></div>
+                                <div class="check-circle w-6 h-6 rounded-full border-2 border-slate-200 flex items-center justify-center text-white transition-all bg-white"><i data-lucide="check" class="w-3.5 h-3.5 opacity-0 text-physio-600"></i></div>
+                            </div>
+                            <h4 class="font-bold text-slate-800 mb-2 text-lg" data-i18n="cat.wp">WordPress</h4>
+                            <p class="text-sm text-slate-500 leading-relaxed" data-i18n="cat.wp.desc">Professional CMS based website development.</p>
+                        </div>
+                        <div class="selection-card rounded-2xl p-6" data-value="custom">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="icon-wrap w-12 h-12 rounded-xl bg-slate-50 text-slate-600 flex items-center justify-center transition-all duration-300 border border-slate-100"><i data-lucide="code-2" class="w-6 h-6"></i></div>
+                                <div class="check-circle w-6 h-6 rounded-full border-2 border-slate-200 flex items-center justify-center text-white transition-all bg-white"><i data-lucide="check" class="w-3.5 h-3.5 opacity-0 text-physio-600"></i></div>
+                            </div>
+                            <h4 class="font-bold text-slate-800 mb-2 text-lg" data-i18n="cat.custom">Custom Software</h4>
+                            <p class="text-sm text-slate-500 leading-relaxed" data-i18n="cat.custom.desc">Custom programming, IoT or unique engineering solutions.</p>
+                        </div>
+                    </div>
+                    <div id="step-1-error" class="error-message mb-4 bg-red-50 p-3 rounded-lg border border-red-100 flex items-center gap-2"><i data-lucide="alert-circle" class="w-4 h-4"></i> <span data-i18n="err.selectOne">Please select at least one project category.</span></div>
+
+                    <!-- Smart UX Sub-options Container -->
+                    <div id="smart-options-container" class="space-y-6 hidden border-t border-slate-100 pt-8 mt-4">
+                        <!-- Populated by JS based on selection -->
+                    </div>
+                </div>
+
+                <div id="step-2" class="form-step">
+                    <h2 class="text-2xl sm:text-3xl font-bold text-physio-950 mb-3" data-i18n="step2.title">Tell us a little about you.</h2>
+                    <p class="text-slate-500 mb-8 text-lg" data-i18n="step2.subtitle">We need this information to contact you regarding your request.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2" data-i18n="lbl.name">Full Name <span class="text-physio-500">*</span></label>
+                            <input type="text" id="inp_name" class="custom-input w-full px-5 py-3.5 rounded-xl text-slate-800 placeholder-slate-400 font-medium" placeholder="Your full name" required>
+                            <div class="error-message" id="err_name" data-i18n="err.req">This field is required.</div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2" data-i18n="lbl.company">Company / Organization</label>
+                            <input type="text" id="inp_company" class="custom-input w-full px-5 py-3.5 rounded-xl text-slate-800 placeholder-slate-400 font-medium" placeholder="Company or organization name">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2" data-i18n="lbl.email">Email Address <span class="text-physio-500">*</span></label>
+                            <input type="email" id="inp_email" class="custom-input w-full px-5 py-3.5 rounded-xl text-slate-800 placeholder-slate-400 font-medium text-left" dir="ltr" placeholder="name@company.com" required>
+                            <div class="error-message" id="err_email" data-i18n="err.email">Please enter a valid email address.</div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2" data-i18n="lbl.phone">Phone Number <span class="text-physio-500">*</span></label>
+                            <input type="tel" id="inp_phone" class="custom-input w-full px-5 py-3.5 rounded-xl text-slate-800 placeholder-slate-400 font-medium text-left" dir="ltr" placeholder="+98 ..." required>
+                            <div class="error-message" id="err_phone" data-i18n="err.req">This field is required.</div>
+                        </div>
+                        <div class="md:col-span-2 pt-4">
+                            <label class="block text-sm font-semibold text-slate-700 mb-3" data-i18n="lbl.contactMethod">Preferred Contact Method</label>
+                            <div class="flex flex-wrap gap-3" id="contact-method-group">
+                                <!-- Enhanced Radio pills -->
+                                <label class="cursor-pointer relative">
+                                    <input type="radio" name="contactMethod" value="Email" class="peer sr-only" checked>
+                                    <div class="px-6 py-3 rounded-full border-2 border-slate-200 text-sm font-semibold text-slate-600 peer-checked:bg-physio-600 peer-checked:border-physio-600 peer-checked:text-white transition-all duration-300 hover:border-physio-300 peer-checked:shadow-lg peer-checked:shadow-physio-500/30 flex items-center gap-2">
+                                        <i data-lucide="mail" class="w-4 h-4"></i> <span data-i18n="opt.email">Email</span>
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer relative">
+                                    <input type="radio" name="contactMethod" value="Phone" class="peer sr-only">
+                                    <div class="px-6 py-3 rounded-full border-2 border-slate-200 text-sm font-semibold text-slate-600 peer-checked:bg-physio-600 peer-checked:border-physio-600 peer-checked:text-white transition-all duration-300 hover:border-physio-300 peer-checked:shadow-lg peer-checked:shadow-physio-500/30 flex items-center gap-2">
+                                        <i data-lucide="phone" class="w-4 h-4"></i> <span data-i18n="opt.phone">Phone</span>
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer relative">
+                                    <input type="radio" name="contactMethod" value="Telegram" class="peer sr-only">
+                                    <div class="px-6 py-3 rounded-full border-2 border-slate-200 text-sm font-semibold text-slate-600 peer-checked:bg-[#229ED9] peer-checked:border-[#229ED9] peer-checked:text-white transition-all duration-300 hover:border-[#229ED9] peer-checked:shadow-lg peer-checked:shadow-[#229ED9]/30 flex items-center gap-2">
+                                        <i data-lucide="send" class="w-4 h-4"></i> Telegram
+                                    </div>
+                                </label>
+                            </div>
+                            
+                            <!-- Dynamic Contact ID Field -->
+                            <div id="dynamic-contact-wrapper" class="hidden mt-6 transition-all duration-300">
+                                <label class="block text-sm font-semibold text-slate-700 mb-2" data-i18n="lbl.contact_id">Telegram ID <span class="text-physio-500">*</span></label>
+                                <input type="text" id="inp_contact_id" class="custom-input w-full md:w-1/2 px-5 py-3.5 rounded-xl text-slate-800 placeholder-slate-400 font-medium text-left" dir="ltr" placeholder="@username">
+                                <div class="error-message" id="err_contact_id" data-i18n="err.req">This field is required.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="step-3" class="form-step">
+                    <h2 class="text-2xl sm:text-3xl font-bold text-physio-950 mb-3" data-i18n="step3.title">Tell us about your project.</h2>
+                    <p class="text-slate-500 mb-8 text-lg" data-i18n="step3.subtitle">The more details you provide, the better we can understand your requirements.</p>
+                    
+                    <div class="relative">
+                        <label class="block text-sm font-semibold text-slate-700 mb-3" data-i18n="lbl.desc">Project Description <span class="text-physio-500">*</span></label>
+                        <textarea id="inp_desc" rows="12" class="custom-input w-full px-5 py-4 rounded-xl text-slate-800 placeholder-slate-400 resize-none leading-relaxed text-base" placeholder="Describe your idea, problem, requirements, expected result, technologies you have in mind, or anything else that can help us understand your project." maxlength="3000" required></textarea>
+                        
+                        <div class="flex justify-between items-center mt-3">
+                            <div class="error-message !mt-0 flex items-center gap-2" id="err_desc"><i data-lucide="alert-circle" class="w-4 h-4"></i> <span data-i18n="err.desc">Please tell us a little about your project.</span></div>
+                            <span class="text-xs font-mono text-slate-400 bg-slate-100 px-2 py-1 rounded-md ml-auto rtl:ml-0 rtl:mr-auto" id="char-counter">0 / 3000</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="step-4" class="form-step">
+                    <h2 class="text-2xl sm:text-3xl font-bold text-physio-950 mb-3" data-i18n="step4.title">Project Scope</h2>
+                    <p class="text-slate-500 mb-10 text-lg" data-i18n="step4.subtitle">Help us understand the parameters of your project.</p>
+                    
+                    <div class="space-y-10">
+                        <div>
+                            <label class="block text-base font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="calendar" class="w-5 h-5 text-physio-500"></i> <span data-i18n="lbl.timeline">Expected Timeline</span></label>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="timeline" value="ASAP" class="peer sr-only" checked>
+                                    <div class="px-4 py-4 text-center rounded-xl border-2 border-slate-200 text-sm font-semibold text-slate-600 peer-checked:bg-slate-700 peer-checked:border-slate-700 peer-checked:text-white transition-all duration-300 hover:border-slate-400 hover:-translate-y-0.5 peer-checked:shadow-lg peer-checked:shadow-slate-500/25" data-i18n="time.1">As soon as possible</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="timeline" value="1-2 Weeks" class="peer sr-only">
+                                    <div class="px-4 py-4 text-center rounded-xl border-2 border-slate-200 text-sm font-semibold text-slate-600 peer-checked:bg-slate-700 peer-checked:border-slate-700 peer-checked:text-white transition-all duration-300 hover:border-slate-400 hover:-translate-y-0.5 peer-checked:shadow-lg peer-checked:shadow-slate-500/25" data-i18n="time.2">1–2 weeks</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="timeline" value="1 Month" class="peer sr-only">
+                                    <div class="px-4 py-4 text-center rounded-xl border-2 border-slate-200 text-sm font-semibold text-slate-600 peer-checked:bg-slate-700 peer-checked:border-slate-700 peer-checked:text-white transition-all duration-300 hover:border-slate-400 hover:-translate-y-0.5 peer-checked:shadow-lg peer-checked:shadow-slate-500/25" data-i18n="time.3">1 month</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="timeline" value="1-3 Months" class="peer sr-only">
+                                    <div class="px-4 py-4 text-center rounded-xl border-2 border-slate-200 text-sm font-semibold text-slate-600 peer-checked:bg-slate-700 peer-checked:border-slate-700 peer-checked:text-white transition-all duration-300 hover:border-slate-400 hover:-translate-y-0.5 peer-checked:shadow-lg peer-checked:shadow-slate-500/25" data-i18n="time.4">1–3 months</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="timeline" value="3+ Months" class="peer sr-only">
+                                    <div class="px-4 py-4 text-center rounded-xl border-2 border-slate-200 text-sm font-semibold text-slate-600 peer-checked:bg-slate-700 peer-checked:border-slate-700 peer-checked:text-white transition-all duration-300 hover:border-slate-400 hover:-translate-y-0.5 peer-checked:shadow-lg peer-checked:shadow-slate-500/25" data-i18n="time.5">3+ months</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="timeline" value="Not sure" class="peer sr-only">
+                                    <div class="px-4 py-4 text-center rounded-xl border-2 border-slate-200 text-sm font-semibold text-slate-600 peer-checked:bg-slate-700 peer-checked:border-slate-700 peer-checked:text-white transition-all duration-300 hover:border-slate-400 hover:-translate-y-0.5 peer-checked:shadow-lg peer-checked:shadow-slate-500/25" data-i18n="time.6">Not sure yet</div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            <div id="step-5" class="form-step">
+                <h2 class="text-2xl sm:text-3xl font-bold text-physio-950 mb-3" data-i18n="step5.title">Anything else we should know?</h2>
+                    <p class="text-slate-500 mb-8 text-lg" data-i18n="step5.subtitle">Optional information and file uploads.</p>
+                    
+                    <div class="space-y-8">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2" data-i18n="lbl.notes">Additional Notes</label>
+                            <input type="text" id="inp_notes" class="custom-input w-full px-5 py-4 rounded-xl text-slate-800 placeholder-slate-400 font-medium" placeholder="Links to references, competitors, or specific requirements...">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2" data-i18n="lbl.upload">Upload Project Files</label>
+                            <p class="text-sm text-slate-500 mb-4" data-i18n="lbl.upload_desc">Upload documents, requirements, designs, or PDFs.</p>
+                            
+                            <div class="dropzone rounded-2xl flex flex-col items-center justify-center p-10 text-center cursor-pointer relative" id="dropzone">
+                                <input type="file" id="file_input" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" multiple accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.zip">
+                                <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-[0_4px_20px_-4px_rgba(0,0,0,0.1)] mb-4 transition-transform group-hover:scale-110">
+                                    <i data-lucide="upload-cloud" class="w-8 h-8 text-physio-500"></i>
+                                </div>
+                                <span class="text-base font-bold text-slate-700 mb-2" data-i18n="upload.main">Click or drag files to upload</span>
+                                <span class="text-sm text-slate-400 font-medium" data-i18n="upload.sub">PDF, DOC, PNG, JPG, ZIP (Max. 10MB)</span>
+                            </div>
+
+                            <!-- Uploaded Files List -->
+                            <div id="file-list" class="mt-4 space-y-3 empty:hidden"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="step-6" class="form-step">
+                    <h2 class="text-2xl sm:text-3xl font-bold text-physio-950 mb-3" data-i18n="step6.title">Review Your Project Request</h2>
+                    <p class="text-slate-500 mb-8 text-lg" data-i18n="step6.subtitle">Please ensure the information below is correct before submitting.</p>
+                    
+                    <div class="bg-slate-50/80 rounded-2xl border border-slate-200 p-8 space-y-6 mb-8 shadow-inner">
+                        
+                        <div class="flex justify-between items-start border-b border-slate-200 pb-5">
+                            <div class="w-full pr-4 rtl:pr-0 rtl:pl-4">
+                                <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2" data-i18n="rev.type">Project Type</span>
+                                <div class="text-sm font-bold text-physio-700" id="rev_type"></div>
+                            </div>
+                            <button class="text-physio-600 hover:text-physio-700 text-sm font-bold edit-btn bg-physio-50 px-3 py-1.5 rounded-md hover:bg-physio-100 transition-colors shrink-0" data-step="0" data-i18n="btn.edit">Edit</button>
+                        </div>
+
+                        <div class="flex justify-between items-start border-b border-slate-200 pb-5">
+                            <div class="w-full pr-4 rtl:pr-0 rtl:pl-4">
+                                <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2" data-i18n="rev.client">Client Details</span>
+                                <div class="text-sm font-medium text-slate-700 leading-relaxed" id="rev_client"></div>
+                            </div>
+                            <button class="text-physio-600 hover:text-physio-700 text-sm font-bold edit-btn bg-physio-50 px-3 py-1.5 rounded-md hover:bg-physio-100 transition-colors shrink-0" data-step="1" data-i18n="btn.edit">Edit</button>
+                        </div>
+
+                        <div class="flex justify-between items-start border-b border-slate-200 pb-5">
+                            <div class="w-full pr-4 rtl:pr-0 rtl:pl-4">
+                                <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2" data-i18n="rev.desc">Description</span>
+                                <div class="text-sm font-medium text-slate-600 line-clamp-3 leading-relaxed" id="rev_desc"></div>
+                            </div>
+                            <button class="text-physio-600 hover:text-physio-700 text-sm font-bold edit-btn bg-physio-50 px-3 py-1.5 rounded-md hover:bg-physio-100 transition-colors shrink-0" data-step="2" data-i18n="btn.edit">Edit</button>
+                        </div>
+
+                        <div class="flex justify-between items-start border-b border-slate-200 pb-5">
+                            <div class="w-full pr-4 rtl:pr-0 rtl:pl-4">
+                                <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2" data-i18n="rev.scope">Scope</span>
+                                <div class="text-base font-semibold text-slate-800 flex items-center gap-3">
+                                    <span class="flex items-center gap-1.5"><i data-lucide="clock" class="w-4 h-4 text-slate-400"></i> <span id="rev_time"></span></span>
+                                </div>
+                            </div>
+                            <button class="text-physio-600 hover:text-physio-700 text-sm font-bold edit-btn bg-physio-50 px-3 py-1.5 rounded-md hover:bg-physio-100 transition-colors shrink-0" data-step="3" data-i18n="btn.edit">Edit</button>
+                        </div>
+
+                        <div class="flex justify-between items-start">
+                            <div class="w-full pr-4 rtl:pr-0 rtl:pl-4">
+                                <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2" data-i18n="lbl.notes">Additional Notes</span>
+                                <div class="text-sm font-medium text-slate-600 leading-relaxed" id="rev_notes"></div>
+                            </div>
+                            <button class="text-physio-600 hover:text-physio-700 text-sm font-bold edit-btn bg-physio-50 px-3 py-1.5 rounded-md hover:bg-physio-100 transition-colors shrink-0" data-step="4" data-i18n="btn.edit">Edit</button>
+                        </div>
+                    </div>
+
+                <!-- Consent -->
+                    <label class="flex items-start gap-4 cursor-pointer group mb-4 p-4 rounded-xl border border-slate-100 bg-white hover:border-physio-200 hover:bg-physio-50/50 transition-all">
+                        <div class="relative flex items-center justify-center mt-1 shrink-0">
+                            <input type="checkbox" id="consent_check" class="peer sr-only" required>
+                            <div class="w-6 h-6 rounded-md border-2 border-slate-300 bg-white peer-checked:bg-physio-600 peer-checked:border-physio-600 transition-all shadow-sm"></div>
+                            <i data-lucide="check" class="w-4 h-4 text-white absolute opacity-0 peer-checked:opacity-100 transition-opacity transform scale-50 peer-checked:scale-100 duration-200"></i>
+                        </div>
+                        <span class="text-sm text-slate-600 leading-relaxed font-medium select-none">
+                            <span data-i18n="rev.consent1">I agree that PhysioElectric may use the information provided to contact me regarding this project inquiry. View our</span> 
+                            <a href="#" class="text-physio-600 hover:text-physio-800 hover:underline font-bold" data-i18n="rev.policy">Privacy Policy</a>.
+                        </span>
+                    </label>
+                    <div class="error-message bg-red-50 p-3 rounded-lg border border-red-100 flex items-center gap-2" id="err_consent"><i data-lucide="alert-triangle" class="w-4 h-4"></i> <span data-i18n="err.consent">You must agree to continue.</span></div>
+                </div>
+
+                <div id="step-success" class="form-step hidden text-center py-16">
+                    <div class="w-28 h-28 bg-green-50 rounded-full mx-auto flex items-center justify-center mb-8 relative">
+                        <div class="absolute inset-0 bg-green-400 rounded-full animate-ping opacity-20"></div>
+                        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center shadow-lg shadow-green-100">
+                            <i data-lucide="check" class="w-10 h-10 text-green-600"></i>
+                        </div>
+                    </div>
+                    <h2 class="text-3xl sm:text-4xl font-bold text-physio-950 mb-4" data-i18n="succ.title">Project Request Received.</h2>
+                    <p class="text-slate-500 mb-4 text-lg max-w-md mx-auto leading-relaxed" data-i18n="succ.desc">Thank you for reaching out to PhysioElectric. Our team will review your request and contact you soon.</p>
+                    
+                    <div class="inline-flex items-center gap-3 bg-slate-50 border border-slate-200 rounded-xl px-5 py-3 mt-6 mb-12 shadow-inner">
+                        <span class="text-xs text-slate-400 font-bold uppercase tracking-wider" data-i18n="succ.id">Request ID:</span>
+                        <span class="text-base font-mono font-bold text-physio-700 bg-white px-3 py-1 rounded border border-slate-100 shadow-sm" id="req-id">#PE-8492X</span>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row justify-center gap-4">
+                        <a href="index.html" class="px-8 py-3.5 bg-white text-physio-950 border-2 border-slate-200 font-bold rounded-full hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm" data-i18n="succ.btn1">Back to Home</a>
+                        <a href="index.html#projects" class="px-8 py-3.5 bg-physio-900 text-white font-bold rounded-full hover:bg-physio-950 transition-all shadow-xl shadow-physio-900/20 hover:-translate-y-0.5" data-i18n="succ.btn2">Explore Our Projects</a>
+                    </div>
+                </div>
+
+                <div class="mt-12 pt-8 border-t border-slate-100 flex justify-between items-center bg-white" id="form-navigation">
+                    <button id="btn-prev" class="hidden px-6 py-3.5 text-sm font-bold text-slate-500 hover:text-slate-800 hover:bg-slate-50 rounded-full transition-all disabled:opacity-50 flex items-center gap-2">
+                        <i data-lucide="arrow-left" class="w-4 h-4 rtl:rotate-180"></i>
+                        <span data-i18n="btn.prev">Previous</span>
+                    </button>
+                    <div class="flex-1"></div>
+                    <div class="flex items-center gap-6">
+                        <span class="text-xs font-semibold text-slate-400 flex items-center gap-1.5 hidden bg-slate-50 px-3 py-1.5 rounded-md" id="secure-msg"><i data-lucide="shield-check" class="w-4 h-4 text-green-500"></i> <span data-i18n="msg.secure">Secure Submission</span></span>
+                        
+                        <button id="btn-next" class="px-8 py-3.5 bg-physio-600 text-white text-sm font-bold rounded-full hover:bg-physio-700 transition-all shadow-lg shadow-physio-500/30 hover:shadow-physio-500/40 hover:-translate-y-0.5 flex items-center gap-2 relative overflow-hidden group">
+                            <span class="absolute inset-0 w-full h-full bg-white/20 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></span>
+                            <span data-i18n="btn.next" id="btn-next-text" class="relative z-10">Next Step</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4 rtl:rotate-180 relative z-10" id="btn-next-icon"></i>
+                            <i data-lucide="loader-2" class="w-4 h-4 hidden spinner relative z-10" id="btn-loading-icon"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </section>
+        </div>
+    </main>
+
+    <!-- Social & Contact Section -->
+    <section class="py-20 bg-white border-t border-slate-200 relative overflow-hidden">
+        <div class="absolute right-0 top-0 w-1/3 h-full bg-gradient-to-l from-physio-50/50 to-transparent pointer-events-none ltr-only"></div>
+        <div class="absolute left-0 top-0 w-1/3 h-full bg-gradient-to-r from-physio-50/50 to-transparent pointer-events-none rtl-only"></div>
+        
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-10 relative z-10">
+            <div>
+                <h3 class="text-3xl font-bold text-physio-950 mb-3" data-i18n="contact.title">Prefer to talk directly?</h3>
+                <p class="text-slate-500 text-lg" data-i18n="contact.subtitle">You can also reach us through our social and professional channels.</p>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row items-center gap-8 bg-slate-50 p-6 rounded-3xl border border-slate-100 shadow-sm">
+                <!-- Info -->
+                <div class="flex flex-col sm:items-end text-sm text-slate-700 font-mono font-medium gap-2">
+                    <a href="mailto:hello@physioelectric.com" class="hover:text-physio-600 transition-colors flex items-center gap-2"><i data-lucide="mail" class="w-4 h-4 text-slate-400"></i> hello@physioelectric.com</a>
+                    <a href="tel:+980000000000" class="hover:text-physio-600 transition-colors flex items-center gap-2" dir="ltr"><i data-lucide="phone" class="w-4 h-4 text-slate-400"></i> +98 21 0000 0000</a>
+                </div>
+                <!-- Divider -->
+                <div class="hidden sm:block w-px h-16 bg-slate-200"></div>
+                <!-- Enhanced Icons -->
+                <div class="flex flex-wrap items-center justify-center gap-3">
+                    <a href="mailto:hello@physioelectric.com" class="w-12 h-12 rounded-2xl bg-red-50 border border-red-100 flex items-center justify-center text-red-500 hover:text-white hover:border-red-500 hover:bg-red-500 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group" title="Email">
+                        <svg class="w-5 h-5 group-hover:scale-110 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                    </a>
+                    <a href="https://linkedin.com/company/physioelectric" target="_blank" rel="noopener noreferrer" class="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 hover:text-white hover:border-blue-600 hover:bg-blue-600 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group" title="LinkedIn">
+                        <svg class="w-5 h-5 group-hover:scale-110 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+                    </a>
+                    <a href="https://instagram.com/physioelectric" target="_blank" rel="noopener noreferrer" class="w-12 h-12 rounded-2xl bg-pink-50 border border-pink-100 flex items-center justify-center text-pink-600 hover:text-white hover:border-transparent hover:bg-gradient-to-tr hover:from-yellow-400 hover:via-pink-500 hover:to-purple-600 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group" title="Instagram">
+                        <svg class="w-5 h-5 group-hover:scale-110 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                    </a>
+                    <a href="https://t.me/physioelectric" target="_blank" rel="noopener noreferrer" class="w-12 h-12 rounded-2xl bg-sky-50 border border-sky-100 flex items-center justify-center text-[#229ED9] hover:text-white hover:border-[#229ED9] hover:bg-[#229ED9] shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group" title="Telegram">
+                        <svg class="w-5 h-5 group-hover:scale-110 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+                    </a>
+                    <a href="https://github.com/physioelectric" target="_blank" rel="noopener noreferrer" class="w-12 h-12 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-white hover:border-slate-900 hover:bg-slate-900 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group" title="GitHub">
+                        <svg class="w-5 h-5 group-hover:scale-110 transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Global Footer -->
+    <footer class="bg-slate-50 border-t border-slate-200 pt-20 pb-10">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
+                <div class="lg:col-span-2">
+                    <a href="index.html" class="flex items-center gap-2 mb-6">
+                        <div class="w-8 h-8 rounded-lg bg-physio-900 flex items-center justify-center text-white font-bold text-xl">P</div>
+                        <span class="text-xl font-bold tracking-tight text-physio-900">PhysioElectric</span>
+                    </a>
+                    <p class="text-slate-500 max-w-sm mb-6" data-i18n="footer.desc">Engineering Technology. Building Intelligent Solutions for modern businesses and scientific challenges.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-900 mb-5 uppercase tracking-wider text-sm" data-i18n="footer.nav">Navigation</h4>
+                    <ul class="space-y-3 text-sm font-medium text-slate-600">
+                        <li><a href="index.html#home" class="hover:text-physio-600 transition-colors">Home</a></li>
+                        <li><a href="index.html#capabilities" class="hover:text-physio-600 transition-colors">Capabilities</a></li>
+                        <li><a href="index.html#projects" class="hover:text-physio-600 transition-colors">Projects</a></li>
+                        <li><a href="about.html" class="hover:text-physio-600 transition-colors">About</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-900 mb-5 uppercase tracking-wider text-sm" data-i18n="footer.serv">Services</h4>
+                    <ul class="space-y-3 text-sm font-medium text-slate-600">
+                        <li><a href="#" class="hover:text-physio-600 transition-colors">Web Development</a></li>
+                        <li><a href="#" class="hover:text-physio-600 transition-colors">MATLAB / COMSOL</a></li>
+                        <li><a href="#" class="hover:text-physio-600 transition-colors">AI Agents</a></li>
+                        <li><a href="#" class="hover:text-physio-600 transition-colors">Custom Software</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-900 mb-5 uppercase tracking-wider text-sm" data-i18n="footer.lang">Language</h4>
+                    <ul class="space-y-3 text-sm font-medium text-slate-600">
+                        <li><button class="hover:text-physio-600 transition-colors" onclick="setLanguage('en')">English (LTR)</button></li>
+                        <li><button class="hover:text-physio-600 transition-colors font-['Vazirmatn']" onclick="setLanguage('fa')">فارسی (RTL)</button></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-slate-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm font-medium text-slate-500">
+                <p>&copy; 2026 PhysioElectric. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <style>
+        @keyframes shimmer {
+            100% { transform: translateX(100%); }
+        }
+    </style>
+
+    <script>
+        lucide.createIcons();
+
+        /* --- Bilingual Dictionary --- */
+        const dictionary = {
+            en: {
+                'nav.home': 'Home', 'nav.capabilities': 'Capabilities', 'nav.projects': 'Projects', 'nav.about': 'About', 'nav.faq': 'FAQ', 'nav.cta_active': 'Project Request',
+                'hero.back': 'Back to Home', 'hero.badge': 'Project Inquiry Workspace',
+                'hero.title': 'Let\'s Build Something <span class="text-gradient">Together.</span>',
+                'hero.subtitle': 'Tell us about your project, challenge or idea. Our team will review your request and get back to you with an engineering approach.',
+                
+                'blueprint.title': 'Project Blueprint', 'blueprint.secure': 'Secure & Confidential<br>Your data is encrypted.',
+                'bp.1': 'Project Type', 'bp.2': 'About You', 'bp.3': 'Details', 'bp.4': 'Scope', 'bp.5': 'Additional', 'bp.6': 'Review', 'bp.ready': 'PROJECT READY',
+
+                'step1.title': 'What would you like us to build?', 'step1.subtitle': 'Select one or more categories that apply to your project.',
+                'cat.web': 'Web Development', 'cat.web.desc': 'Website design, scalable frontends, and robust backends.',
+                'cat.matlab': 'MATLAB', 'cat.matlab.desc': 'Engineering, numerical and scientific computing projects.',
+                'cat.comsol': 'COMSOL', 'cat.comsol.desc': 'Multiphysics simulation and engineering modeling.',
+                'cat.ai': 'AI Agents', 'cat.ai.desc': 'Intelligent workflows, LLMs and automation agents.',
+                'cat.wp': 'WordPress', 'cat.wp.desc': 'Professional CMS based website development.',
+                'cat.custom': 'Custom Software', 'cat.custom.desc': 'Custom programming, IoT or unique engineering solutions.',
+                
+                'smart.matlab': 'What type of MATLAB project is this?', 'smart.comsol': 'Simulation Type', 'smart.ai': 'What would you like the AI agent to do?', 'smart.web': 'Website Type',
+                'opt.sp': 'Signal Processing', 'opt.cs': 'Control Systems', 'opt.da': 'Data Analysis', 'opt.em': 'Electromagnetics', 'opt.ht': 'Heat Transfer', 'opt.mm': 'Multiphysics', 'opt.sup': 'Customer Support', 'opt.auto': 'Automation', 'opt.corp': 'Corporate Website', 'opt.ecom': 'E-commerce', 'opt.other': 'Other',
+
+                'step2.title': 'Tell us a little about you.', 'step2.subtitle': 'We need this information to contact you regarding your request.',
+                'lbl.name': 'Full Name <span class="text-physio-500">*</span>', 'lbl.company': 'Company / Organization', 'lbl.email': 'Email Address <span class="text-physio-500">*</span>', 'lbl.phone': 'Phone Number <span class="text-physio-500">*</span>', 'lbl.contactMethod': 'Preferred Contact Method', 'lbl.contact_id': 'Telegram ID <span class="text-physio-500">*</span>',
+                'opt.email': 'Email', 'opt.phone': 'Phone',
+
+                'step3.title': 'Tell us about your project.', 'step3.subtitle': 'The more details you provide, the better we can understand your requirements.',
+                'lbl.desc': 'Project Description <span class="text-physio-500">*</span>',
+
+                'step4.title': 'Project Scope', 'step4.subtitle': 'Help us understand the parameters of your project.',
+                'lbl.timeline': 'Expected Timeline', 'lbl.budget': 'Estimated Budget',
+                'time.1': 'As soon as possible', 'time.2': '1–2 weeks', 'time.3': '1 month', 'time.4': '1–3 months', 'time.5': '3+ months', 'time.6': 'Not sure yet',
+
+                'step5.title': 'Anything else we should know?', 'step5.subtitle': 'Optional information and file uploads.',
+                'lbl.notes': 'Additional Notes', 'lbl.upload': 'Upload Project Files', 'lbl.upload_desc': 'Upload documents, requirements, designs, or PDFs.',
+                'upload.main': 'Click or drag files to upload', 'upload.sub': 'PDF, DOC, PNG, JPG, ZIP (Max. 10MB)',
+
+                'step6.title': 'Review Your Project Request', 'step6.subtitle': 'Please ensure the information below is correct before submitting.',
+                'rev.type': 'Project Type', 'rev.client': 'Client Details', 'rev.desc': 'Description', 'rev.scope': 'Scope',
+                'rev.consent1': 'I agree that PhysioElectric may use the information provided to contact me regarding this project inquiry. View our', 'rev.policy': 'Privacy Policy',
+                'btn.edit': 'Edit',
+
+                'btn.prev': 'Previous', 'btn.next': 'Next Step', 'btn.review': 'Review Request', 'btn.submit': 'Send Project Request',
+                'msg.secure': 'Secure Submission',
+
+                'succ.title': 'Project Request Received.', 'succ.desc': 'Thank you for reaching out to PhysioElectric. Our team will review your request and contact you soon.', 'succ.id': 'Request ID:', 'succ.btn1': 'Back to Home', 'succ.btn2': 'Explore Our Projects',
+
+                'err.selectOne': 'Please select at least one project category.', 'err.req': 'This field is required.', 'err.email': 'Please enter a valid email address.', 'err.desc': 'Please tell us a little about your project.', 'err.consent': 'You must agree to continue.',
+
+                'contact.title': 'Prefer to talk directly?', 'contact.subtitle': 'You can also reach us through our social and professional channels.',
+                'footer.desc': 'Engineering Technology. Building Intelligent Solutions for modern businesses and scientific challenges.', 'footer.nav': 'Navigation', 'footer.serv': 'Services', 'footer.lang': 'Language',
+            },
+            fa: {
+                'nav.home': 'خانه', 'nav.capabilities': 'توانمندی‌ها', 'nav.projects': 'پروژه‌ها', 'nav.about': 'درباره ما', 'nav.faq': 'سوالات متداول', 'nav.cta_active': 'درخواست پروژه',
+                'hero.back': 'بازگشت به صفحه اصلی', 'hero.badge': 'کنسول درخواست پروژه',
+                'hero.title': 'بیایید چیزی را <span class="text-gradient">با هم بسازیم.</span>',
+                'hero.subtitle': 'پروژه، ایده یا چالش فنی خود را برای ما توضیح دهید. تیم ما درخواست شما را بررسی کرده و با رویکردی مهندسی با شما تماس خواهد گرفت.',
+                
+                'blueprint.title': 'نقشه پروژه', 'blueprint.secure': 'امن و محرمانه<br>اطلاعات شما رمزنگاری می‌شود.',
+                'bp.1': 'نوع پروژه', 'bp.2': 'مشخصات شما', 'bp.3': 'جزئیات', 'bp.4': 'محدوده زمانی و مالی', 'bp.5': 'اطلاعات تکمیلی', 'bp.6': 'بررسی نهایی', 'bp.ready': 'آماده ارسال',
+
+                'step1.title': 'چه چیزی برایتان بسازیم؟', 'step1.subtitle': 'یک یا چند دسته که با پروژه شما مرتبط است را انتخاب کنید.',
+                'cat.web': 'توسعه وب', 'cat.web.desc': 'طراحی سایت، فرانت‌اند مقیاس‌پذیر و بک‌اند قدرتمند.',
+                'cat.matlab': 'متلب (MATLAB)', 'cat.matlab.desc': 'پروژه‌های مهندسی، محاسبات عددی و علمی.',
+                'cat.comsol': 'کامسول (COMSOL)', 'cat.comsol.desc': 'شبیه‌سازی چندفیزیکی و مدل‌سازی مهندسی.',
+                'cat.ai': 'عوامل هوش مصنوعی', 'cat.ai.desc': 'جریان‌های کاری هوشمند و عوامل اتوماسیون (AI).',
+                'cat.wp': 'وردپرس', 'cat.wp.desc': 'توسعه حرفه‌ای وب‌سایت‌های مبتنی بر CMS.',
+                'cat.custom': 'نرم‌افزار سفارشی', 'cat.custom.desc': 'برنامه‌نویسی اختصاصی، IoT یا راهکارهای مهندسی.',
+
+                'smart.matlab': 'این چه نوع پروژه متلب است؟', 'smart.comsol': 'نوع شبیه‌سازی', 'smart.ai': 'عامل هوش مصنوعی چه کاری باید انجام دهد؟', 'smart.web': 'نوع وب‌سایت',
+                'opt.sp': 'پردازش سیگنال', 'opt.cs': 'سیستم‌های کنترل', 'opt.da': 'تحلیل داده', 'opt.em': 'الکترومغناطیس', 'opt.ht': 'انتقال حرارت', 'opt.mm': 'چندفیزیکی (Multiphysics)', 'opt.sup': 'پشتیبانی مشتری', 'opt.auto': 'اتوماسیون', 'opt.corp': 'وب‌سایت شرکتی', 'opt.ecom': 'فروشگاه آنلاین', 'opt.other': 'سایر',
+
+                'step2.title': 'کمی درباره خودتان بگویید.', 'step2.subtitle': 'برای تماس با شما در رابطه با درخواستتان به این اطلاعات نیاز داریم.',
+                'lbl.name': 'نام و نام خانوادگی <span class="text-physio-500">*</span>', 'lbl.company': 'نام شرکت / سازمان', 'lbl.email': 'آدرس ایمیل <span class="text-physio-500">*</span>', 'lbl.phone': 'شماره تماس <span class="text-physio-500">*</span>', 'lbl.contactMethod': 'روش ارتباطی ترجیحی', 'lbl.contact_id': 'آیدی تلگرام <span class="text-physio-500">*</span>',
+                'opt.email': 'ایمیل', 'opt.phone': 'تماس تلفنی',
+
+                'step3.title': 'درباره پروژه خود توضیح دهید.', 'step3.subtitle': 'هرچه جزئیات بیشتری ارائه دهید، نیازهای شما را بهتر درک خواهیم کرد.',
+                'lbl.desc': 'توضیحات پروژه <span class="text-physio-500">*</span>',
+
+                'step4.title': 'محدوده پروژه', 'step4.subtitle': 'به ما کمک کنید تا پارامترهای پروژه شما را درک کنیم.',
+                'lbl.timeline': 'زمان‌بندی مورد انتظار', 'lbl.budget': 'بودجه برآوردی',
+                'time.1': 'در اسرع وقت', 'time.2': '۱ تا ۲ هفته', 'time.3': '۱ ماه', 'time.4': '۱ تا ۳ ماه', 'time.5': 'بیش از ۳ ماه', 'time.6': 'هنوز مطمئن نیستم',
+
+                'step5.title': 'چیز دیگری هست که باید بدانیم؟', 'step5.subtitle': 'اطلاعات اختیاری و آپلود فایل.',
+                'lbl.notes': 'یادداشت‌های تکمیلی', 'lbl.upload': 'آپلود فایل‌های پروژه', 'lbl.upload_desc': 'مستندات، نیازمندی‌ها، طراحی‌ها یا PDFها را آپلود کنید.',
+                'upload.main': 'برای آپلود کلیک کنید یا فایل را بکشید', 'upload.sub': 'PDF, DOC, PNG, JPG, ZIP (حداکثر ۱۰ مگابایت)',
+
+                'step6.title': 'بررسی درخواست پروژه', 'step6.subtitle': 'لطفاً پیش از ارسال، از صحت اطلاعات زیر اطمینان حاصل کنید.',
+                'rev.type': 'نوع پروژه', 'rev.client': 'مشخصات مشتری', 'rev.desc': 'توضیحات', 'rev.scope': 'محدوده',
+                'rev.consent1': 'موافقم که PhysioElectric از اطلاعات ارائه‌شده برای تماس با من درباره این درخواست استفاده کند. مشاهده', 'rev.policy': 'حریم خصوصی',
+                'btn.edit': 'ویرایش',
+
+                'btn.prev': 'مرحله قبل', 'btn.next': 'مرحله بعد', 'btn.review': 'بررسی درخواست', 'btn.submit': 'ارسال درخواست پروژه',
+                'msg.secure': 'ارسال امن',
+
+                'succ.title': 'درخواست پروژه دریافت شد.', 'succ.desc': 'از تماس شما با PhysioElectric سپاسگزاریم. تیم ما درخواست شما را بررسی کرده و به زودی با شما تماس خواهد گرفت.', 'succ.id': 'شناسه درخواست:', 'succ.btn1': 'بازگشت به صفحه اصلی', 'succ.btn2': 'بررسی پروژه‌های ما',
+
+                'err.selectOne': 'لطفاً حداقل یک دسته‌بندی را انتخاب کنید.', 'err.req': 'پر کردن این فیلد الزامی است.', 'err.email': 'لطفاً یک ایمیل معتبر وارد کنید.', 'err.desc': 'لطفاً کمی درباره پروژه خود توضیح دهید.', 'err.consent': 'برای ادامه باید موافقت کنید.',
+
+                'contact.title': 'ترجیح می‌دهید مستقیم صحبت کنید؟', 'contact.subtitle': 'شما همچنین می‌توانید از طریق کانال‌های اجتماعی و حرفه‌ای با ما در ارتباط باشید.',
+                'footer.desc': 'تکنولوژی مهندسی. خلق راهکارهای هوشمند برای کسب‌وکارهای مدرن و چالش‌های علمی.', 'footer.nav': 'دسترسی سریع', 'footer.serv': 'خدمات', 'footer.lang': 'زبان',
+            }
+        };
+
+        let currentLang = 'fa';
+        const stepsCount = 6;
+        let currentStep = 0; // 0 to 5
+        let selectedCategories = [];
+
+        /* --- Language Switching --- */
+        function setLanguage(lang) {
+            currentLang = lang;
+            const htmlTag = document.documentElement;
+            const langToggleTxt = document.getElementById('currentLang');
+            
+            if (lang === 'fa') {
+                htmlTag.setAttribute('dir', 'rtl');
+                htmlTag.setAttribute('lang', 'fa');
+                langToggleTxt.innerText = 'EN';
+                document.getElementById('inp_name').setAttribute('placeholder', 'نام و نام خانوادگی شما');
+                document.getElementById('inp_company').setAttribute('placeholder', 'نام شرکت یا سازمان');
+                document.getElementById('inp_desc').setAttribute('placeholder', 'ایده، مشکل، نیازمندی‌ها، نتیجه مورد انتظار، تکنولوژی‌های مد نظر یا هر چیز دیگری که به درک پروژه کمک می‌کند را توضیح دهید.');
+                document.getElementById('inp_notes').setAttribute('placeholder', 'لینک‌ها، رقبا، یا نیازمندی‌های خاص...');
+            } else {
+                htmlTag.setAttribute('dir', 'ltr');
+                htmlTag.setAttribute('lang', 'en');
+                langToggleTxt.innerText = 'FA';
+                document.getElementById('inp_name').setAttribute('placeholder', 'Your full name');
+                document.getElementById('inp_company').setAttribute('placeholder', 'Company or organization name');
+                document.getElementById('inp_desc').setAttribute('placeholder', 'Describe your idea, problem, requirements, expected result, technologies you have in mind...');
+                document.getElementById('inp_notes').setAttribute('placeholder', 'Links to references, competitors, or specific requirements...');
+            }
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dictionary[lang][key]) el.innerHTML = dictionary[lang][key];
+            });
+            
+            updateBlueprintUI();
+            updateNavigationButtons();
+            lucide.createIcons();
+        }
+
+        document.getElementById('langToggle').addEventListener('click', () => {
+            setLanguage(currentLang === 'en' ? 'fa' : 'en');
+        });
+
+        /* --- Form Logic & Blueprint --- */
+        function initBlueprint() {
+            const ul = document.getElementById('blueprint-list');
+            ul.innerHTML = '';
+            for(let i=0; i<stepsCount; i++) {
+                const li = document.createElement('li');
+                li.className = 'flex items-center gap-4 group cursor-default relative';
+                
+                const dot = document.createElement('div');
+                dot.id = `bp-dot-${i}`;
+                dot.className = `w-7 h-7 rounded-full border-2 bg-white flex items-center justify-center transition-all duration-300 relative z-10 ${i===0 ? 'border-physio-500 scale-110 shadow-md' : 'border-slate-200'}`;
+                dot.innerHTML = `<i data-lucide="check" class="w-4 h-4 text-white opacity-0 transition-opacity" id="bp-check-${i}"></i>`;
+                
+                const text = document.createElement('span');
+                text.id = `bp-text-${i}`;
+                text.className = `text-sm transition-all duration-300 ${i===0 ? 'text-physio-950 font-bold translate-x-1 rtl:-translate-x-1' : 'text-slate-400 font-medium'}`;
+                text.setAttribute('data-i18n', `bp.${i+1}`);
+                text.innerText = dictionary[currentLang][`bp.${i+1}`];
+
+                li.appendChild(dot);
+                li.appendChild(text);
+                ul.appendChild(li);
+            }
+            lucide.createIcons();
+        }
+
+        function updateBlueprintUI() {
+            // Desktop
+            for(let i=0; i<stepsCount; i++) {
+                const dot = document.getElementById(`bp-dot-${i}`);
+                const check = document.getElementById(`bp-check-${i}`);
+                const text = document.getElementById(`bp-text-${i}`);
+                if(!dot) return;
+
+                if (i < currentStep) {
+                    // Completed
+                    dot.className = 'w-7 h-7 rounded-full border-2 border-physio-500 bg-physio-500 flex items-center justify-center transition-all duration-300 relative z-10 shadow-[0_0_15px_rgba(14,165,233,0.4)] scale-100';
+                    check.classList.remove('opacity-0');
+                    text.className = 'text-sm font-bold text-slate-800 transition-all duration-300 transform translate-x-0';
+                } else if (i === currentStep) {
+                    // Active
+                    dot.className = 'w-7 h-7 rounded-full border-2 border-physio-500 bg-white flex items-center justify-center transition-all duration-300 relative z-10 shadow-[0_0_0_4px_rgba(14,165,233,0.15)] scale-110';
+                    check.classList.add('opacity-0');
+                    // Ensure dot has an inner active state
+                    dot.innerHTML = `<div class="w-2.5 h-2.5 bg-physio-500 rounded-full" id="bp-inner-${i}"></div><i data-lucide="check" class="w-4 h-4 text-white absolute opacity-0" id="bp-check-${i}"></i>`;
+                    
+                    text.className = 'text-sm font-bold text-physio-600 transition-all duration-300 transform translate-x-1 rtl:-translate-x-1';
+                } else {
+                    // Future
+                    dot.className = 'w-7 h-7 rounded-full border-2 border-slate-200 bg-white flex items-center justify-center transition-all duration-300 relative z-10 scale-100';
+                    dot.innerHTML = `<i data-lucide="check" class="w-4 h-4 text-white opacity-0" id="bp-check-${i}"></i>`;
+                    text.className = 'text-sm font-medium text-slate-400 transition-all duration-300 transform translate-x-0';
+                }
+            }
+            lucide.createIcons(); // recreate icons dynamically added
+
+            // Mobile Progress
+            const mobileText = document.getElementById('mobile-step-text');
+            const mobilePercent = document.getElementById('mobile-percent-text');
+            const mobileBar = document.getElementById('mobile-progress-bar');
+            
+            const stepNum = currentStep + 1;
+            const percent = Math.round((stepNum / stepsCount) * 100);
+            
+            mobileText.innerText = currentLang === 'en' ? `Step ${stepNum} of ${stepsCount}` : `مرحله ${stepNum} از ${stepsCount}`;
+            mobilePercent.innerText = `${percent}%`;
+            mobileBar.style.width = `${percent}%`;
+        }
+
+        function showStep(index) {
+            document.querySelectorAll('.form-step').forEach((el, i) => {
+                if(i === index) {
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            });
+            currentStep = index;
+            updateBlueprintUI();
+            updateNavigationButtons();
+            
+            if(index === 5) populateReview(); // If reaching review step
+            
+            // Smoothly scroll specifically to the form container top (adjusting for sticky nav)
+            const formContainer = document.getElementById('form-container');
+            const formTop = formContainer.getBoundingClientRect().top + window.scrollY - 120;
+            window.scrollTo({ top: formTop, behavior: 'smooth' });
+        }
+
+        function updateNavigationButtons() {
+            const btnPrev = document.getElementById('btn-prev');
+            const btnNext = document.getElementById('btn-next');
+            const nextText = document.getElementById('btn-next-text');
+            const nextIcon = document.getElementById('btn-next-icon');
+            const secureMsg = document.getElementById('secure-msg');
+
+            // Prev Button
+            if (currentStep === 0) btnPrev.classList.add('hidden');
+            else btnPrev.classList.remove('hidden');
+
+            // Next Button text
+            secureMsg.classList.add('hidden');
+            if (currentStep === stepsCount - 2) {
+                // Step 5 (before review)
+                nextText.innerText = dictionary[currentLang]['btn.review'];
+                nextIcon.setAttribute('data-lucide', 'file-search');
+                btnNext.className = 'px-8 py-3.5 bg-physio-900 text-white text-sm font-bold rounded-full hover:bg-physio-950 transition-all shadow-lg shadow-physio-900/30 hover:shadow-physio-900/40 hover:-translate-y-0.5 flex items-center gap-2 relative overflow-hidden group';
+            } else if (currentStep === stepsCount - 1) {
+                // Step 6 (Review - Final Submit)
+                nextText.innerText = dictionary[currentLang]['btn.submit'];
+                nextIcon.setAttribute('data-lucide', 'send');
+                secureMsg.classList.remove('hidden');
+                btnNext.className = 'px-8 py-3.5 bg-green-600 text-white text-sm font-bold rounded-full hover:bg-green-700 transition-all shadow-lg shadow-green-600/30 hover:shadow-green-600/40 hover:-translate-y-0.5 flex items-center gap-2 relative overflow-hidden group';
+            } else {
+                nextText.innerText = dictionary[currentLang]['btn.next'];
+                nextIcon.setAttribute('data-lucide', 'arrow-right');
+                btnNext.className = 'px-8 py-3.5 bg-physio-600 text-white text-sm font-bold rounded-full hover:bg-physio-700 transition-all shadow-lg shadow-physio-500/30 hover:shadow-physio-500/40 hover:-translate-y-0.5 flex items-center gap-2 relative overflow-hidden group';
+            }
+            lucide.createIcons();
+        }
+
+        /* --- Smart UX Sub-options --- */
+        const smartOptionsMap = {
+            'matlab': { title: 'smart.matlab', opts: ['opt.sp', 'opt.cs', 'opt.da', 'opt.other'] },
+            'comsol': { title: 'smart.comsol', opts: ['opt.em', 'opt.ht', 'opt.mm', 'opt.other'] },
+            'ai': { title: 'smart.ai', opts: ['opt.sup', 'opt.auto', 'opt.da', 'opt.other'] },
+            'web': { title: 'smart.web', opts: ['opt.corp', 'opt.ecom', 'opt.other'] }
+        };
+
+        function renderSmartOptions() {
+            const container = document.getElementById('smart-options-container');
+            container.innerHTML = '';
+            let hasOptions = false;
+
+            selectedCategories.forEach(cat => {
+                if (smartOptionsMap[cat]) {
+                    hasOptions = true;
+                    const block = document.createElement('div');
+                    
+                    const label = document.createElement('label');
+                    label.className = 'block text-sm font-bold text-slate-700 mb-3';
+                    label.setAttribute('data-i18n', smartOptionsMap[cat].title);
+                    label.innerText = dictionary[currentLang][smartOptionsMap[cat].title];
+                    block.appendChild(label);
+
+                    const select = document.createElement('select');
+                    select.className = 'custom-input w-full px-5 py-3.5 bg-white rounded-xl text-slate-800 focus:outline-none appearance-none cursor-pointer font-medium shadow-sm';
+                    select.id = `smart_opt_${cat}`;
+                    
+                    smartOptionsMap[cat].opts.forEach(opt => {
+                        const option = document.createElement('option');
+                        option.value = opt;
+                        option.setAttribute('data-i18n', opt);
+                        option.innerText = dictionary[currentLang][opt];
+                        select.appendChild(option);
+                    });
+                    
+                    const selectWrapper = document.createElement('div');
+                    selectWrapper.className = 'relative';
+                    selectWrapper.appendChild(select);
+                    selectWrapper.innerHTML += `<div class="absolute inset-y-0 right-4 rtl:right-auto rtl:left-4 flex items-center pointer-events-none"><i data-lucide="chevron-down" class="w-5 h-5 text-physio-500"></i></div>`;
+                    
+                    block.appendChild(selectWrapper);
+                    container.appendChild(block);
+                }
+            });
+
+            if (hasOptions) container.classList.remove('hidden');
+            else container.classList.add('hidden');
+            
+            lucide.createIcons();
+        }
+
+        /* --- Event Listeners --- */
+        // Category Selection (Step 1)
+        document.querySelectorAll('.selection-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const val = this.getAttribute('data-value');
+                const checkIcon = this.querySelector('.check-circle i') || this.querySelector('.check-circle svg');
+                const iconWrap = this.querySelector('.icon-wrap');
+                
+                if (this.classList.contains('selected')) {
+                    this.classList.remove('selected');
+                    if (checkIcon) checkIcon.classList.add('opacity-0');
+                    if (iconWrap) { iconWrap.classList.remove('bg-physio-500', 'text-white', 'shadow-md'); iconWrap.classList.add('bg-slate-50', 'text-slate-600'); }
+                    selectedCategories = selectedCategories.filter(c => c !== val);
+                } else {
+                    this.classList.add('selected');
+                    if (checkIcon) checkIcon.classList.remove('opacity-0');
+                    if (iconWrap) { iconWrap.classList.remove('bg-slate-50', 'text-slate-600'); iconWrap.classList.add('bg-physio-500', 'text-white', 'shadow-md'); }
+                    selectedCategories.push(val);
+                }
+                
+                document.getElementById('step-1-error').style.display = 'none';
+                renderSmartOptions();
+            });
+        });
+
+        // Character Counter (Step 3)
+        const descInput = document.getElementById('inp_desc');
+        const charCounter = document.getElementById('char-counter');
+        descInput.addEventListener('input', () => {
+            charCounter.innerText = `${descInput.value.length} / 3000`;
+            if (descInput.value.length > 0) {
+                descInput.classList.remove('error-field');
+                document.getElementById('err_desc').style.display = 'none';
+            }
+        });
+
+        // Clear errors on input
+        ['name', 'email', 'phone', 'contact_id'].forEach(id => {
+            document.getElementById(`inp_${id}`).addEventListener('input', function() {
+                this.classList.remove('error-field');
+                document.getElementById(`err_${id}`).style.display = 'none';
+            });
+        });
+        
+        // Dynamic Contact Method Visibility
+        document.querySelectorAll('input[name="contactMethod"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const wrapper = document.getElementById('dynamic-contact-wrapper');
+                if (this.value === 'Telegram') {
+                    wrapper.classList.remove('hidden');
+                } else {
+                    wrapper.classList.add('hidden');
+                    document.getElementById('inp_contact_id').classList.remove('error-field');
+                    document.getElementById('err_contact_id').style.display = 'none';
+                }
+            });
+        });
+
+        document.getElementById('consent_check').addEventListener('change', function() {
+            document.getElementById('err_consent').style.display = 'none';
+        });
+
+        // Edit buttons in review
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                showStep(parseInt(this.getAttribute('data-step')));
+            });
+        });
+
+        /* --- Validation Logic --- */
+        function validateStep(step) {
+            let isValid = true;
+            
+            if (step === 0) {
+                if (selectedCategories.length === 0) {
+                    document.getElementById('step-1-error').style.display = 'flex';
+                    isValid = false;
+                }
+            } else if (step === 1) {
+                const name = document.getElementById('inp_name');
+                const email = document.getElementById('inp_email');
+                const phone = document.getElementById('inp_phone');
+                const method = document.querySelector('input[name="contactMethod"]:checked').value;
+                const contactId = document.getElementById('inp_contact_id');
+                
+                if (!name.value.trim()) { name.classList.add('error-field'); document.getElementById('err_name').style.display = 'flex'; isValid = false; }
+                if (!email.value.trim() || !email.value.includes('@')) { email.classList.add('error-field'); document.getElementById('err_email').style.display = 'flex'; isValid = false; }
+                if (!phone.value.trim()) { phone.classList.add('error-field'); document.getElementById('err_phone').style.display = 'flex'; isValid = false; }
+                
+                if (method === 'Telegram' && !contactId.value.trim()) {
+                    contactId.classList.add('error-field');
+                    document.getElementById('err_contact_id').style.display = 'flex';
+                    isValid = false;
+                }
+            } else if (step === 2) {
+                const desc = document.getElementById('inp_desc');
+                if (!desc.value.trim()) {
+                    desc.classList.add('error-field');
+                    document.getElementById('err_desc').style.display = 'flex';
+                    isValid = false;
+                }
+            } else if (step === 5) {
+                const consent = document.getElementById('consent_check');
+                if (!consent.checked) {
+                    document.getElementById('err_consent').style.display = 'flex';
+                    isValid = false;
+                }
+            }
+            return isValid;
+        }
+
+        /* --- Population Review Step --- */
+        function populateReview() {
+            // Type
+            const catNames = selectedCategories.map(cat => dictionary[currentLang][`cat.${cat}` === 'cat.wordpress' ? 'cat.wp' : `cat.${cat}`]).join('، ');
+            document.getElementById('rev_type').innerText = catNames || '-';
+            
+            // Client
+            const name = document.getElementById('inp_name').value;
+            const comp = document.getElementById('inp_company').value;
+            const email = document.getElementById('inp_email').value;
+            const phone = document.getElementById('inp_phone').value;
+            const method = document.querySelector('input[name="contactMethod"]:checked').value;
+            
+            // Handle telegram translation properly based on current selection
+            let methodTranslated = method === 'Telegram' ? 'تلگرام / Telegram' : (dictionary[currentLang][`opt.${method.toLowerCase()}`] || method);
+            
+            if (method === 'Telegram') {
+                const contactId = document.getElementById('inp_contact_id').value;
+                methodTranslated += ` (${contactId})`;
+            }
+            
+            document.getElementById('rev_client').innerHTML = `<strong>${name}</strong> ${comp ? `<span class="text-slate-500">(${comp})</span>` : ''}<br><span class="text-slate-600 block mt-1" dir="ltr">${email}</span><span class="text-slate-600 block" dir="ltr">${phone}</span><span class="text-physio-600 text-xs mt-2 inline-flex items-center gap-1.5"><i data-lucide="${method==='Email'?'mail':(method==='Phone'?'phone':'send')}" class="w-3.5 h-3.5"></i> ${methodTranslated}</span>`;
+            
+            // Desc
+            document.getElementById('rev_desc').innerText = document.getElementById('inp_desc').value;
+            
+            // Scope
+            const timeVal = document.querySelector('input[name="timeline"]:checked').nextElementSibling.innerText;
+            document.getElementById('rev_time').innerText = timeVal;
+
+            // Notes
+            const notes = document.getElementById('inp_notes').value;
+            const fileCount = document.getElementById('file-list').children.length;
+            
+            let notesText = notes ? notes : (currentLang === 'fa' ? 'بدون یادداشت' : 'No notes provided');
+            if (fileCount > 0) {
+                const fileText = currentLang === 'fa' ? `${fileCount} فایل ضمیمه شد` : `${fileCount} files attached`;
+                notesText += `<br><span class="text-physio-600 text-xs mt-2 inline-flex items-center gap-1.5"><i data-lucide="paperclip" class="w-3.5 h-3.5"></i> ${fileText}</span>`;
+            }
+            document.getElementById('rev_notes').innerHTML = notesText;
+
+            lucide.createIcons();
+        }
+
+    /* --- Next / Prev / Submit --- */
+    document.getElementById('btn-next').addEventListener('click', function() {
+            if (currentStep < stepsCount - 1) {
+                if (validateStep(currentStep)) showStep(currentStep + 1);
+            } else {
+                // Final Submit
+                if (validateStep(currentStep)) submitForm();
+            }
+        });
+
+        document.getElementById('btn-prev').addEventListener('click', function() {
+            if (currentStep > 0) showStep(currentStep - 1);
+        });
+
+        function submitForm() {
+            const btn = document.getElementById('btn-next');
+            const icon = document.getElementById('btn-next-icon');
+            const loader = document.getElementById('btn-loading-icon');
+            const prev = document.getElementById('btn-prev');
+            
+            // Loading State
+            btn.disabled = true;
+            prev.disabled = true;
+            icon.classList.add('hidden');
+            loader.classList.remove('hidden');
+
+            // Simulate API Call
+            setTimeout(() => {
+                // Hide Nav, Show Success
+                document.getElementById('form-navigation').style.display = 'none';
+                document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
+                
+                const successStep = document.getElementById('step-success');
+                successStep.classList.add('active');
+                successStep.classList.remove('hidden');
+
+                // Update Blueprint to Final
+                const ul = document.getElementById('blueprint-list');
+                ul.innerHTML = `<li class="flex items-center gap-4"><div class="w-8 h-8 rounded-full bg-green-500 shadow-lg shadow-green-500/40 flex items-center justify-center scale-110"><i data-lucide="check" class="w-5 h-5 text-white"></i></div><span class="text-base font-bold text-green-600" data-i18n="bp.ready">${dictionary[currentLang]['bp.ready']}</span></li>`;
+                lucide.createIcons();
+                
+            }, 1500);
+        }
+
+        /* --- Drag & Drop File Upload Mock --- */
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('file_input');
+        const fileList = document.getElementById('file-list');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, preventDefaults, false);
+        });
+        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, () => dropzone.classList.add('dragover'), false);
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, () => dropzone.classList.remove('dragover'), false);
+        });
+
+        dropzone.addEventListener('drop', handleDrop, false);
+        fileInput.addEventListener('change', function() { handleFiles(this.files); });
+
+        function handleDrop(e) { handleFiles(e.dataTransfer.files); }
+        
+        function handleFiles(files) {
+            ([...files]).forEach(file => {
+                const card = document.createElement('div');
+                card.className = 'flex items-center justify-between p-4 bg-white border border-slate-200 shadow-sm rounded-xl text-sm transition-all hover:border-slate-300';
+                card.innerHTML = `
+                    <div class="flex items-center gap-4 overflow-hidden">
+                        <div class="p-2 bg-physio-50 text-physio-600 rounded-lg shrink-0"><i data-lucide="file" class="w-5 h-5"></i></div>
+                        <span class="truncate font-bold text-slate-700 text-base">${file.name}</span>
+                        <span class="text-xs font-bold text-slate-400 shrink-0 bg-slate-100 px-2 py-1 rounded-md">${(file.size / 1024 / 1024).toFixed(2)} MB</span>
+                    </div>
+                    <button type="button" class="text-slate-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors" onclick="this.parentElement.remove()"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                `;
+                fileList.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        /* --- Initialization --- */
+        document.addEventListener("DOMContentLoaded", () => {
+            initBlueprint();
+            setLanguage('fa'); // Default to Persian
+            showStep(0);
+        });
+
+    </script>
+</body>
+</html>
