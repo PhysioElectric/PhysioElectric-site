@@ -1,0 +1,35 @@
+
+# 2026-08-21 17:25:43.503647
++/ls
+
+# 2026-08-21 17:26:22.777818
++/add backend/
+
+# 2026-08-21 17:26:35.310889
++/add frontend
+
+# 2026-08-21 17:26:53.356327
++/ls
+
+# 2026-08-21 17:31:29.844275
++Please inspect the repository and aggregate the following information into a single concise summary so I can share it with my assistant:
++
++Django API Endpoints & Routes:
++
++Read backend/config/urls.py, backend/config/api_urls.py, and the urls.py files in content, core, and leads. List all available API endpoints (URLs, HTTP methods, and associated view names).
++
++Serializers / Request-Response Structure:
++
++Read serializers.py in content, core, and leads. Show the fields expected for POST/PUT requests (e.g., lead forms, contact forms) and key fields returned for GET requests (e.g., articles, projects, capabilities).
++
++Frontend JavaScript Status:
++
++Look into frontend/index.html, frontend/pages/, and frontend/assets/js/. Identify any existing JavaScript files, forms, dynamic content placeholders, or fetch/axios calls currently present in the frontend.
++
++Keep the output structured, clean, and plain-text friendly.
+
+# 2026-08-21 18:01:40.396628
++/tree
+
+# 2026-08-21 18:02:54.333926
++فایل ستینگ پایتون کجاست 
