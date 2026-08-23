@@ -1,0 +1,63 @@
+# =============================================================
+#  PhysioElectric - Docker Compose
+#  Usage:  docker compose up -d --build
+#  Site:   http://localhost:8080  (redirects to /fa)
+#  Admin:  http://localhost:8080/admin
+# =============================================================
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pe_app
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8080}:80"
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      SITE_BASE_URL: ${SITE_BASE_URL:-http://localhost:8080}
+
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_NAME: physioelectric
+      DB_USER: pe_user
+      DB_PASS: ${DB_PASS:-pe_secret_2026}
+
+      ADMIN_NAME: ${ADMIN_NAME:-Admin}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@physioelectric.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-Physio@2026}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./app:/var/www/html
+
+  db:
+    image: mysql:8.4
+    container_name: pe_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS:-pe_root_secret_2026}
+      MYSQL_DATABASE: physioelectric
+      MYSQL_USER: pe_user
+      MYSQL_PASSWORD: ${DB_PASS:-pe_secret_2026}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-time-zone=+03:30
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    # Uncomment to inspect the DB from the host:
+    # ports:
+    #   - "3306:3306"
+
+volumes:
+  db-data:

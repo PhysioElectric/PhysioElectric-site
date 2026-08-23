@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#020617"/>
+    </linearGradient>
+    <linearGradient id="acc" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0ea5e9"/>
+      <stop offset="1" stop-color="#0284c7"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <g stroke="#1e293b" stroke-width="1">
+    <line x1="0" y1="157" x2="1200" y2="157"/>
+    <line x1="0" y1="315" x2="1200" y2="315"/>
+    <line x1="0" y1="472" x2="1200" y2="472"/>
+    <line x1="300" y1="0" x2="300" y2="630"/>
+    <line x1="600" y1="0" x2="600" y2="630"/>
+    <line x1="900" y1="0" x2="900" y2="630"/>
+  </g>
+  <rect x="80" y="215" width="100" height="100" rx="22" fill="url(#acc)"/>
+  <path d="M112 295v-50h27c12.8 0 21 7.8 21 19.4 0 11.8-8.2 19.6-21 19.6h-18V295h-14.9zm14-27.2h11.8c6.4 0 10-3.4 10-8.6 0-5.2-3.6-8.6-10-8.6h-11.8v17.2z" fill="#fff"/>
+  <text x="220" y="272" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="bold" fill="#f8fafc">PhysioElectric</text>
+  <text x="220" y="316" font-family="Arial, Helvetica, sans-serif" font-size="26" fill="#7dd3fc">Engineering Ideas. Building Intelligent Solutions.</text>
+  <text x="80" y="560" font-family="Arial, Helvetica, sans-serif" font-size="24" fill="#475569">physioelectric.com</text>
+</svg>

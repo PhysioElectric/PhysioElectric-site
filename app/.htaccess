@@ -1,0 +1,48 @@
+# =============================================================
+#  PhysioElectric - Apache configuration
+#  SEO-friendly routing + hardening
+# =============================================================
+
+Options -Indexes
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Never rewrite existing files (static assets, uploads) or directories.
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Everything else goes to the front controller.
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>
+
+# Block dotfiles (.git, .env, .htaccess, ...)
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# Block config & core sources if ever probed directly
+<FilesMatch "^(config\.php|entrypoint\.sh)$">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+    Header always unset X-Powered-By
+</IfModule>
+
+# Sensible caching for static assets
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 7 days"
+    ExpiresByType application/javascript "access plus 7 days"
+    ExpiresByType font/woff2 "access plus 30 days"
+    ExpiresByType image/webp "access plus 30 days"
+    ExpiresByType image/jpeg "access plus 30 days"
+    ExpiresByType image/png "access plus 30 days"
+    ExpiresByType image/svg+xml "access plus 30 days"
+</IfModule>
