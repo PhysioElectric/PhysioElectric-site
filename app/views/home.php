@@ -11,20 +11,24 @@ $site = setting('site_name', 'PhysioElectric');
     <canvas id="hero-canvas"></canvas>
 
     <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 w-full text-center">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-physio-100/50 border border-physio-200 text-physio-600 text-xs font-semibold uppercase tracking-wider mb-8 reveal">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-physio-100/50 border border-physio-200 text-physio-600 text-xs font-semibold uppercase tracking-wider mb-12 reveal">
             <span class="w-2 h-2 rounded-full bg-physio-500 animate-pulse"></span>
-            <span><?= e((string) setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('hero.badge', []))) ?></span>
+            <span><?= e((string) setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', 'طراحی، توسعه و هوشمندسازی')) ?></span>
         </div>
 
-        <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-physio-950 max-w-5xl mx-auto leading-[1.15] reveal reveal-delay-1">
-            <?= (string) setting(lang() === 'fa' ? 'hero_title_fa' : 'hero_title_en', t('meta.home')) /* contains <br> */ ?>
+        <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight max-w-5xl mx-auto leading-[4.5rem] md:leading-[6.5rem] reveal reveal-delay-1 pb-4">
+            <span class="text-transparent bg-clip-text bg-gradient-to-b from-slate-900 to-slate-600 drop-shadow-md block pb-6 pt-2">
+                تجسم ایده های مهندسی
+                <br>
+                و خلق مسیرهای هوشمند آینده
+            </span>
         </h1>
 
-        <p class="mt-8 text-lg md:text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed reveal reveal-delay-2">
-            <?= e((string) setting(lang() === 'fa' ? 'hero_subtitle_fa' : 'hero_subtitle_en', '')) ?>
+        <p class="mt-8 text-xl md:text-2xl text-slate-500 max-w-3xl mx-auto font-medium leading-[3rem] md:leading-[3.5rem] reveal reveal-delay-2">
+            ما با تلفیق برنامه نویسی پیشرفته و الکترونیک صنعتی مرزهای تکنولوژی را جابجا میکنیم و راهکارهایی بی نقص برای چالش های پیچیده شما میسازیم
         </p>
 
-        <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 reveal reveal-delay-3">
+        <div class="mt-16 flex flex-col sm:flex-row items-center justify-center gap-4 reveal reveal-delay-3">
             <a href="<?= e(url(lang(), 'projects')) ?>" class="btn-shine w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-medium text-white bg-physio-900 hover:bg-physio-950 rounded-full shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
                 <?= e(t('hero.ctaPrimary')) ?>
             </a>
@@ -53,10 +57,12 @@ $site = setting('site_name', 'PhysioElectric');
             <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24 reveal">
                 <div class="w-full lg:w-1/2">
                     <span class="text-physio-500 font-bold text-xl mb-2 block">01</span>
-                    <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4"><?= e(t('cap.c0.title')) ?></h3>
-                    <p class="text-slate-600 mb-8 text-lg leading-relaxed"><?= e(t('cap.c0.desc')) ?></p>
+                    <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4">هسته فناوری و برنامه‌نویسی</h3>
+                    <p class="text-slate-600 mb-8 text-lg leading-[2.2rem] text-justify">
+                        تسلط عمیق بر زبان‌های برنامه‌نویسی متنوع از جمله C++، Python، و PHP به ما این امکان را می‌دهد که معماری نرم‌افزارهای مقیاس‌پذیر و بهینه را طراحی کنیم. از مدیریت دقیق حافظه و طراحی الگوریتم‌های پیچیده تا پیاده‌سازی ساختارهای شی‌گرا و توسعه سیستم‌های نرم‌افزاری پایدار، ما زیرساختی مستحکم برای پروژه‌های مهندسی شما فراهم می‌کنیم. ما معتقدیم که انتخاب ابزار درست، کلید موفقیت هر پروژه است.
+                    </p>
                     <a href="<?= e(url(lang(), 'projects')) ?>" class="inline-flex items-center text-physio-600 font-semibold group">
-                        <?= e(t('cap.c0.link')) ?>
+                        مشاهده پروژه‌های نرم‌افزاری
                         <i data-lucide="arrow-right" class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180"></i>
                     </a>
                 </div>
@@ -80,10 +86,12 @@ $site = setting('site_name', 'PhysioElectric');
             <div class="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-24 reveal">
                 <div class="w-full lg:w-1/2">
                     <span class="text-physio-500 font-bold text-xl mb-2 block">02</span>
-                    <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4"><?= e(t('cap.c1.title')) ?></h3>
-                    <p class="text-slate-600 mb-8 text-lg leading-relaxed"><?= e(t('cap.c1.desc')) ?></p>
+                    <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4">شبیه‌سازی و مدل‌سازی مهندسی</h3>
+                    <p class="text-slate-600 mb-8 text-lg leading-[2.2rem] text-justify">
+                        پیش از ساخت هر نمونه فیزیکی، رفتار سیستم‌ها را با بالاترین دقت تحلیل و پیش‌بینی می‌کنیم. تخصص ما شامل مدل‌سازی المان محدود (FEM) در COMSOL، تحلیل و طراحی مدارهای الکترونیکی در OrCAD PSpice، و بررسی سیستم‌های کنترل در MATLAB است. این رویکرد علمی، هزینه‌های توسعه را کاهش داده و قابلیت اطمینان سیستم نهایی را در شرایط واقعی به حداکثر می‌رساند.
+                    </p>
                     <a href="<?= e(url(lang(), 'projects/simulation')) ?>" class="inline-flex items-center text-physio-600 font-semibold group">
-                        <?= e(t('cap.c1.link')) ?>
+                        مشاهده پروژه‌های شبیه‌سازی
                         <i data-lucide="arrow-right" class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180"></i>
                     </a>
                 </div>
@@ -114,10 +122,12 @@ $site = setting('site_name', 'PhysioElectric');
             <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24 reveal">
                 <div class="w-full lg:w-1/2">
                     <span class="text-physio-500 font-bold text-xl mb-2 block">03</span>
-                    <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4"><?= e(t('cap.c2.title')) ?></h3>
-                    <p class="text-slate-600 mb-8 text-lg leading-relaxed"><?= e(t('cap.c2.desc')) ?></p>
+                    <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4">پردازش سیگنال و هوش مصنوعی</h3>
+                    <p class="text-slate-600 mb-8 text-lg leading-[2.2rem] text-justify">
+                        استخراج اطلاعات ارزشمند از داده‌های خام تخصص ماست. با بهره‌گیری از ابزارهای قدرتمند بینایی ماشین (OpenCV) و الگوریتم‌های هوش مصنوعی، سیستم‌هایی هوشمند برای ردیابی اهداف، تشخیص الگو، و اتوماسیون بصری می‌سازیم. همچنین در زمینه پردازش سیگنال‌های دیجیتال، راهکارهایی دقیق برای تحلیل و فیلترینگ داده‌های پیچیده ارائه می‌دهیم تا سیستم شما هوشمندانه تصمیم‌گیری کند.
+                    </p>
                     <a href="<?= e(url(lang(), 'projects/programming')) ?>" class="inline-flex items-center text-physio-600 font-semibold group">
-                        <?= e(t('cap.c2.link')) ?>
+                        مشاهده پروژه‌های هوش مصنوعی
                         <i data-lucide="arrow-right" class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180"></i>
                     </a>
                 </div>
@@ -145,10 +155,12 @@ $site = setting('site_name', 'PhysioElectric');
             <div class="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-24 reveal">
                 <div class="w-full lg:w-1/2">
                     <span class="text-physio-500 font-bold text-xl mb-2 block">04</span>
-                    <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4"><?= e(t('cap.c3.title')) ?></h3>
-                    <p class="text-slate-600 mb-8 text-lg leading-relaxed"><?= e(t('cap.c3.desc')) ?></p>
+                    <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4">توسعه وب و پلتفرم‌های ابری</h3>
+                    <p class="text-slate-600 mb-8 text-lg leading-[2.2rem] text-justify">
+                        طراحی و پیاده‌سازی سامانه‌های تحت وب اختصاصی با رابط کاربری (UI) مدرن و تجربه کاربری (UX) روان. ما با استفاده از تکنولوژی‌هایی نظیر Tailwind CSS، JavaScript، و بک‌اند قدرتمند با معماری MVC، وب‌سایت‌ها و پنل‌های مدیریتی امن، سریع و واکنش‌گرا خلق می‌کنیم که به طور کامل با نیازهای کسب‌وکار و سیستم‌های سخت‌افزاری شما یکپارچه می‌شوند.
+                    </p>
                     <a href="<?= e(url(lang(), 'projects/web-development')) ?>" class="inline-flex items-center text-physio-600 font-semibold group">
-                        <?= e(t('cap.c3.link')) ?>
+                        مشاهده پروژه‌های وب
                         <i data-lucide="arrow-right" class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180"></i>
                     </a>
                 </div>
@@ -170,11 +182,62 @@ $site = setting('site_name', 'PhysioElectric');
                     </div>
                 </div>
             </div>
+
+            <!-- 05 IoT -->
+            <div class="pt-16 border-t border-slate-100 reveal">
+                <div class="mb-12">
+                    <span class="text-physio-500 font-bold text-xl mb-2 block">05</span>
+                    <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4">هوشمندسازی و سیستم‌های نهفته</h3>
+                    <p class="text-slate-600 text-lg leading-[2.2rem] max-w-4xl text-justify mb-6">
+                        طراحی و پیاده‌سازی بردهای پردازشی قدرتمند و گره‌های صنعتی. از جمع‌آوری دقیق داده‌های سنسوری تا پردازش بی‌درنگ و کنترل عملگرها در بستر اینترنت اشیاء (IoT)، ما سخت‌افزار را به فرمان شما درمی‌آوریم. معماری پایدار میکروکنترلرها در کنار پروتکل‌های ارتباطی امن، هسته مرکزی اتوماسیون ما را تشکیل می‌دهد.
+                    </p>
+                    <a href="<?= e(url(lang(), 'projects/iot')) ?>" class="inline-flex items-center text-physio-600 font-semibold group">
+                        مشاهده پروژه‌های هوشمندسازی
+                        <i data-lucide="arrow-right" class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180"></i>
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- کارت 1 -->
+                    <div class="iot-card glass-card rounded-2xl p-8 hover:shadow-xl transition-all duration-300 bg-slate-50 border border-slate-100">
+                        <div class="iot-icon iot-icon-float w-16 h-16 rounded-xl bg-white shadow-sm flex items-center justify-center mb-6 text-slate-700">
+                            <i data-lucide="microchip" class="w-8 h-8"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-physio-950 mb-3">پردازش صنعتی با STM32</h4>
+                        <p class="text-slate-500 leading-relaxed text-sm">
+                            استفاده از معماری قدرتمند ARM Cortex-M برای پردازش‌های سنگین و بلادرنگ. ایده‌آل برای کنترل دقیق موتورها، مکاترونیک پیشرفته و راه‌اندازی پروتکل‌های ارتباطی.
+                        </p>
+                    </div>
+                    
+                    <!-- کارت 2 -->
+                    <div class="iot-card glass-card rounded-2xl p-8 hover:shadow-xl transition-all duration-300 bg-slate-50 border border-slate-100 reveal-delay-1">
+                        <div class="iot-icon iot-icon-float w-16 h-16 rounded-xl bg-white shadow-sm flex items-center justify-center mb-6 text-physio-600">
+                            <i data-lucide="wifi" class="w-8 h-8"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-physio-950 mb-3">اینترنت اشیاء (ESP32)</h4>
+                        <p class="text-slate-500 leading-relaxed text-sm">
+                            توسعه شبکه‌های هوشمند با تراشه‌های وای‌فای و بلوتوث. بهترین انتخاب برای مانیتورینگ از راه دور، خانه‌های هوشمند و انتقال امن دیتای سنسورها به کلود.
+                        </p>
+                    </div>
+                    
+                    <!-- کارت 3 -->
+                    <div class="iot-card glass-card rounded-2xl p-8 hover:shadow-xl transition-all duration-300 bg-slate-50 border border-slate-100 reveal-delay-2">
+                        <div class="iot-icon iot-icon-float w-16 h-16 rounded-xl bg-white shadow-sm flex items-center justify-center mb-6 text-slate-700">
+                            <i data-lucide="settings-2" class="w-8 h-8"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-physio-950 mb-3">مکاترونیک و اتوماسیون</h4>
+                        <p class="text-slate-500 leading-relaxed text-sm">
+                            تلفیق بی‌نقص مکانیک، سخت‌افزار و نرم‌افزار. از طراحی PCB تا برنامه‌نویسی سطح پایین برای کنترل درایورها، سیستم‌های مبتنی بر فیدبک و اتوماسیون.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </section>
 
-<!-- ============ FEATURED PROJECTS (dark slider) ============ -->
+<!-- ============ FEATURED PROJECTS ============ -->
 <section id="projects" class="py-24 bg-slate-900 text-white overflow-hidden relative">
     <div class="max-w-7xl mx-auto px-6 lg:px-8 mb-4 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 reveal">
         <div class="max-w-2xl">

@@ -253,3 +253,41 @@
         });
     }
 })();
+// --- Interactive 3D Hover Effect for IoT Icons ---
+document.addEventListener('DOMContentLoaded', () => {
+    const iotCards = document.querySelectorAll('.iot-card');
+
+    iotCards.forEach(card => {
+        const icon = card.querySelector('.iot-icon');
+        if (!icon) return;
+
+        // وقتی موس روی کارت حرکت می‌کند
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            // زاویه متناسب با حرکت موس روی کارت
+            const rotateX = ((y - centerY) / centerY) * -20;
+            const rotateY = ((x - centerX) / centerX) * 20;
+
+            icon.classList.remove('iot-icon-float');
+            icon.style.transition = 'transform 0.1s ease-out';
+            icon.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.1, 1.1, 1.1)`;
+        });
+
+        // وقتی موس از روی کارت خارج می‌شود
+        card.addEventListener('mouseleave', () => {
+            icon.style.transition = 'transform 0.5s ease-out';
+            icon.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+            
+            setTimeout(() => {
+                icon.classList.add('iot-icon-float');
+                icon.style.transition = '';
+            }, 500);
+        });
+    });
+});

@@ -660,3 +660,18 @@ html[dir="rtl"] .prose-pe blockquote {
 }
 .flash-success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
 .flash-error   { background: #fff1f2; color: #9f1239; border: 1px solid #fecdd3; }
+/* --- Floating Animation for IoT Icons --- */
+@keyframes float-3d {
+    0%, 100% {
+        transform: translateY(0) rotateX(0deg) rotateY(0deg);
+    }
+    50% {
+        transform: translateY(-10px) rotateX(8deg) rotateY(-8deg);
+    }
+}
+
+.iot-icon-float {
+    animation: float-3d 4s ease-in-out infinite;
+    transform-style: preserve-3d;
+    will-change: transform;
+}
