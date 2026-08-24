@@ -8,13 +8,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libicu-dev \
         zlib1g-dev \
         libzip-dev \
+        libpng-dev \
+        libjpeg62-turbo-dev \
+        libfreetype6-dev \
+        libonig-dev \
+        libxml2-dev \
         unzip \
         openssl \
         curl \
     && rm -rf /var/lib/apt/lists/*
 
-# ---- PHP extensions (pdo_mysql for DB, gd for image handling) --------
-RUN docker-php-ext-configure pdo_mysql --with-pdo-mysql \
+# ---- PHP extensions --------------------------------------------------
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-configure pdo_mysql --with-pdo-mysql \
     && docker-php-ext-install -j"$(nproc)" \
         pdo_mysql \
         gd \
@@ -23,7 +29,7 @@ RUN docker-php-ext-configure pdo_mysql --with-pdo-mysql \
         zip \
         dom \
         xml \
-    && docker-php-ext-install opcache
+        opcache
 
 # ---- Apache: mod_rewrite for SEO URLs + headers + static cache -------
 RUN a2enmod rewrite headers expires
