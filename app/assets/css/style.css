@@ -769,3 +769,11 @@ html[dir="rtl"] #processTimeline .timeline-progress {
         display: none;
     }
 }
+/* ============ NEW: Flow line animation ============ */
+.flow-line {
+    stroke-dasharray: 8;
+    animation: dashFlow 3s linear infinite;
+}
+@keyframes dashFlow {
+    to { stroke-dashoffset: -16; }
+}
