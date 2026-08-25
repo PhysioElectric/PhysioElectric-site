@@ -7,17 +7,46 @@
     var currentStep = 0;
     var selectedCategories = [];
 
+    /* ============ BLUEPRINT (Sidebar) ============ */
     function initBlueprint() {
         var ul = document.getElementById('blueprint-list');
         if (!ul) return;
         ul.innerHTML = '';
+        ul.setAttribute('data-progress', '0');
         
         for (var i = 0; i < stepsCount; i++) {
             var li = document.createElement('li');
-            li.className = 'flex items-center gap-4 relative';
-            li.innerHTML = 
-                '<div id="bp-dot-' + i + '" class="w-7 h-7 rounded-full border-2 bg-white flex items-center justify-center transition-all relative z-10 ' + (i === 0 ? 'border-physio-500' : 'border-slate-200') + '"></div>' +
-                '<span id="bp-text-' + i + '" class="text-sm transition-all ' + (i === 0 ? 'text-physio-950 font-bold' : 'text-slate-400 font-medium') + '">' + (DICT.bpLabels ? DICT.bpLabels[i] : '') + '</span>';
+            li.className = 'relative flex items-center gap-4';
+            li.style.position = 'relative';
+            li.style.zIndex = '2';
+            
+            var dot = document.createElement('div');
+            dot.id = 'bp-dot-' + i;
+            dot.className = 'w-7 h-7 rounded-full border-2 bg-white flex items-center justify-center transition-all duration-300 flex-shrink-0 ' + (i === 0 ? 'border-physio-500' : 'border-slate-300');
+            dot.style.cssText = 'width: 28px; height: 28px; border-radius: 50%; border: 2px solid #cbd5e1; background: #ffffff; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; flex-shrink: 0;';
+            
+            if (i === 0) {
+                dot.style.borderColor = '#0ea5e9';
+                dot.innerHTML = '<div style="width: 10px; height: 10px; background: #0ea5e9; border-radius: 50%;"></div>';
+            }
+            
+            var text = document.createElement('span');
+            text.id = 'bp-text-' + i;
+            text.className = 'text-sm transition-all duration-300';
+            text.style.cssText = 'font-size: 0.875rem; transition: all 0.3s ease;';
+            
+            if (i === 0) {
+                text.style.color = '#0284c7';
+                text.style.fontWeight = 'bold';
+            } else {
+                text.style.color = '#94a3b8';
+                text.style.fontWeight = '500';
+            }
+            
+            text.innerText = DICT.bpLabels ? DICT.bpLabels[i] : ('Step ' + (i + 1));
+            
+            li.appendChild(dot);
+            li.appendChild(text);
             ul.appendChild(li);
         }
     }
@@ -29,22 +58,39 @@
             if (!dot || !text) continue;
             
             if (i < currentStep) {
-                dot.className = 'w-7 h-7 rounded-full border-2 border-physio-500 bg-physio-500 flex items-center justify-center relative z-10';
-                dot.innerHTML = '<i data-lucide="check" class="w-4 h-4 text-white"></i>';
-                text.className = 'text-sm font-bold text-slate-800 transition-all';
+                // COMPLETED - Green with check
+                dot.style.borderColor = '#22c55e';
+                dot.style.backgroundColor = '#22c55e';
+                dot.style.boxShadow = '0 0 10px rgba(34, 197, 94, 0.4)';
+                dot.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+                text.style.color = '#1e293b';
+                text.style.fontWeight = 'bold';
             } else if (i === currentStep) {
-                dot.className = 'w-7 h-7 rounded-full border-2 border-physio-500 bg-white flex items-center justify-center relative z-10';
-                dot.innerHTML = '<div class="w-2.5 h-2.5 bg-physio-500 rounded-full"></div>';
-                text.className = 'text-sm font-bold text-physio-600 transition-all';
+                // ACTIVE - Blue with inner dot
+                dot.style.borderColor = '#0ea5e9';
+                dot.style.backgroundColor = '#ffffff';
+                dot.style.boxShadow = '0 0 0 4px rgba(14, 165, 233, 0.15)';
+                dot.innerHTML = '<div style="width: 10px; height: 10px; background: #0ea5e9; border-radius: 50%;"></div>';
+                text.style.color = '#0284c7';
+                text.style.fontWeight = 'bold';
             } else {
-                dot.className = 'w-7 h-7 rounded-full border-2 border-slate-200 bg-white flex items-center justify-center relative z-10';
+                // FUTURE - Gray
+                dot.style.borderColor = '#cbd5e1';
+                dot.style.backgroundColor = '#ffffff';
+                dot.style.boxShadow = 'none';
                 dot.innerHTML = '';
-                text.className = 'text-sm font-medium text-slate-400 transition-all';
+                text.style.color = '#94a3b8';
+                text.style.fontWeight = '500';
             }
         }
         
-        if (window.lucide) window.lucide.createIcons();
+        // Update progress line
+        var blueprintList = document.getElementById('blueprint-list');
+        if (blueprintList) {
+            blueprintList.setAttribute('data-progress', currentStep);
+        }
         
+        // Mobile progress
         var mobileText = document.getElementById('mobile-step-text');
         var mobilePercent = document.getElementById('mobile-percent-text');
         var mobileBar = document.getElementById('mobile-progress-bar');
@@ -54,19 +100,27 @@
         if (mobileBar) mobileBar.style.width = Math.round(((currentStep + 1) / stepsCount) * 100) + '%';
     }
 
+    /* ============ SHOW STEP ============ */
     function showStep(index) {
-        var steps = document.querySelectorAll('.form-step');
-        for (var i = 0; i < steps.length; i++) {
-            if (i === index) {
-                steps[i].classList.add('active');
-            } else {
-                steps[i].classList.remove('active');
-            }
+        // Hide all steps
+        var allSteps = document.querySelectorAll('.form-step');
+        for (var i = 0; i < allSteps.length; i++) {
+            allSteps[i].classList.remove('active');
+            allSteps[i].style.display = 'none';
         }
+        
+        // Show target step
+        var targetStep = document.getElementById('step-' + (index + 1));
+        if (targetStep) {
+            targetStep.classList.add('active');
+            targetStep.style.display = 'block';
+        }
+        
         currentStep = index;
         updateBlueprint();
-        updateNav();
+        updateNavButtons();
         
+        // Scroll to form
         var formContainer = document.getElementById('form-container');
         if (formContainer) {
             var formTop = formContainer.getBoundingClientRect().top + window.scrollY - 120;
@@ -74,14 +128,18 @@
         }
     }
 
-    function updateNav() {
+    /* ============ NAV BUTTONS ============ */
+    function updateNavButtons() {
         var btnPrev = document.getElementById('btn-prev');
+        var btnNext = document.getElementById('btn-next');
         var nextText = document.getElementById('btn-next-text');
         
+        if (!btnPrev || !btnNext || !nextText) return;
+        
         if (currentStep === 0) {
-            btnPrev.classList.add('hidden');
+            btnPrev.style.display = 'none';
         } else {
-            btnPrev.classList.remove('hidden');
+            btnPrev.style.display = 'flex';
         }
         
         if (currentStep === stepsCount - 2) {
@@ -93,70 +151,118 @@
         }
     }
 
+    /* ============ VALIDATION ============ */
     function validateStep(step) {
         var isValid = true;
         
         if (step === 0) {
+            // Step 1: Category
             if (selectedCategories.length === 0) {
-                var err = document.getElementById('step-1-error');
-                if (err) err.style.display = 'flex';
+                showError('step-1-error', true);
                 isValid = false;
+            } else {
+                showError('step-1-error', false);
             }
-        } else if (step === 1) {
+        } 
+        else if (step === 1) {
+            // Step 2: Client Info
             var name = document.getElementById('inp_name');
             var email = document.getElementById('inp_email');
             var phone = document.getElementById('inp_phone');
             
             if (!name.value.trim()) {
-                name.classList.add('error-field');
-                document.getElementById('err_name').style.display = 'block';
+                markError(name, 'err_name', true);
                 isValid = false;
+            } else {
+                markError(name, 'err_name', false);
             }
+            
             if (!email.value.trim() || email.value.indexOf('@') === -1) {
-                email.classList.add('error-field');
-                document.getElementById('err_email').style.display = 'block';
+                markError(email, 'err_email', true);
                 isValid = false;
+            } else {
+                markError(email, 'err_email', false);
             }
+            
             if (!phone.value.trim()) {
-                phone.classList.add('error-field');
-                document.getElementById('err_phone').style.display = 'block';
+                markError(phone, 'err_phone', true);
                 isValid = false;
+            } else {
+                markError(phone, 'err_phone', false);
             }
-        } else if (step === 2) {
+            
+            var methodChecked = document.querySelector('input[name="contactMethod"]:checked');
+            if (methodChecked && methodChecked.value === 'Telegram') {
+                var tgId = document.getElementById('inp_contact_id');
+                if (!tgId.value.trim()) {
+                    markError(tgId, 'err_contact_id', true);
+                    isValid = false;
+                } else {
+                    markError(tgId, 'err_contact_id', false);
+                }
+            }
+        } 
+        else if (step === 2) {
+            // Step 3: Description
             var desc = document.getElementById('inp_desc');
             if (!desc.value.trim()) {
-                desc.classList.add('error-field');
-                document.getElementById('err_desc').style.display = 'block';
+                markError(desc, 'err_desc', true);
                 isValid = false;
+            } else {
+                markError(desc, 'err_desc', false);
             }
-        } else if (step === 5) {
+        } 
+        else if (step === 5) {
+            // Step 6: Consent
             var consent = document.getElementById('consent_check');
             if (!consent.checked) {
-                document.getElementById('err_consent').style.display = 'block';
+                showError('err_consent', true);
                 isValid = false;
+            } else {
+                showError('err_consent', false);
             }
         }
         
         return isValid;
     }
 
-    function populateReview() {
-        var catNames = [];
-        for (var i = 0; i < selectedCategories.length; i++) {
-            catNames.push(selectedCategories[i]);
+    function markError(input, errId, isError) {
+        if (input) {
+            if (isError) {
+                input.classList.add('error-field');
+            } else {
+                input.classList.remove('error-field');
+            }
         }
-        document.getElementById('rev_type').innerText = catNames.join(', ') || '-';
+        var errEl = document.getElementById(errId);
+        if (errEl) {
+            errEl.style.display = isError ? 'block' : 'none';
+        }
+    }
+
+    function showError(errId, isError) {
+        var errEl = document.getElementById(errId);
+        if (errEl) {
+            errEl.style.display = isError ? 'flex' : 'none';
+        }
+    }
+
+    /* ============ REVIEW POPULATION ============ */
+    function populateReview() {
+        var catDisplay = selectedCategories.join('، ');
+        document.getElementById('rev_type').innerText = catDisplay || '-';
         
         var name = document.getElementById('inp_name').value;
         var comp = document.getElementById('inp_company').value;
         var email = document.getElementById('inp_email').value;
         var phone = document.getElementById('inp_phone').value;
-        var method = document.querySelector('input[name="contactMethod"]:checked');
-        var methodVal = method ? method.value : '';
+        var methodChecked = document.querySelector('input[name="contactMethod"]:checked');
+        var methodVal = methodChecked ? methodChecked.value : '';
         
         var clientHtml = '<strong>' + name + '</strong>';
         if (comp) clientHtml += ' (' + comp + ')';
-        clientHtml += '<br>' + email + '<br>' + phone + '<br>' + methodVal;
+        clientHtml += '<br>' + email + '<br>' + phone;
+        clientHtml += '<br><span style="color: #0284c7; font-size: 0.75rem;">' + methodVal + '</span>';
         
         document.getElementById('rev_client').innerHTML = clientHtml;
         document.getElementById('rev_desc').innerText = document.getElementById('inp_desc').value;
@@ -165,74 +271,117 @@
         var timeVal = timeChecked ? timeChecked.nextElementSibling.innerText : '';
         document.getElementById('rev_time').innerText = timeVal;
         
-        var notes = document.getElementById('inp_notes').value || '-';
-        document.getElementById('rev_notes').innerText = notes;
+        var notes = document.getElementById('inp_notes').value;
+        document.getElementById('rev_notes').innerText = notes || '-';
     }
 
-    // Init
+    /* ============ INIT ============ */
     function init() {
         initBlueprint();
-        showStep(0);
         
-        // Category selection
+        // Hide all steps first
+        var allSteps = document.querySelectorAll('.form-step');
+        for (var i = 0; i < allSteps.length; i++) {
+            allSteps[i].classList.remove('active');
+            allSteps[i].style.display = 'none';
+        }
+        
+        // Show only step 1
+        var firstStep = document.getElementById('step-1');
+        if (firstStep) {
+            firstStep.classList.add('active');
+            firstStep.style.display = 'block';
+        }
+        
+        currentStep = 0;
+        updateBlueprint();
+        updateNavButtons();
+        
+        /* --- Category Selection --- */
         var cards = document.querySelectorAll('.selection-card');
         for (var i = 0; i < cards.length; i++) {
             (function(card) {
                 card.addEventListener('click', function() {
                     var val = this.getAttribute('data-value');
-                    var icon = this.querySelector('.check-circle i');
+                    var checkIcon = this.querySelector('.check-circle i, .check-circle svg');
+                    var iconWrap = this.querySelector('.icon-wrap');
                     
                     if (this.classList.contains('selected')) {
+                        // Deselect
                         this.classList.remove('selected');
-                        if (icon) icon.style.display = 'none';
+                        if (checkIcon) checkIcon.style.display = 'none';
+                        if (iconWrap) {
+                            iconWrap.style.backgroundColor = '#f8fafc';
+                            iconWrap.style.color = '#475569';
+                        }
                         var idx = selectedCategories.indexOf(val);
                         if (idx > -1) selectedCategories.splice(idx, 1);
                     } else {
+                        // Select
                         this.classList.add('selected');
-                        if (icon) icon.style.display = 'block';
+                        if (checkIcon) checkIcon.style.display = 'block';
+                        if (iconWrap) {
+                            iconWrap.style.backgroundColor = '#0ea5e9';
+                            iconWrap.style.color = '#ffffff';
+                        }
                         selectedCategories.push(val);
                     }
                     
                     var err = document.getElementById('step-1-error');
-                    if (err) err.style.display = 'none';
+                    if (err && selectedCategories.length > 0) err.style.display = 'none';
                 });
             })(cards[i]);
         }
 
-        // Next button
-        document.getElementById('btn-next').addEventListener('click', function() {
-            if (currentStep < stepsCount - 1) {
-                if (validateStep(currentStep)) {
+        /* --- Next Button --- */
+        var btnNext = document.getElementById('btn-next');
+        if (btnNext) {
+            btnNext.addEventListener('click', function() {
+                if (!validateStep(currentStep)) {
+                    return;
+                }
+                
+                if (currentStep < stepsCount - 1) {
                     if (currentStep === stepsCount - 2) {
                         populateReview();
                     }
                     showStep(currentStep + 1);
-                }
-            } else {
-                if (validateStep(currentStep)) {
-                    document.getElementById('form-navigation').style.display = 'none';
-                    var steps = document.querySelectorAll('.form-step');
-                    for (var j = 0; j < steps.length; j++) steps[j].classList.remove('active');
-                    var success = document.getElementById('step-success');
-                    success.classList.add('active');
-                    success.classList.remove('hidden');
+                } else {
+                    // Final submit
+                    var nav = document.getElementById('form-navigation');
+                    if (nav) nav.style.display = 'none';
                     
-                    // Update blueprint
+                    var steps = document.querySelectorAll('.form-step');
+                    for (var j = 0; j < steps.length; j++) {
+                        steps[j].classList.remove('active');
+                        steps[j].style.display = 'none';
+                    }
+                    
+                    var success = document.getElementById('step-success');
+                    if (success) {
+                        success.classList.add('active');
+                        success.style.display = 'block';
+                    }
+                    
                     var ul = document.getElementById('blueprint-list');
                     if (ul) {
-                        ul.innerHTML = '<li class="flex items-center gap-4"><div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center"><i data-lucide="check" class="w-5 h-5 text-white"></i></div><span class="text-base font-bold text-green-600">' + (DICT.ready || 'READY') + '</span></li>';
-                        if (window.lucide) window.lucide.createIcons();
+                        ul.innerHTML = '<li style="display: flex; align-items: center; gap: 1rem;"><div style="width: 32px; height: 32px; border-radius: 50%; background: #22c55e; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(34, 197, 94, 0.5);"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div><span style="font-weight: bold; color: #16a34a;">' + (DICT.ready || 'READY') + '</span></li>';
                     }
                 }
-            }
-        });
+            });
+        }
 
-        // Prev button
-        document.getElementById('btn-prev').addEventListener('click', function() {
-            if (currentStep > 0) showStep(currentStep - 1);
-        });
+        /* --- Prev Button --- */
+        var btnPrev = document.getElementById('btn-prev');
+        if (btnPrev) {
+            btnPrev.addEventListener('click', function() {
+                if (currentStep > 0) {
+                    showStep(currentStep - 1);
+                }
+            });
+        }
 
-        // Edit buttons
+        /* --- Edit Buttons --- */
         var editBtns = document.querySelectorAll('.edit-btn');
         for (var e = 0; e < editBtns.length; e++) {
             (function(btn) {
@@ -242,18 +391,23 @@
             })(editBtns[e]);
         }
 
-        // Char counter
+        /* --- Char Counter --- */
         var descInput = document.getElementById('inp_desc');
         var charCounter = document.getElementById('char-counter');
         if (descInput && charCounter) {
             descInput.addEventListener('input', function() {
                 charCounter.innerText = this.value.length + ' / 3000';
+                if (this.value.length > 0) {
+                    this.classList.remove('error-field');
+                    var errDesc = document.getElementById('err_desc');
+                    if (errDesc) errDesc.style.display = 'none';
+                }
             });
         }
 
-        // Clear errors on input
-        var inputs = ['inp_name', 'inp_email', 'inp_phone'];
-        for (var n = 0; n < inputs.length; n++) {
+        /* --- Clear Errors on Input --- */
+        var clearOnInput = ['inp_name', 'inp_email', 'inp_phone', 'inp_contact_id'];
+        for (var n = 0; n < clearOnInput.length; n++) {
             (function(id) {
                 var el = document.getElementById(id);
                 if (el) {
@@ -264,33 +418,36 @@
                         if (errEl) errEl.style.display = 'none';
                     });
                 }
-            })(inputs[n]);
+            })(clearOnInput[n]);
         }
 
-        // Contact method toggle
+        /* --- Contact Method Toggle --- */
         var radios = document.querySelectorAll('input[name="contactMethod"]');
         for (var r = 0; r < radios.length; r++) {
             (function(radio) {
                 radio.addEventListener('change', function() {
                     var wrapper = document.getElementById('dynamic-contact-wrapper');
-                    if (this.value === 'Telegram') {
-                        wrapper.classList.remove('hidden');
-                    } else {
-                        wrapper.classList.add('hidden');
+                    if (wrapper) {
+                        if (this.value === 'Telegram') {
+                            wrapper.style.display = 'block';
+                        } else {
+                            wrapper.style.display = 'none';
+                        }
                     }
                 });
             })(radios[r]);
         }
 
-        // Consent
+        /* --- Consent --- */
         var consent = document.getElementById('consent_check');
         if (consent) {
             consent.addEventListener('change', function() {
-                document.getElementById('err_consent').style.display = 'none';
+                var errConsent = document.getElementById('err_consent');
+                if (errConsent) errConsent.style.display = 'none';
             });
         }
 
-        // File upload
+        /* --- File Upload --- */
         var dropzone = document.getElementById('dropzone');
         var fileInput = document.getElementById('file_input');
         var fileList = document.getElementById('file-list');
@@ -305,15 +462,19 @@
                     fileList.innerHTML = '';
                     for (var f = 0; f < this.files.length; f++) {
                         var div = document.createElement('div');
-                        div.className = 'text-sm text-slate-600 flex items-center gap-2';
-                        div.innerHTML = '<i data-lucide="file" class="w-4 h-4 text-physio-500"></i> ' + this.files[f].name;
+                        div.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; background: #fff; border: 1px solid #e2e8f0; border-radius: 0.75rem; font-size: 0.875rem;';
+                        div.innerHTML = '<span>' + this.files[f].name + '</span><span style="color: #94a3b8; font-size: 0.75rem;">' + (this.files[f].size / 1024).toFixed(1) + ' KB</span>';
                         fileList.appendChild(div);
                     }
-                    if (window.lucide) window.lucide.createIcons();
                 }
             });
         }
     }
 
-    document.addEventListener('DOMContentLoaded', init);
+    /* ============ START ============ */
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
 })();

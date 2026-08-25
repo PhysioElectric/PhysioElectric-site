@@ -777,34 +777,58 @@ html[dir="rtl"] #processTimeline .timeline-progress {
 @keyframes dashFlow {
     to { stroke-dashoffset: -16; }
 }
-/* Contact Form Styles */
+
+
+/* =============================================================
+   CONTACT FORM - Multi-step Project Request
+   ============================================================= */
+
+/* ---------- Abstract Tech Background ---------- */
 .tech-bg {
     position: absolute;
     inset: 0;
     z-index: -1;
     background-size: 40px 40px;
     opacity: 0.5;
+    mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
 }
 
+/* ---------- FORM STEPS - CRITICAL ---------- */
 .form-step {
-    display: none;
+    display: none !important;
     opacity: 0;
-    transform: translateY(15px);
+    transform: translateY(15px) scale(0.98);
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .form-step.active {
-    display: block;
+    display: block !important;
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
 }
 
+/* ---------- SELECTION CARDS (Step 1) ---------- */
 .selection-card {
     border: 1.5px solid #e2e8f0;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
     position: relative;
     background-color: #ffffff;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.selection-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: transparent;
+    transition: background 0.3s ease;
 }
 
 .selection-card:hover {
@@ -817,6 +841,11 @@ html[dir="rtl"] #processTimeline .timeline-progress {
     border-color: #0ea5e9;
     background: linear-gradient(145deg, #f0f9ff 0%, #ffffff 100%);
     box-shadow: 0 0 0 2px #0ea5e9, 0 8px 25px rgba(14, 165, 233, 0.25);
+    transform: translateY(-2px);
+}
+
+.selection-card.selected::before {
+    background: linear-gradient(90deg, #0ea5e9, #38bdf8);
 }
 
 .selection-card.selected .icon-wrap {
@@ -825,10 +854,38 @@ html[dir="rtl"] #processTimeline .timeline-progress {
     box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
 }
 
+.selection-card .check-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.selection-card .check-circle i,
+.selection-card .check-circle svg {
+    display: none !important;
+}
+
+.selection-card.selected .check-circle i,
+.selection-card.selected .check-circle svg {
+    display: block !important;
+}
+
+.selection-card.selected .check-circle {
+    background-color: #0ea5e9;
+    border-color: #0ea5e9;
+}
+
+/* ---------- CUSTOM INPUTS ---------- */
 .custom-input {
     background-color: #f8fafc;
     border: 1.5px solid #e2e8f0;
     transition: all 0.3s ease;
+    width: 100%;
+    padding: 0.875rem 1.25rem;
+    border-radius: 0.75rem;
+    font-size: 0.95rem;
+    color: #1e293b;
+    outline: none;
 }
 
 .custom-input:hover {
@@ -843,6 +900,26 @@ html[dir="rtl"] #processTimeline .timeline-progress {
     box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15);
 }
 
+.custom-input::placeholder {
+    color: #94a3b8;
+}
+
+textarea.custom-input {
+    resize: none;
+    line-height: 1.8;
+}
+
+/* ---------- ERROR STATES ---------- */
+.error-field {
+    border-color: #ef4444 !important;
+    background-color: #fef2f2 !important;
+}
+
+.error-field:focus {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15) !important;
+}
+
 .error-message {
     color: #ef4444;
     font-size: 0.875rem;
@@ -851,33 +928,248 @@ html[dir="rtl"] #processTimeline .timeline-progress {
     font-weight: 500;
 }
 
-.error-field {
-    border-color: #ef4444 !important;
-    background-color: #fef2f2 !important;
+.error-message.show {
+    display: block;
 }
 
+/* ---------- DROPZONE (File Upload) ---------- */
 .dropzone {
     border: 2px dashed #cbd5e1;
     transition: all 0.3s ease;
     background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    cursor: pointer;
 }
 
-.dropzone:hover, .dropzone.dragover {
+.dropzone:hover {
+    border-color: #94a3b8;
+    background: #f8fafc;
+}
+
+.dropzone.dragover {
     border-color: #0ea5e9;
     background: #f0f9ff;
+    transform: scale(1.02);
+    box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
 }
 
-.blueprint-line {
+/* ---------- BLUEPRINT SIDEBAR ---------- */
+#blueprint-list {
+    position: relative;
+    padding-left: 0;
+    margin: 0;
+}
+
+/* Gray connecting line */
+#blueprint-list::before {
+    content: '';
     position: absolute;
-    top: 24px;
-    bottom: 24px;
+    top: 14px;
+    bottom: 14px;
+    left: 13px;
     width: 2px;
     background: #e2e8f0;
-    left: 11px;
     z-index: 0;
 }
 
-html[dir="rtl"] .blueprint-line {
+/* Blue progress line */
+#blueprint-list::after {
+    content: '';
+    position: absolute;
+    top: 14px;
+    left: 13px;
+    width: 2px;
+    background: #0ea5e9;
+    z-index: 1;
+    height: 0%;
+    transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 8px rgba(14, 165, 233, 0.4);
+}
+
+/* RTL */
+html[dir="rtl"] #blueprint-list::before {
     left: auto;
-    right: 11px;
+    right: 13px;
+}
+
+html[dir="rtl"] #blueprint-list::after {
+    left: auto;
+    right: 13px;
+}
+
+/* Progress states */
+#blueprint-list[data-progress="0"]::after { height: 0%; }
+#blueprint-list[data-progress="1"]::after { height: 20%; }
+#blueprint-list[data-progress="2"]::after { height: 40%; }
+#blueprint-list[data-progress="3"]::after { height: 60%; }
+#blueprint-list[data-progress="4"]::after { height: 80%; }
+#blueprint-list[data-progress="5"]::after { height: 100%; }
+
+/* Blueprint items */
+#blueprint-list li {
+    position: relative;
+    z-index: 2;
+}
+
+/* ---------- BLUEPRINT DOTS ---------- */
+#blueprint-list .bp-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid #cbd5e1;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+#blueprint-list .bp-dot.completed {
+    border-color: #22c55e;
+    background: #22c55e;
+    box-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
+}
+
+#blueprint-list .bp-dot.active {
+    border-color: #0ea5e9;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15);
+}
+
+#blueprint-list .bp-dot.future {
+    border-color: #cbd5e1;
+    background: #ffffff;
+}
+
+/* ---------- RADIO PILLS ---------- */
+input[type="radio"].peer:checked + div {
+    background-color: #0ea5e9;
+    border-color: #0ea5e9;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+}
+
+/* ---------- MOBILE PROGRESS ---------- */
+#mobile-progress-bar {
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---------- SUCCESS STEP ---------- */
+#step-success.active {
+    display: block !important;
+}
+
+/* ---------- NAVIGATION BUTTONS ---------- */
+#btn-next {
+    position: relative;
+    overflow: hidden;
+}
+
+#btn-next:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Shimmer effect on Next button */
+#btn-next::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+#btn-next:hover::before {
+    left: 100%;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 768px) {
+    .form-step {
+        padding: 0;
+    }
+    
+    .selection-card {
+        padding: 1rem !important;
+    }
+    
+    .selection-card h4 {
+        font-size: 1rem;
+    }
+    
+    .selection-card p {
+        font-size: 0.8rem;
+    }
+    
+    #blueprint-list {
+        display: none;
+    }
+}
+
+/* ---------- CHAR COUNTER ---------- */
+#char-counter {
+    font-family: 'JetBrains Mono', monospace, 'Vazirmatn';
+    font-size: 0.75rem;
+    background: #f1f5f9;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    color: #94a3b8;
+}
+
+/* ---------- CONSENT CHECKBOX ---------- */
+#consent_check.peer:checked + div {
+    background-color: #0ea5e9;
+    border-color: #0ea5e9;
+}
+
+#consent_check.peer:checked + div i,
+#consent_check.peer:checked + div svg {
+    opacity: 1;
+}
+
+/* ---------- ANIMATIONS ---------- */
+@keyframes shimmer {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.spinner {
+    animation: spin 1s linear infinite;
+}
+
+/* ---------- FIX: HIDDEN CLASS ---------- */
+.hidden {
+    display: none !important;
+}
+
+/* ---------- FILE LIST ---------- */
+#file-list:empty {
+    display: none;
+}
+
+#file-list .file-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+}
+
+#file-list .file-item:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }

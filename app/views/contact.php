@@ -57,11 +57,13 @@ $lang = lang();
                 
                 <div class="relative">
                     <div class="blueprint-line"></div>
-                    <ul class="space-y-8 relative z-10" id="blueprint-list"></ul>
+                    <ul class="space-y-8 relative z-10" id="blueprint-list" data-progress="0"></ul>
                 </div>
 
                 <div class="mt-12 pt-6 border-t border-slate-100 flex items-center gap-3 bg-slate-50/50 p-4 rounded-xl">
-                    <div class="bg-green-100 text-green-600 p-1.5 rounded-full"><i data-lucide="shield-check" class="w-4 h-4"></i></div>
+                    <div class="bg-green-100 text-green-600 p-1.5 rounded-full">
+                        <i data-lucide="shield-check" class="w-4 h-4"></i>
+                    </div>
                     <span class="text-xs text-slate-600 font-medium leading-relaxed"><?= t('contact.secure') ?></span>
                 </div>
             </div>
@@ -70,7 +72,7 @@ $lang = lang();
         <!-- Form Container -->
         <section class="w-full lg:w-2/3 bg-white rounded-3xl ring-1 ring-slate-200 p-6 sm:p-10 min-h-[500px] relative overflow-hidden" id="form-container">
             
-            <!-- STEP 1: Category -->
+            <!-- ====== STEP 1: Category Selection ====== -->
             <div id="step-1" class="form-step active">
                 <h2 class="text-2xl sm:text-3xl font-bold text-physio-950 mb-3"><?= e(t('contact.s1.title')) ?></h2>
                 <p class="text-slate-500 mb-8 text-lg"><?= e(t('contact.s1.sub')) ?></p>
@@ -93,7 +95,7 @@ $lang = lang();
                                 <i data-lucide="<?= e($c['icon']) ?>" class="w-6 h-6"></i>
                             </div>
                             <div class="check-circle w-6 h-6 rounded-full border-2 border-slate-200 flex items-center justify-center bg-white transition-all">
-                                <i data-lucide="check" class="w-3.5 h-3.5 opacity-0 text-physio-600" style="display:none;"></i>
+                                <i data-lucide="check" class="w-3.5 h-3.5 text-white" style="display: none;"></i>
                             </div>
                         </div>
                         <h4 class="font-bold text-slate-800 mb-2 text-lg"><?= e($c['t']) ?></h4>
@@ -102,14 +104,14 @@ $lang = lang();
                     <?php endforeach; ?>
                 </div>
                 
-                <div id="step-1-error" class="bg-red-50 p-3 rounded-lg border border-red-100 text-red-600 text-sm font-medium items-center gap-2" style="display:none;">
-                    <i data-lucide="alert-circle" class="w-4 h-4 inline"></i>
+                <div id="step-1-error" class="bg-red-50 p-3 rounded-lg border border-red-100 text-red-600 text-sm font-medium flex items-center gap-2" style="display: none;">
+                    <i data-lucide="alert-circle" class="w-4 h-4"></i>
                     <span><?= e(t('contact.err.selectOne')) ?></span>
                 </div>
             </div>
 
-            <!-- STEP 2: Client Info -->
-            <div id="step-2" class="form-step">
+            <!-- ====== STEP 2: Client Info ====== -->
+            <div id="step-2" class="form-step" style="display: none;">
                 <h2 class="text-2xl sm:text-3xl font-bold text-physio-950 mb-3"><?= e(t('contact.s2.title')) ?></h2>
                 <p class="text-slate-500 mb-8 text-lg"><?= e(t('contact.s2.sub')) ?></p>
                 
@@ -117,7 +119,7 @@ $lang = lang();
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-2"><?= t('contact.lbl.name') ?></label>
                         <input type="text" id="inp_name" class="custom-input w-full px-5 py-3.5 rounded-xl text-slate-800" placeholder="<?= $lang === 'fa' ? 'نام و نام خانوادگی شما' : 'Your full name' ?>">
-                        <div class="error-message" id="err_name"><?= e(t('contact.err.req')) ?></div>
+                        <div class="error-message" id="err_name" style="display: none;"><?= e(t('contact.err.req')) ?></div>
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-2"><?= e(t('contact.lbl.company')) ?></label>
@@ -126,16 +128,16 @@ $lang = lang();
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-2"><?= t('contact.lbl.email') ?></label>
                         <input type="email" id="inp_email" class="custom-input w-full px-5 py-3.5 rounded-xl text-slate-800 text-left" dir="ltr" placeholder="name@company.com">
-                        <div class="error-message" id="err_email"><?= e(t('contact.err.email')) ?></div>
+                        <div class="error-message" id="err_email" style="display: none;"><?= e(t('contact.err.email')) ?></div>
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-2"><?= t('contact.lbl.phone') ?></label>
                         <input type="tel" id="inp_phone" class="custom-input w-full px-5 py-3.5 rounded-xl text-slate-800 text-left" dir="ltr" placeholder="+98 ...">
-                        <div class="error-message" id="err_phone"><?= e(t('contact.err.req')) ?></div>
+                        <div class="error-message" id="err_phone" style="display: none;"><?= e(t('contact.err.req')) ?></div>
                     </div>
                     <div class="md:col-span-2 pt-4">
                         <label class="block text-sm font-semibold text-slate-700 mb-3"><?= e(t('contact.lbl.method')) ?></label>
-                        <div class="flex flex-wrap gap-3" id="contact-method-group">
+                        <div class="flex flex-wrap gap-3">
                             <label class="cursor-pointer">
                                 <input type="radio" name="contactMethod" value="Email" class="peer sr-only" checked>
                                 <div class="px-6 py-3 rounded-full border-2 border-slate-200 text-sm font-semibold text-slate-600 peer-checked:bg-physio-600 peer-checked:border-physio-600 peer-checked:text-white transition-all flex items-center gap-2">
@@ -156,17 +158,17 @@ $lang = lang();
                             </label>
                         </div>
                         
-                        <div id="dynamic-contact-wrapper" class="hidden mt-6">
+                        <div id="dynamic-contact-wrapper" style="display: none;" class="mt-6">
                             <label class="block text-sm font-semibold text-slate-700 mb-2"><?= t('contact.lbl.tgId') ?></label>
                             <input type="text" id="inp_contact_id" class="custom-input w-full md:w-1/2 px-5 py-3.5 rounded-xl text-slate-800 text-left" dir="ltr" placeholder="@username">
-                            <div class="error-message" id="err_contact_id"><?= e(t('contact.err.req')) ?></div>
+                            <div class="error-message" id="err_contact_id" style="display: none;"><?= e(t('contact.err.req')) ?></div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- STEP 3: Description -->
-            <div id="step-3" class="form-step">
+            <!-- ====== STEP 3: Description ====== -->
+            <div id="step-3" class="form-step" style="display: none;">
                 <h2 class="text-2xl sm:text-3xl font-bold text-physio-950 mb-3"><?= e(t('contact.s3.title')) ?></h2>
                 <p class="text-slate-500 mb-8 text-lg"><?= e(t('contact.s3.sub')) ?></p>
                 
@@ -174,13 +176,13 @@ $lang = lang();
                 <textarea id="inp_desc" rows="12" class="custom-input w-full px-5 py-4 rounded-xl text-slate-800 resize-none leading-relaxed" maxlength="3000" placeholder="<?= $lang === 'fa' ? 'ایده، مشکل، نیازمندی‌ها را توضیح دهید...' : 'Describe your idea, problem, requirements...' ?>"></textarea>
                 
                 <div class="flex justify-between items-center mt-3">
-                    <div class="error-message !mt-0" id="err_desc"><?= e(t('contact.err.desc')) ?></div>
+                    <div class="error-message" id="err_desc" style="display: none;"><?= e(t('contact.err.desc')) ?></div>
                     <span class="text-xs font-mono text-slate-400 bg-slate-100 px-2 py-1 rounded-md" id="char-counter">0 / 3000</span>
                 </div>
             </div>
 
-            <!-- STEP 4: Scope -->
-            <div id="step-4" class="form-step">
+            <!-- ====== STEP 4: Scope ====== -->
+            <div id="step-4" class="form-step" style="display: none;">
                 <h2 class="text-2xl sm:text-3xl font-bold text-physio-950 mb-3"><?= e(t('contact.s4.title')) ?></h2>
                 <p class="text-slate-500 mb-10 text-lg"><?= e(t('contact.s4.sub')) ?></p>
                 
@@ -201,8 +203,8 @@ $lang = lang();
                 </div>
             </div>
 
-            <!-- STEP 5: Additional -->
-            <div id="step-5" class="form-step">
+            <!-- ====== STEP 5: Additional ====== -->
+            <div id="step-5" class="form-step" style="display: none;">
                 <h2 class="text-2xl sm:text-3xl font-bold text-physio-950 mb-3"><?= e(t('contact.s5.title')) ?></h2>
                 <p class="text-slate-500 mb-8 text-lg"><?= e(t('contact.s5.sub')) ?></p>
                 
@@ -219,8 +221,8 @@ $lang = lang();
                 <div id="file-list" class="mt-4 space-y-3"></div>
             </div>
 
-            <!-- STEP 6: Review -->
-            <div id="step-6" class="form-step">
+            <!-- ====== STEP 6: Review ====== -->
+            <div id="step-6" class="form-step" style="display: none;">
                 <h2 class="text-2xl sm:text-3xl font-bold text-physio-950 mb-3"><?= e(t('contact.s6.title')) ?></h2>
                 <p class="text-slate-500 mb-8 text-lg"><?= e(t('contact.s6.sub')) ?></p>
                 
@@ -269,11 +271,11 @@ $lang = lang();
                     </div>
                     <span class="text-sm text-slate-600"><?= e(t('contact.rev.consent')) ?></span>
                 </label>
-                <div class="error-message" id="err_consent"><?= e(t('contact.err.consent')) ?></div>
+                <div class="error-message" id="err_consent" style="display: none;"><?= e(t('contact.err.consent')) ?></div>
             </div>
 
-            <!-- SUCCESS -->
-            <div id="step-success" class="form-step hidden text-center py-16">
+            <!-- ====== SUCCESS ====== -->
+            <div id="step-success" class="form-step text-center py-16" style="display: none;">
                 <div class="w-28 h-28 bg-green-50 rounded-full mx-auto flex items-center justify-center mb-8">
                     <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
                         <i data-lucide="check" class="w-10 h-10 text-green-600"></i>
@@ -291,9 +293,9 @@ $lang = lang();
                 </div>
             </div>
 
-            <!-- NAVIGATION -->
+            <!-- ====== NAVIGATION ====== -->
             <div class="mt-12 pt-8 border-t border-slate-100 flex justify-between items-center" id="form-navigation">
-                <button id="btn-prev" class="hidden px-6 py-3.5 text-sm font-bold text-slate-500 hover:text-slate-800 rounded-full flex items-center gap-2">
+                <button id="btn-prev" class="px-6 py-3.5 text-sm font-bold text-slate-500 hover:text-slate-800 rounded-full flex items-center gap-2" style="display: none;">
                     <i data-lucide="arrow-left" class="w-4 h-4 rtl:rotate-180"></i>
                     <span><?= e(t('contact.btn.prev')) ?></span>
                 </button>
@@ -324,6 +326,7 @@ $lang = lang();
     </div>
 </section>
 
+<!-- Pass data to JS -->
 <script>
 var PE_CONTACT_LANG = '<?= e($lang) ?>';
 var PE_CONTACT_DICT = {
