@@ -102,6 +102,7 @@ $year     = (string) date('Y');
 
 <!-- Scripts -->
 <script src="/assets/js/lucide.min.js"></script>
+<script src="/assets/js/contact.js"></script>
 <script src="/assets/js/main.js" data-lang="<?= e($lang) ?>"></script>
 </body>
 </html>

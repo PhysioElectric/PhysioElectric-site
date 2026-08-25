@@ -777,3 +777,107 @@ html[dir="rtl"] #processTimeline .timeline-progress {
 @keyframes dashFlow {
     to { stroke-dashoffset: -16; }
 }
+/* Contact Form Styles */
+.tech-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-size: 40px 40px;
+    opacity: 0.5;
+}
+
+.form-step {
+    display: none;
+    opacity: 0;
+    transform: translateY(15px);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-step.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.selection-card {
+    border: 1.5px solid #e2e8f0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    background-color: #ffffff;
+}
+
+.selection-card:hover {
+    border-color: #bae6fd;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 20px -8px rgba(14, 165, 233, 0.15);
+}
+
+.selection-card.selected {
+    border-color: #0ea5e9;
+    background: linear-gradient(145deg, #f0f9ff 0%, #ffffff 100%);
+    box-shadow: 0 0 0 2px #0ea5e9, 0 8px 25px rgba(14, 165, 233, 0.25);
+}
+
+.selection-card.selected .icon-wrap {
+    background-color: #0ea5e9;
+    color: white;
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+}
+
+.custom-input {
+    background-color: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.custom-input:hover {
+    border-color: #cbd5e1;
+    background-color: #ffffff;
+}
+
+.custom-input:focus {
+    outline: none;
+    background-color: #ffffff;
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15);
+}
+
+.error-message {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-top: 0.35rem;
+    display: none;
+    font-weight: 500;
+}
+
+.error-field {
+    border-color: #ef4444 !important;
+    background-color: #fef2f2 !important;
+}
+
+.dropzone {
+    border: 2px dashed #cbd5e1;
+    transition: all 0.3s ease;
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.dropzone:hover, .dropzone.dragover {
+    border-color: #0ea5e9;
+    background: #f0f9ff;
+}
+
+.blueprint-line {
+    position: absolute;
+    top: 24px;
+    bottom: 24px;
+    width: 2px;
+    background: #e2e8f0;
+    left: 11px;
+    z-index: 0;
+}
+
+html[dir="rtl"] .blueprint-line {
+    left: auto;
+    right: 11px;
+}
