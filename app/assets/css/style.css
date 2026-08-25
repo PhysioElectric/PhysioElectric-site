@@ -675,3 +675,97 @@ html[dir="rtl"] .prose-pe blockquote {
     transform-style: preserve-3d;
     will-change: transform;
 }
+
+/* ============ NEW: Line dash animation for About SVG ============ */
+@keyframes dash-flow {
+    to { stroke-dashoffset: -24; }
+}
+.line-dashed {
+    stroke-dasharray: 6, 6;
+    animation: dash-flow 2s linear infinite;
+}
+.line-dashed-reverse {
+    stroke-dasharray: 6, 6;
+    animation: dash-flow 2s linear infinite reverse;
+}
+
+/* ============ NEW: Banner parallax ============ */
+#banner .bg-fixed {
+    background-attachment: fixed;
+}
+@media (max-width: 768px) {
+    #banner .bg-fixed {
+        background-attachment: scroll;
+    }
+}
+
+/* ============ IMPROVED: Tech tags ============ */
+.tech-tag {
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 500;
+    backdrop-filter: blur(8px);
+    animation: floatTag 6s ease-in-out infinite;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+}
+.tech-tag:hover {
+    background: rgba(14, 165, 233, 0.3);
+    border-color: rgba(14, 165, 233, 0.5);
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(14, 165, 233, 0.4);
+}
+
+/* ============ FIX: Timeline center alignment ============ */
+#processTimeline {
+    position: relative;
+}
+
+#processTimeline .timeline-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e2e8f0;
+    left: 31px; /* نصف w-16 (64px) = 32px - 1px */
+    transform: translateX(-50%);
+    z-index: 0;
+}
+
+#processTimeline .timeline-progress {
+    position: absolute;
+    top: 0;
+    width: 2px;
+    background: #0ea5e9;
+    left: 31px;
+    transform: translateX(-50%);
+    height: 0%;
+    transition: height 0.3s ease;
+    z-index: 1;
+}
+
+/* RTL */
+html[dir="rtl"] #processTimeline .timeline-line,
+html[dir="rtl"] #processTimeline .timeline-progress {
+    left: auto;
+    right: 31px;
+    transform: translateX(50%);
+}
+
+/* آیکون‌ها بالای خط */
+#processTimeline .w-16 {
+    position: relative;
+    z-index: 2;
+}
+
+/* موبایل */
+@media (max-width: 768px) {
+    .timeline-line,
+    .timeline-progress {
+        display: none;
+    }
+}

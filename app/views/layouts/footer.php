@@ -37,19 +37,22 @@ $year     = (string) date('Y');
             </div>
 
             <!-- Categories -->
-            <div>
-                <h4 class="text-white font-semibold mb-4 text-sm uppercase tracking-wider"><?= e(t('footer.categories')) ?></h4>
-                <ul class="space-y-2.5 text-sm">
-                    <?php foreach ($catList as $c): ?>
-                    <li>
-                        <a href="<?= e(url($lang, 'projects/' . e($c['slug']))) ?>" class="hover:text-physio-400 transition-colors">
-                            <?= e(L($c, 'name')) ?>
-                        </a>
-                    </li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-
+<div>
+    <h4 class="text-white font-semibold mb-4 text-sm uppercase tracking-wider"><?= e(t('footer.categories')) ?></h4>
+    <ul class="space-y-2.5 text-sm">
+        <?php if (empty($catList)): ?>
+            <li class="text-slate-500">—</li>
+        <?php else: ?>
+            <?php foreach ($catList as $c): ?>
+            <li>
+                <a href="<?= e(url($lang, 'projects/' . e($c['slug']))) ?>" class="hover:text-physio-400 transition-colors">
+                    <?= e(L($c, 'name')) ?>
+                </a>
+            </li>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </ul>
+</div>
             <!-- Contact -->
             <div>
                 <h4 class="text-white font-semibold mb-4 text-sm uppercase tracking-wider"><?= e(t('footer.contact')) ?></h4>

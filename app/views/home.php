@@ -1,9 +1,12 @@
 <?php
 /**
- * Home page.
+ * Home page - Merged version with best of both designs.
  * Expects: $featured (projects), $latestPosts, $categories.
  */
 $site = setting('site_name', 'PhysioElectric');
+$heroTitle = setting(lang() === 'fa' ? 'hero_title_fa' : 'hero_title_en', t('hero.title'));
+$heroSub = setting(lang() === 'fa' ? 'hero_sub_fa' : 'hero_sub_en', t('hero.subtitle'));
+$heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('hero.badge'));
 ?>
 
 <!-- ============ HERO ============ -->
@@ -11,25 +14,27 @@ $site = setting('site_name', 'PhysioElectric');
     <canvas id="hero-canvas"></canvas>
 
     <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 w-full text-center">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-physio-100/50 border border-physio-200 text-physio-600 text-xs font-semibold uppercase tracking-wider mb-12 reveal">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-physio-100/50 border border-physio-200 text-physio-600 text-xs font-semibold uppercase tracking-wider mb-8 reveal">
             <span class="w-2 h-2 rounded-full bg-physio-500 animate-pulse"></span>
-            <span><?= e((string) setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', 'طراحی، توسعه و هوشمندسازی')) ?></span>
+            <span><?= e($heroBadge) ?></span>
         </div>
 
-        <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight max-w-5xl mx-auto leading-[4.5rem] md:leading-[6.5rem] reveal reveal-delay-1 pb-4">
-            <span class="text-transparent bg-clip-text bg-gradient-to-b from-slate-900 to-slate-600 drop-shadow-md block pb-6 pt-2">
-                تجسم ایده های مهندسی
-                <br>
-                و خلق مسیرهای هوشمند آینده
-            </span>
+        <h1 class="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-physio-950 max-w-5xl mx-auto leading-[1.1] reveal reveal-delay-1">
+            <?php if (lang() === 'fa'): ?>
+                مهندسی ایده‌ها.<br>
+                <span class="text-gradient">خلق راهکارهای هوشمند.</span>
+            <?php else: ?>
+                Engineering Ideas.<br>
+                <span class="text-gradient">Building Intelligent Solutions.</span>
+            <?php endif; ?>
         </h1>
 
-        <p class="mt-8 text-xl md:text-2xl text-slate-500 max-w-3xl mx-auto font-medium leading-[3rem] md:leading-[3.5rem] reveal reveal-delay-2">
-            ما با تلفیق برنامه نویسی پیشرفته و الکترونیک صنعتی مرزهای تکنولوژی را جابجا میکنیم و راهکارهایی بی نقص برای چالش های پیچیده شما میسازیم
+        <p class="mt-8 text-lg md:text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed reveal reveal-delay-2">
+            <?= e($heroSub) ?>
         </p>
 
-        <div class="mt-16 flex flex-col sm:flex-row items-center justify-center gap-4 reveal reveal-delay-3">
-            <a href="<?= e(url(lang(), 'projects')) ?>" class="btn-shine w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-medium text-white bg-physio-900 hover:bg-physio-950 rounded-full shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
+        <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 reveal reveal-delay-3">
+            <a href="<?= e(url(lang(), 'projects')) ?>" class="btn-shine relative w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-medium text-white bg-physio-900 hover:bg-physio-950 rounded-full shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 overflow-hidden">
                 <?= e(t('hero.ctaPrimary')) ?>
             </a>
             <a href="<?= e(url(lang(), 'contact')) ?>" class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-base font-medium text-physio-900 bg-white hover:bg-slate-50 border border-slate-200 rounded-full shadow-sm hover:shadow-md transition-all">
@@ -44,7 +49,7 @@ $site = setting('site_name', 'PhysioElectric');
     </div>
 </section>
 
-<!-- ============ CAPABILITIES ============ -->
+<!-- ============ CAPABILITIES (6 items - improved) ============ -->
 <section id="capabilities" class="py-24 md:py-32 bg-white relative z-20">
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
         <div class="mb-16 md:mb-24 reveal max-w-2xl">
@@ -57,12 +62,10 @@ $site = setting('site_name', 'PhysioElectric');
             <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24 reveal">
                 <div class="w-full lg:w-1/2">
                     <span class="text-physio-500 font-bold text-xl mb-2 block">01</span>
-                    <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4">هسته فناوری و برنامه‌نویسی</h3>
-                    <p class="text-slate-600 mb-8 text-lg leading-[2.2rem] text-justify">
-                        تسلط عمیق بر زبان‌های برنامه‌نویسی متنوع از جمله C++، Python، و PHP به ما این امکان را می‌دهد که معماری نرم‌افزارهای مقیاس‌پذیر و بهینه را طراحی کنیم. از مدیریت دقیق حافظه و طراحی الگوریتم‌های پیچیده تا پیاده‌سازی ساختارهای شی‌گرا و توسعه سیستم‌های نرم‌افزاری پایدار، ما زیرساختی مستحکم برای پروژه‌های مهندسی شما فراهم می‌کنیم. ما معتقدیم که انتخاب ابزار درست، کلید موفقیت هر پروژه است.
-                    </p>
+                    <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4"><?= e(t('cap.c0.title')) ?></h3>
+                    <p class="text-slate-600 mb-8 text-lg leading-[2.2rem] text-justify"><?= e(t('cap.c0.desc')) ?></p>
                     <a href="<?= e(url(lang(), 'projects')) ?>" class="inline-flex items-center text-physio-600 font-semibold group">
-                        مشاهده پروژه‌های نرم‌افزاری
+                        <?= e(t('cap.c0.link')) ?>
                         <i data-lucide="arrow-right" class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180"></i>
                     </a>
                 </div>
@@ -82,16 +85,51 @@ $site = setting('site_name', 'PhysioElectric');
                 </div>
             </div>
 
-            <!-- 02 Simulation -->
+            <!-- 02 Web Development (improved with mock browser) -->
             <div class="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-24 reveal">
                 <div class="w-full lg:w-1/2">
                     <span class="text-physio-500 font-bold text-xl mb-2 block">02</span>
-                    <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4">شبیه‌سازی و مدل‌سازی مهندسی</h3>
-                    <p class="text-slate-600 mb-8 text-lg leading-[2.2rem] text-justify">
-                        پیش از ساخت هر نمونه فیزیکی، رفتار سیستم‌ها را با بالاترین دقت تحلیل و پیش‌بینی می‌کنیم. تخصص ما شامل مدل‌سازی المان محدود (FEM) در COMSOL، تحلیل و طراحی مدارهای الکترونیکی در OrCAD PSpice، و بررسی سیستم‌های کنترل در MATLAB است. این رویکرد علمی، هزینه‌های توسعه را کاهش داده و قابلیت اطمینان سیستم نهایی را در شرایط واقعی به حداکثر می‌رساند.
-                    </p>
+                    <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4"><?= e(t('cap.c3.title')) ?></h3>
+                    <p class="text-slate-600 mb-8 text-lg leading-[2.2rem] text-justify"><?= e(t('cap.c3.desc')) ?></p>
+                    <a href="<?= e(url(lang(), 'projects/web-development')) ?>" class="inline-flex items-center text-physio-600 font-semibold group">
+                        <?= e(t('cap.c3.link')) ?>
+                        <i data-lucide="arrow-right" class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180"></i>
+                    </a>
+                </div>
+                <div class="w-full lg:w-1/2">
+                    <div class="mock-browser w-full h-[300px] flex flex-col transform transition-transform hover:scale-[1.02] duration-500">
+                        <div class="mock-browser-header">
+                            <span class="mock-dot"></span>
+                            <span class="mock-dot"></span>
+                            <span class="mock-dot"></span>
+                            <span class="ms-3 text-[10px] text-slate-400 font-mono">physioelectric.com</span>
+                        </div>
+                        <div class="p-6 flex-1 bg-slate-50 flex flex-col gap-4">
+                            <div class="w-1/3 h-4 bg-slate-200 rounded"></div>
+                            <div class="w-full h-32 bg-white border border-slate-100 rounded-lg shadow-sm flex items-center justify-center">
+                                <div class="w-1/2 h-2/3 flex flex-col gap-2">
+                                    <div class="w-full h-2 bg-physio-100 rounded"></div>
+                                    <div class="w-3/4 h-2 bg-physio-100 rounded"></div>
+                                    <div class="w-5/6 h-2 bg-physio-100 rounded"></div>
+                                </div>
+                            </div>
+                            <div class="flex gap-4">
+                                <div class="w-1/2 h-16 bg-white border border-slate-100 rounded shadow-sm"></div>
+                                <div class="w-1/2 h-16 bg-white border border-slate-100 rounded shadow-sm"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 03 Simulation -->
+            <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24 reveal">
+                <div class="w-full lg:w-1/2">
+                    <span class="text-physio-500 font-bold text-xl mb-2 block">03</span>
+                    <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4"><?= e(t('cap.c1.title')) ?></h3>
+                    <p class="text-slate-600 mb-8 text-lg leading-[2.2rem] text-justify"><?= e(t('cap.c1.desc')) ?></p>
                     <a href="<?= e(url(lang(), 'projects/simulation')) ?>" class="inline-flex items-center text-physio-600 font-semibold group">
-                        مشاهده پروژه‌های شبیه‌سازی
+                        <?= e(t('cap.c1.link')) ?>
                         <i data-lucide="arrow-right" class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180"></i>
                     </a>
                 </div>
@@ -118,16 +156,14 @@ $site = setting('site_name', 'PhysioElectric');
                 </div>
             </div>
 
-            <!-- 03 Programming & AI -->
-            <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24 reveal">
+            <!-- 04 AI & Programming -->
+            <div class="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-24 reveal">
                 <div class="w-full lg:w-1/2">
-                    <span class="text-physio-500 font-bold text-xl mb-2 block">03</span>
-                    <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4">پردازش سیگنال و هوش مصنوعی</h3>
-                    <p class="text-slate-600 mb-8 text-lg leading-[2.2rem] text-justify">
-                        استخراج اطلاعات ارزشمند از داده‌های خام تخصص ماست. با بهره‌گیری از ابزارهای قدرتمند بینایی ماشین (OpenCV) و الگوریتم‌های هوش مصنوعی، سیستم‌هایی هوشمند برای ردیابی اهداف، تشخیص الگو، و اتوماسیون بصری می‌سازیم. همچنین در زمینه پردازش سیگنال‌های دیجیتال، راهکارهایی دقیق برای تحلیل و فیلترینگ داده‌های پیچیده ارائه می‌دهیم تا سیستم شما هوشمندانه تصمیم‌گیری کند.
-                    </p>
+                    <span class="text-physio-500 font-bold text-xl mb-2 block">04</span>
+                    <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4"><?= e(t('cap.c2.title')) ?></h3>
+                    <p class="text-slate-600 mb-8 text-lg leading-[2.2rem] text-justify"><?= e(t('cap.c2.desc')) ?></p>
                     <a href="<?= e(url(lang(), 'projects/programming')) ?>" class="inline-flex items-center text-physio-600 font-semibold group">
-                        مشاهده پروژه‌های هوش مصنوعی
+                        <?= e(t('cap.c2.link')) ?>
                         <i data-lucide="arrow-right" class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180"></i>
                     </a>
                 </div>
@@ -151,101 +187,118 @@ $site = setting('site_name', 'PhysioElectric');
                 </div>
             </div>
 
-            <!-- 04 Web Development -->
-            <div class="flex flex-col lg:flex-row-reverse items-center gap-12 lg:gap-24 reveal">
+            <!-- 05 IoT (improved with microchip) -->
+            <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24 reveal">
                 <div class="w-full lg:w-1/2">
-                    <span class="text-physio-500 font-bold text-xl mb-2 block">04</span>
-                    <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4">توسعه وب و پلتفرم‌های ابری</h3>
-                    <p class="text-slate-600 mb-8 text-lg leading-[2.2rem] text-justify">
-                        طراحی و پیاده‌سازی سامانه‌های تحت وب اختصاصی با رابط کاربری (UI) مدرن و تجربه کاربری (UX) روان. ما با استفاده از تکنولوژی‌هایی نظیر Tailwind CSS، JavaScript، و بک‌اند قدرتمند با معماری MVC، وب‌سایت‌ها و پنل‌های مدیریتی امن، سریع و واکنش‌گرا خلق می‌کنیم که به طور کامل با نیازهای کسب‌وکار و سیستم‌های سخت‌افزاری شما یکپارچه می‌شوند.
-                    </p>
-                    <a href="<?= e(url(lang(), 'projects/web-development')) ?>" class="inline-flex items-center text-physio-600 font-semibold group">
-                        مشاهده پروژه‌های وب
-                        <i data-lucide="arrow-right" class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180"></i>
-                    </a>
-                </div>
-                <div class="w-full lg:w-1/2">
-                    <div class="bg-slate-900 rounded-2xl h-[300px] flex items-center justify-center relative overflow-hidden shadow-lg">
-                        <div class="absolute inset-0 bg-gradient-radial from-physio-600/20 to-transparent"></div>
-                        <div class="relative z-10 flex items-end gap-3 h-40 items-center">
-                            <div class="flex items-end gap-3">
-                                <div class="w-3 h-16 bg-physio-500/80 rounded signal-bar-1"></div>
-                                <div class="w-3 h-24 bg-physio-500/80 rounded signal-bar-2"></div>
-                                <div class="w-3 h-20 bg-physio-500/80 rounded signal-bar-3"></div>
-                                <div class="w-3 h-28 bg-physio-400 rounded signal-bar-2"></div>
-                            </div>
-                            <div class="ms-6 bg-slate-800/80 backdrop-blur border border-slate-700 rounded-xl px-5 py-4">
-                                <p class="text-xs text-slate-400 mb-1">Uptime</p>
-                                <p class="text-2xl font-bold text-white">99.98%</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 05 IoT -->
-            <div class="pt-16 border-t border-slate-100 reveal">
-                <div class="mb-12">
                     <span class="text-physio-500 font-bold text-xl mb-2 block">05</span>
-                    <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4">هوشمندسازی و سیستم‌های نهفته</h3>
-                    <p class="text-slate-600 text-lg leading-[2.2rem] max-w-4xl text-justify mb-6">
-                        طراحی و پیاده‌سازی بردهای پردازشی قدرتمند و گره‌های صنعتی. از جمع‌آوری دقیق داده‌های سنسوری تا پردازش بی‌درنگ و کنترل عملگرها در بستر اینترنت اشیاء (IoT)، ما سخت‌افزار را به فرمان شما درمی‌آوریم. معماری پایدار میکروکنترلرها در کنار پروتکل‌های ارتباطی امن، هسته مرکزی اتوماسیون ما را تشکیل می‌دهد.
-                    </p>
+                    <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4"><?= e(t('cap.c4.title', ['default' => 'سیستم‌های نهفته و اینترنت اشیا'])) ?></h3>
+                    <p class="text-slate-600 mb-8 text-lg leading-[2.2rem] text-justify"><?= e(t('cap.c4.desc', ['default' => 'طراحی و برنامه‌نویسی بردهای Embedded با استفاده از STM32 و ESP32.'])) ?></p>
                     <a href="<?= e(url(lang(), 'projects/iot')) ?>" class="inline-flex items-center text-physio-600 font-semibold group">
-                        مشاهده پروژه‌های هوشمندسازی
+                        <?= e(t('cap.c4.link', ['default' => 'بررسی سیستم‌های هوشمند'])) ?>
                         <i data-lucide="arrow-right" class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180"></i>
                     </a>
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <!-- کارت 1 -->
-                    <div class="iot-card glass-card rounded-2xl p-8 hover:shadow-xl transition-all duration-300 bg-slate-50 border border-slate-100">
-                        <div class="iot-icon iot-icon-float w-16 h-16 rounded-xl bg-white shadow-sm flex items-center justify-center mb-6 text-slate-700">
-                            <i data-lucide="microchip" class="w-8 h-8"></i>
+                <div class="w-full lg:w-1/2">
+                    <div class="bg-slate-900 rounded-2xl h-[300px] flex items-center justify-center relative overflow-hidden shadow-lg border border-slate-800">
+                        <svg class="absolute inset-0 w-full h-full opacity-30" viewBox="0 0 200 200" preserveAspectRatio="none">
+                            <path d="M0 50 L50 50 L70 70 L100 70" fill="none" stroke="#0ea5e9" stroke-width="1.5" />
+                            <path d="M200 150 L150 150 L130 130 L100 130" fill="none" stroke="#0ea5e9" stroke-width="1.5" />
+                            <path d="M50 200 L50 150 L70 130 L100 130" fill="none" stroke="#0284c7" stroke-width="1.5" />
+                            <path d="M150 0 L150 50 L130 70 L100 70" fill="none" stroke="#0284c7" stroke-width="1.5" />
+                            <circle cx="100" cy="100" r="45" fill="none" stroke="rgba(14,165,233,0.3)" stroke-width="1" stroke-dasharray="4,4"/>
+                        </svg>
+                        <div class="relative z-10 w-32 h-32 bg-slate-800 rounded-lg border-2 border-slate-700 shadow-[0_0_25px_rgba(14,165,233,0.2)] flex items-center justify-center flex-col transform hover:scale-105 transition-transform duration-500">
+                            <div class="absolute -top-2.5 w-full flex justify-around px-3"><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div></div>
+                            <div class="absolute -bottom-2.5 w-full flex justify-around px-3"><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div></div>
+                            <div class="absolute -left-2.5 h-full flex flex-col justify-around py-3"><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div></div>
+                            <div class="absolute -right-2.5 h-full flex flex-col justify-around py-3"><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div></div>
+                            <div class="text-physio-500 font-mono text-lg font-bold tracking-wider mb-1">STM32</div>
+                            <div class="w-12 h-px bg-slate-600 my-1"></div>
+                            <div class="text-slate-400 font-mono text-sm">ESP32</div>
                         </div>
-                        <h4 class="text-xl font-bold text-physio-950 mb-3">پردازش صنعتی با STM32</h4>
-                        <p class="text-slate-500 leading-relaxed text-sm">
-                            استفاده از معماری قدرتمند ARM Cortex-M برای پردازش‌های سنگین و بلادرنگ. ایده‌آل برای کنترل دقیق موتورها، مکاترونیک پیشرفته و راه‌اندازی پروتکل‌های ارتباطی.
-                        </p>
-                    </div>
-                    
-                    <!-- کارت 2 -->
-                    <div class="iot-card glass-card rounded-2xl p-8 hover:shadow-xl transition-all duration-300 bg-slate-50 border border-slate-100 reveal-delay-1">
-                        <div class="iot-icon iot-icon-float w-16 h-16 rounded-xl bg-white shadow-sm flex items-center justify-center mb-6 text-physio-600">
-                            <i data-lucide="wifi" class="w-8 h-8"></i>
+                        <div class="absolute top-8 left-8 flex gap-1.5 items-end h-8">
+                            <div class="w-1.5 bg-physio-500 rounded-full signal-bar-1"></div>
+                            <div class="w-1.5 bg-physio-400 rounded-full signal-bar-2"></div>
+                            <div class="w-1.5 bg-physio-300 rounded-full signal-bar-3"></div>
                         </div>
-                        <h4 class="text-xl font-bold text-physio-950 mb-3">اینترنت اشیاء (ESP32)</h4>
-                        <p class="text-slate-500 leading-relaxed text-sm">
-                            توسعه شبکه‌های هوشمند با تراشه‌های وای‌فای و بلوتوث. بهترین انتخاب برای مانیتورینگ از راه دور، خانه‌های هوشمند و انتقال امن دیتای سنسورها به کلود.
-                        </p>
-                    </div>
-                    
-                    <!-- کارت 3 -->
-                    <div class="iot-card glass-card rounded-2xl p-8 hover:shadow-xl transition-all duration-300 bg-slate-50 border border-slate-100 reveal-delay-2">
-                        <div class="iot-icon iot-icon-float w-16 h-16 rounded-xl bg-white shadow-sm flex items-center justify-center mb-6 text-slate-700">
-                            <i data-lucide="settings-2" class="w-8 h-8"></i>
-                        </div>
-                        <h4 class="text-xl font-bold text-physio-950 mb-3">مکاترونیک و اتوماسیون</h4>
-                        <p class="text-slate-500 leading-relaxed text-sm">
-                            تلفیق بی‌نقص مکانیک، سخت‌افزار و نرم‌افزار. از طراحی PCB تا برنامه‌نویسی سطح پایین برای کنترل درایورها، سیستم‌های مبتنی بر فیدبک و اتوماسیون.
-                        </p>
                     </div>
                 </div>
             </div>
-
         </div>
+    </div>
+</section>
+
+<!-- ============ ABOUT (NEW - from HTML version) ============ -->
+<section id="about" class="py-24 md:py-32 bg-white relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div class="reveal">
+                <h2 class="text-4xl md:text-6xl font-bold tracking-tight text-physio-950 leading-tight mb-8">
+                    <span class="block"><?= e(t('about.title_part1')) ?></span>
+                    <span class="block text-slate-400 mt-4"><?= e(t('about.title_part2')) ?></span>
+                </h2>
+                
+                <p class="text-xl text-slate-600 mb-6 font-light leading-relaxed"><?= e(t('about.desc1')) ?></p>
+                <p class="text-lg text-slate-500 mb-8 leading-relaxed"><?= e(t('about.desc2')) ?></p>
+                
+                <blockquote class="border-l-4 border-physio-500 pl-6 rtl:border-l-0 rtl:border-r-4 rtl:pl-0 rtl:pr-6 italic text-slate-700 font-medium text-lg bg-slate-50 py-4 rounded-r-lg rtl:rounded-r-none rtl:rounded-l-lg mb-10">
+                    <?= e(t('about.quote')) ?>
+                </blockquote>
+
+                <a href="<?= e(url(lang(), 'about')) ?>" class="btn-shine relative overflow-hidden inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-physio-600 to-physio-900 text-white font-bold rounded-full shadow-lg hover:shadow-glow hover:-translate-y-1 transition-all duration-300">
+                    <span class="relative z-10"><?= e(t('about.cta')) ?></span>
+                    <i data-lucide="arrow-right" class="w-5 h-5 relative z-10 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180"></i>
+                </a>
+            </div>
+            
+            <div class="flex justify-center reveal reveal-delay-2 h-[400px] relative w-full">
+                <div class="relative w-full max-w-[400px] h-[400px] flex items-center justify-center">
+                    <svg class="absolute inset-0 w-full h-full pointer-events-none z-0" viewBox="0 0 400 400">
+                        <line x1="200" y1="200" x2="110" y2="110" stroke="#cbd5e1" stroke-width="2" class="line-dashed" />
+                        <line x1="200" y1="200" x2="300" y2="130" stroke="#cbd5e1" stroke-width="2" class="line-dashed-reverse" />
+                        <line x1="200" y1="200" x2="290" y2="290" stroke="#cbd5e1" stroke-width="2" class="line-dashed" />
+                        <line x1="200" y1="200" x2="100" y2="270" stroke="#0ea5e9" stroke-width="2" class="line-dashed-reverse opacity-60" />
+                    </svg>
+
+                    <div class="w-64 h-64 border border-slate-200 rounded-full absolute animate-[spin_20s_linear_infinite] z-0"></div>
+                    <div class="w-48 h-48 border border-physio-200 rounded-full absolute animate-[spin_15s_linear_infinite_reverse] z-0"></div>
+                    
+                    <div class="w-32 h-32 bg-gradient-to-br from-slate-100 to-slate-200 rounded-3xl rotate-45 shadow-premium flex items-center justify-center overflow-hidden z-10 relative border border-white">
+                        <div class="w-full h-full bg-physio-500/10 backdrop-blur flex items-center justify-center -rotate-45 font-bold text-physio-900 text-3xl tracking-tighter">PE</div>
+                    </div>
+                    
+                    <div class="absolute bg-white/90 backdrop-blur shadow-md border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold text-slate-700 z-20" style="top: 110px; left: 110px; transform: translate(-50%, -50%);"><?= e(t('about.label1')) ?></div>
+                    <div class="absolute bg-white/90 backdrop-blur shadow-md border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold text-slate-700 z-20" style="top: 130px; left: 300px; transform: translate(-50%, -50%);"><?= e(t('about.label2')) ?></div>
+                    <div class="absolute bg-white/90 backdrop-blur shadow-md border border-slate-200 px-4 py-2 rounded-xl text-sm font-bold text-slate-700 z-20" style="top: 290px; left: 290px; transform: translate(-50%, -50%);"><?= e(t('about.label3')) ?></div>
+                    <div class="absolute bg-white/90 backdrop-blur shadow-md border border-physio-200 px-4 py-2 rounded-xl text-sm font-bold text-physio-600 z-20" style="top: 270px; left: 100px; transform: translate(-50%, -50%);"><?= e(t('about.label4')) ?></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ BANNER (NEW - Parallax) ============ -->
+<section id="banner" class="w-full h-[50vh] md:h-[70vh] relative overflow-hidden flex items-center justify-center">
+    <div class="absolute inset-0 bg-[url('/assets/images/banner-bg.jpg')] bg-cover bg-center bg-fixed bg-no-repeat transition-transform duration-[10s] hover:scale-105"></div>
+    <div class="absolute inset-0 bg-physio-950/70 backdrop-blur-[2px] mix-blend-multiply"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-physio-950 via-transparent to-physio-950/40"></div>
+    
+    <div class="relative z-10 text-center px-6 reveal">
+        <h2 class="text-3xl md:text-5xl lg:text-7xl font-bold text-white tracking-widest uppercase mb-6"><?= e(t('banner.title')) ?></h2>
+        <p class="text-physio-100/80 text-lg md:text-xl font-light tracking-wide max-w-2xl mx-auto mb-8"><?= e(t('banner.subtitle')) ?></p>
+        <div class="w-24 h-1 bg-gradient-to-r from-physio-500 to-blue-500 mx-auto rounded-full shadow-glow"></div>
     </div>
 </section>
 
 <!-- ============ FEATURED PROJECTS ============ -->
 <section id="projects" class="py-24 bg-slate-900 text-white overflow-hidden relative">
+    <!-- Same as before but keep dynamic projects -->
     <div class="max-w-7xl mx-auto px-6 lg:px-8 mb-4 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 reveal">
         <div class="max-w-2xl">
             <h2 class="text-3xl md:text-5xl font-bold tracking-tight"><?= e(t('home.projects.title')) ?></h2>
             <p class="mt-4 text-lg text-slate-400"><?= e(t('home.projects.subtitle')) ?></p>
         </div>
         <div class="flex items-center gap-4 shrink-0">
-            <!-- Slider Controls -->
             <div class="hidden md:flex p-1.5 bg-slate-800/60 border border-slate-700/80 rounded-full items-center gap-1 backdrop-blur-md shadow-lg">
                 <button id="prevBtn" class="w-12 h-12 rounded-full flex items-center justify-center hover:bg-slate-700 text-slate-400 hover:text-white transition-all" aria-label="prev">
                     <i data-lucide="chevron-left" class="w-5 h-5 rtl:rotate-180"></i>
@@ -315,8 +368,49 @@ $site = setting('site_name', 'PhysioElectric');
     </div>
 </section>
 
+<!-- ============ PROCESS TIMELINE (FIXED) ============ -->
+<section class="py-24 bg-slate-50">
+    <div class="max-w-4xl mx-auto px-6 lg:px-8">
+        <div class="text-center mb-16 reveal">
+            <h2 class="text-3xl md:text-4xl font-bold tracking-tight text-physio-950"><?= e(t('process.title')) ?></h2>
+            <p class="mt-3 text-lg text-slate-500 max-w-2xl mx-auto"><?= e(t('process.subtitle')) ?></p>
+        </div>
+
+        <div class="relative" id="processTimeline">
+            <div class="timeline-line hidden md:block"></div>
+            <div class="timeline-progress hidden md:block" id="timelineProgress"></div>
+
+            <div class="relative">
+                <?php
+                $steps = [
+                    ['num' => '01', 'icon' => 'search',      'title' => t('process.s1.t'), 'desc' => t('process.s1.d')],
+                    ['num' => '02', 'icon' => 'box',         'title' => t('process.s2.t'), 'desc' => t('process.s2.d')],
+                    ['num' => '03', 'icon' => 'code-2',      'title' => t('process.s3.t'), 'desc' => t('process.s3.d')],
+                    ['num' => '04', 'icon' => 'rocket',      'title' => t('process.s4.t'), 'desc' => t('process.s4.d')],
+                    ['num' => '05', 'icon' => 'check-circle','title' => t('process.s5.t'), 'desc' => t('process.s5.d')],
+                ];
+                ?>
+                <?php foreach ($steps as $step): ?>
+                    <div class="relative flex gap-6 mb-12 last:mb-0 reveal">
+                        <!-- دایره آیکون -->
+                        <div class="w-16 h-16 rounded-full bg-white border-2 border-physio-500/40 flex items-center justify-center text-physio-600 shrink-0 shadow-sm z-10">
+                            <i data-lucide="<?= e($step['icon']) ?>" class="w-6 h-6"></i>
+                        </div>
+                        <!-- محتوا -->
+                        <div class="pt-1.5 flex-1">
+                            <span class="text-physio-500 font-bold text-sm"><?= e($step['num']) ?> — <?= e(t('process.phase')) ?></span>
+                            <h3 class="text-xl font-bold text-physio-950 mt-1"><?= e($step['title']) ?></h3>
+                            <p class="mt-2 text-slate-500 leading-relaxed"><?= e($step['desc']) ?></p>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- ============ LATEST ARTICLES ============ -->
-<section class="py-24 md:py-28 bg-white">
+<section id="articles" class="py-24 bg-white relative z-20 border-b border-slate-100">
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
         <div class="mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-4 reveal">
             <div class="max-w-2xl">
@@ -367,42 +461,6 @@ $site = setting('site_name', 'PhysioElectric');
     </div>
 </section>
 
-<!-- ============ PROCESS TIMELINE ============ -->
-<section class="py-24 bg-slate-50">
-    <div class="max-w-4xl mx-auto px-6 lg:px-8">
-        <div class="text-center mb-16 reveal">
-            <h2 class="text-3xl md:text-4xl font-bold tracking-tight text-physio-950"><?= e(t('process.title')) ?></h2>
-            <p class="mt-3 text-lg text-slate-500 max-w-2xl mx-auto"><?= e(t('process.subtitle')) ?></p>
-        </div>
-
-        <div class="relative" id="processTimeline">
-            <div class="timeline-line"></div>
-            <div class="timeline-progress" id="timelineProgress"></div>
-
-            <?php
-            $steps = [
-                ['icon' => 'search',  'title' => t('process.s1.t'), 'desc' => t('process.s1.d')],
-                ['icon' => 'box',     'title' => t('process.s2.t'), 'desc' => t('process.s2.d')],
-                ['icon' => 'code-2',  'title' => t('process.s3.t'), 'desc' => t('process.s3.d')],
-                ['icon' => 'rocket',  'title' => t('process.s4.t'), 'desc' => t('process.s4.d')],
-            ];
-            ?>
-            <?php foreach ($steps as $i => $step): ?>
-                <div class="relative flex gap-6 mb-12 last:mb-0 reveal">
-                    <div class="w-16 h-16 rounded-full bg-white border-2 border-physio-500/40 flex items-center justify-center text-physio-600 shrink-0 shadow-sm z-10">
-                        <i data-lucide="<?= e($step['icon']) ?>" class="w-6 h-6"></i>
-                    </div>
-                    <div class="pt-1.5">
-                        <span class="text-physio-500 font-bold text-sm">0<?= $i + 1 ?></span>
-                        <h3 class="text-xl font-bold text-physio-950 mt-1"><?= e($step['title']) ?></h3>
-                        <p class="mt-2 text-slate-500 leading-relaxed"><?= e($step['desc']) ?></p>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    </div>
-</section>
-
 <!-- ============ FAQ ============ -->
 <section id="faq" class="py-24 bg-white">
     <div class="max-w-3xl mx-auto px-6 lg:px-8">
@@ -435,20 +493,25 @@ $site = setting('site_name', 'PhysioElectric');
     </div>
 </section>
 
-<!-- ============ FINAL CTA ============ -->
-<section class="py-24 bg-slate-900 relative overflow-hidden">
-    <div class="absolute inset-0 opacity-30" style="background-image: radial-gradient(circle at 15% 50%, rgba(14,165,233,0.35) 0, transparent 40%), radial-gradient(circle at 85% 20%, rgba(59,130,246,0.3) 0, transparent 40%);"></div>
-    <div class="max-w-4xl mx-auto px-6 lg:px-8 text-center relative reveal">
-        <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-white"><?= e(t('cta.title')) ?></h2>
-        <p class="mt-4 text-lg text-slate-400 max-w-2xl mx-auto"><?= e(t('cta.subtitle')) ?></p>
-        <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a href="<?= e(cta_telegram_url()) ?>" data-tg-link="<?= e(cta_tg_scheme()) ?>" class="btn-shine w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-medium text-white bg-physio-500 hover:bg-physio-600 rounded-full shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
-                <i data-lucide="send" class="w-5 h-5"></i>
-                <?= e(t('contact.telegram')) ?>
+<!-- ============ FINAL CTA (improved) ============ -->
+<section id="contact" class="py-32 relative overflow-hidden bg-physio-950 text-white">
+    <div class="absolute inset-0 opacity-20">
+        <div class="absolute w-[500px] h-[500px] bg-physio-500 rounded-full blur-[120px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 mix-blend-screen"></div>
+        <div class="absolute inset-0" style="background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 40px 40px;"></div>
+    </div>
+    
+    <div class="max-w-4xl mx-auto px-6 text-center relative z-10 reveal">
+       <h2 class="text-4xl md:text-6xl font-bold tracking-tight mb-6"><?= t('cta.title') ?></h2>
+        <p class="text-xl text-slate-400 mb-10 max-w-2xl mx-auto"><?= e(t('cta.subtitle')) ?></p>
+        
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <a href="<?= e(cta_telegram_url()) ?>" data-tg-link="<?= e(cta_tg_scheme()) ?>" class="btn-shine relative overflow-hidden px-8 py-4 bg-white text-physio-950 font-bold rounded-full hover:bg-slate-100 transition-colors shadow-glow">
+                <i data-lucide="send" class="w-5 h-5 inline-block ml-2 rtl:ml-0 rtl:mr-2"></i>
+                <?= e(t('cta.telegram')) ?>
             </a>
-            <a href="<?= e(cta_mailto_url()) ?>" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-medium text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-full shadow-lg transition-all">
-                <i data-lucide="mail" class="w-5 h-5"></i>
-                <?= e(t('contact.email')) ?>
+            <a href="<?= e(cta_mailto_url()) ?>" class="px-8 py-4 border border-slate-700 bg-slate-900/50 backdrop-blur text-white font-medium rounded-full hover:bg-slate-800 transition-colors">
+                <i data-lucide="mail" class="w-5 h-5 inline-block ml-2 rtl:ml-0 rtl:mr-2"></i>
+                <?= e(t('cta.email')) ?>
             </a>
         </div>
     </div>
