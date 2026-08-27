@@ -7,32 +7,57 @@
     var currentStep = 0;
     var selectedCategories = [];
 
-    /* ============ BLUEPRINT (Sidebar) ============ */
+    /* ========================================
+       BLUEPRINT TIMELINE
+       ======================================== */
     function initBlueprint() {
         var ul = document.getElementById('blueprint-list');
         if (!ul) return;
         ul.innerHTML = '';
-        ul.setAttribute('data-progress', '0');
+        ul.style.cssText = 'position: relative; padding: 0; margin: 0; list-style: none;';
         
+        // ===== TIMELINE LINE CONTAINER =====
+        var lineContainer = document.createElement('div');
+        lineContainer.style.cssText = 'position: absolute; top: 20px; bottom: 20px; left: 13px; width: 2px; z-index: 0;';
+        
+        // Gray base line
+        var grayLine = document.createElement('div');
+        grayLine.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #e2e8f0; border-radius: 2px;';
+        lineContainer.appendChild(grayLine);
+        
+        // Blue progress line
+        var blueLine = document.createElement('div');
+        blueLine.id = 'blueprint-progress-line';
+        blueLine.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 0%; background: linear-gradient(180deg, #0ea5e9, #38bdf8); border-radius: 2px; transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px rgba(14, 165, 233, 0.5);';
+        lineContainer.appendChild(blueLine);
+        
+        ul.appendChild(lineContainer);
+        
+        // RTL support
+        if (document.documentElement.getAttribute('dir') === 'rtl') {
+            lineContainer.style.left = 'auto';
+            lineContainer.style.right = '13px';
+        }
+        
+        // ===== STEP ITEMS =====
         for (var i = 0; i < stepsCount; i++) {
             var li = document.createElement('li');
-            li.className = 'relative flex items-center gap-4';
-            li.style.position = 'relative';
-            li.style.zIndex = '2';
+            li.style.cssText = 'position: relative; display: flex; align-items: center; gap: 14px; z-index: 2; padding: 10px 0;';
             
+            // Dot
             var dot = document.createElement('div');
             dot.id = 'bp-dot-' + i;
-            dot.className = 'w-7 h-7 rounded-full border-2 bg-white flex items-center justify-center transition-all duration-300 flex-shrink-0 ' + (i === 0 ? 'border-physio-500' : 'border-slate-300');
-            dot.style.cssText = 'width: 28px; height: 28px; border-radius: 50%; border: 2px solid #cbd5e1; background: #ffffff; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; flex-shrink: 0;';
+            dot.style.cssText = 'width: 28px; height: 28px; border-radius: 50%; border: 2px solid #cbd5e1; background: #ffffff; display: flex; align-items: center; justify-content: center; transition: all 0.4s ease; flex-shrink: 0;';
             
             if (i === 0) {
                 dot.style.borderColor = '#0ea5e9';
+                dot.style.boxShadow = '0 0 0 4px rgba(14, 165, 233, 0.2)';
                 dot.innerHTML = '<div style="width: 10px; height: 10px; background: #0ea5e9; border-radius: 50%;"></div>';
             }
             
+            // Text
             var text = document.createElement('span');
             text.id = 'bp-text-' + i;
-            text.className = 'text-sm transition-all duration-300';
             text.style.cssText = 'font-size: 0.875rem; transition: all 0.3s ease;';
             
             if (i === 0) {
@@ -49,32 +74,35 @@
             li.appendChild(text);
             ul.appendChild(li);
         }
+        
+        updateBlueprint();
     }
 
     function updateBlueprint() {
+        // Update dots
         for (var i = 0; i < stepsCount; i++) {
             var dot = document.getElementById('bp-dot-' + i);
             var text = document.getElementById('bp-text-' + i);
             if (!dot || !text) continue;
             
             if (i < currentStep) {
-                // COMPLETED - Green with check
+                // COMPLETED
                 dot.style.borderColor = '#22c55e';
                 dot.style.backgroundColor = '#22c55e';
-                dot.style.boxShadow = '0 0 10px rgba(34, 197, 94, 0.4)';
-                dot.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+                dot.style.boxShadow = '0 0 12px rgba(34, 197, 94, 0.5)';
+                dot.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
                 text.style.color = '#1e293b';
                 text.style.fontWeight = 'bold';
             } else if (i === currentStep) {
-                // ACTIVE - Blue with inner dot
+                // ACTIVE
                 dot.style.borderColor = '#0ea5e9';
                 dot.style.backgroundColor = '#ffffff';
-                dot.style.boxShadow = '0 0 0 4px rgba(14, 165, 233, 0.15)';
+                dot.style.boxShadow = '0 0 0 5px rgba(14, 165, 233, 0.15), 0 0 15px rgba(14, 165, 233, 0.3)';
                 dot.innerHTML = '<div style="width: 10px; height: 10px; background: #0ea5e9; border-radius: 50%;"></div>';
                 text.style.color = '#0284c7';
                 text.style.fontWeight = 'bold';
             } else {
-                // FUTURE - Gray
+                // FUTURE
                 dot.style.borderColor = '#cbd5e1';
                 dot.style.backgroundColor = '#ffffff';
                 dot.style.boxShadow = 'none';
@@ -85,9 +113,10 @@
         }
         
         // Update progress line
-        var blueprintList = document.getElementById('blueprint-list');
-        if (blueprintList) {
-            blueprintList.setAttribute('data-progress', currentStep);
+        var progressLine = document.getElementById('blueprint-progress-line');
+        if (progressLine) {
+            var progressPercent = (currentStep / (stepsCount - 1)) * 100;
+            progressLine.style.height = progressPercent + '%';
         }
         
         // Mobile progress
@@ -100,16 +129,16 @@
         if (mobileBar) mobileBar.style.width = Math.round(((currentStep + 1) / stepsCount) * 100) + '%';
     }
 
-    /* ============ SHOW STEP ============ */
+    /* ========================================
+       SHOW STEP
+       ======================================== */
     function showStep(index) {
-        // Hide all steps
         var allSteps = document.querySelectorAll('.form-step');
         for (var i = 0; i < allSteps.length; i++) {
             allSteps[i].classList.remove('active');
             allSteps[i].style.display = 'none';
         }
         
-        // Show target step
         var targetStep = document.getElementById('step-' + (index + 1));
         if (targetStep) {
             targetStep.classList.add('active');
@@ -120,7 +149,6 @@
         updateBlueprint();
         updateNavButtons();
         
-        // Scroll to form
         var formContainer = document.getElementById('form-container');
         if (formContainer) {
             var formTop = formContainer.getBoundingClientRect().top + window.scrollY - 120;
@@ -128,13 +156,12 @@
         }
     }
 
-    /* ============ NAV BUTTONS ============ */
+    /* ========================================
+       NAV BUTTONS
+       ======================================== */
     function updateNavButtons() {
         var btnPrev = document.getElementById('btn-prev');
-        var btnNext = document.getElementById('btn-next');
         var nextText = document.getElementById('btn-next-text');
-        
-        if (!btnPrev || !btnNext || !nextText) return;
         
         if (currentStep === 0) {
             btnPrev.style.display = 'none';
@@ -151,103 +178,163 @@
         }
     }
 
-    /* ============ VALIDATION ============ */
+    /* ========================================
+       VALIDATION
+       ======================================== */
     function validateStep(step) {
         var isValid = true;
         
         if (step === 0) {
-            // Step 1: Category
             if (selectedCategories.length === 0) {
-                showError('step-1-error', true);
+                var err = document.getElementById('step-1-error');
+                if (err) err.style.display = 'flex';
                 isValid = false;
             } else {
-                showError('step-1-error', false);
+                var err2 = document.getElementById('step-1-error');
+                if (err2) err2.style.display = 'none';
             }
         } 
         else if (step === 1) {
-            // Step 2: Client Info
             var name = document.getElementById('inp_name');
             var email = document.getElementById('inp_email');
             var phone = document.getElementById('inp_phone');
             
             if (!name.value.trim()) {
-                markError(name, 'err_name', true);
+                name.classList.add('error-field');
+                document.getElementById('err_name').style.display = 'block';
                 isValid = false;
             } else {
-                markError(name, 'err_name', false);
+                name.classList.remove('error-field');
+                document.getElementById('err_name').style.display = 'none';
             }
             
             if (!email.value.trim() || email.value.indexOf('@') === -1) {
-                markError(email, 'err_email', true);
+                email.classList.add('error-field');
+                document.getElementById('err_email').style.display = 'block';
                 isValid = false;
             } else {
-                markError(email, 'err_email', false);
+                email.classList.remove('error-field');
+                document.getElementById('err_email').style.display = 'none';
             }
             
             if (!phone.value.trim()) {
-                markError(phone, 'err_phone', true);
+                phone.classList.add('error-field');
+                document.getElementById('err_phone').style.display = 'block';
                 isValid = false;
             } else {
-                markError(phone, 'err_phone', false);
+                phone.classList.remove('error-field');
+                document.getElementById('err_phone').style.display = 'none';
             }
             
             var methodChecked = document.querySelector('input[name="contactMethod"]:checked');
             if (methodChecked && methodChecked.value === 'Telegram') {
                 var tgId = document.getElementById('inp_contact_id');
                 if (!tgId.value.trim()) {
-                    markError(tgId, 'err_contact_id', true);
+                    tgId.classList.add('error-field');
+                    document.getElementById('err_contact_id').style.display = 'block';
                     isValid = false;
                 } else {
-                    markError(tgId, 'err_contact_id', false);
+                    tgId.classList.remove('error-field');
+                    document.getElementById('err_contact_id').style.display = 'none';
                 }
             }
         } 
         else if (step === 2) {
-            // Step 3: Description
             var desc = document.getElementById('inp_desc');
             if (!desc.value.trim()) {
-                markError(desc, 'err_desc', true);
+                desc.classList.add('error-field');
+                document.getElementById('err_desc').style.display = 'block';
                 isValid = false;
             } else {
-                markError(desc, 'err_desc', false);
+                desc.classList.remove('error-field');
+                document.getElementById('err_desc').style.display = 'none';
             }
         } 
         else if (step === 5) {
-            // Step 6: Consent
             var consent = document.getElementById('consent_check');
             if (!consent.checked) {
-                showError('err_consent', true);
+                document.getElementById('err_consent').style.display = 'block';
                 isValid = false;
             } else {
-                showError('err_consent', false);
+                document.getElementById('err_consent').style.display = 'none';
             }
         }
         
         return isValid;
     }
 
-    function markError(input, errId, isError) {
-        if (input) {
-            if (isError) {
-                input.classList.add('error-field');
-            } else {
-                input.classList.remove('error-field');
-            }
-        }
-        var errEl = document.getElementById(errId);
-        if (errEl) {
-            errEl.style.display = isError ? 'block' : 'none';
+    /* ========================================
+       CATEGORY SELECTION - STEP 1
+       ======================================== */
+    function initCategorySelection() {
+        var cards = document.querySelectorAll('.selection-card');
+        
+        for (var i = 0; i < cards.length; i++) {
+            (function(card) {
+                card.addEventListener('click', function() {
+                    var val = this.getAttribute('data-value');
+                    var checkCircle = this.querySelector('.check-circle');
+                    var checkIcon = this.querySelector('.check-circle i, .check-circle svg');
+                    var iconWrap = this.querySelector('.icon-wrap');
+                    
+                    if (this.classList.contains('selected')) {
+                        // DESELECT
+                        this.classList.remove('selected');
+                        
+                        if (checkCircle) {
+                            checkCircle.style.backgroundColor = '#ffffff';
+                            checkCircle.style.borderColor = '#cbd5e1';
+                            checkCircle.style.boxShadow = 'none';
+                        }
+                        if (checkIcon) {
+                            checkIcon.style.display = 'none';
+                        }
+                        if (iconWrap) {
+                            iconWrap.style.backgroundColor = '#f8fafc';
+                            iconWrap.style.color = '#475569';
+                            iconWrap.style.borderColor = '#f1f5f9';
+                            iconWrap.style.boxShadow = 'none';
+                        }
+                        
+                        var idx = selectedCategories.indexOf(val);
+                        if (idx > -1) selectedCategories.splice(idx, 1);
+                        
+                    } else {
+                        // SELECT
+                        this.classList.add('selected');
+                        
+                        if (checkCircle) {
+                            checkCircle.style.backgroundColor = '#0ea5e9';
+                            checkCircle.style.borderColor = '#0ea5e9';
+                            checkCircle.style.boxShadow = '0 0 10px rgba(14, 165, 233, 0.5)';
+                        }
+                        if (checkIcon) {
+                            checkIcon.style.display = 'block';
+                            checkIcon.style.color = '#ffffff';
+                            checkIcon.style.opacity = '1';
+                        }
+                        if (iconWrap) {
+                            iconWrap.style.backgroundColor = '#0ea5e9';
+                            iconWrap.style.color = '#ffffff';
+                            iconWrap.style.borderColor = '#0ea5e9';
+                            iconWrap.style.boxShadow = '0 4px 12px rgba(14, 165, 233, 0.4)';
+                        }
+                        
+                        selectedCategories.push(val);
+                    }
+                    
+                    var err = document.getElementById('step-1-error');
+                    if (err && selectedCategories.length > 0) {
+                        err.style.display = 'none';
+                    }
+                });
+            })(cards[i]);
         }
     }
 
-    function showError(errId, isError) {
-        var errEl = document.getElementById(errId);
-        if (errEl) {
-            errEl.style.display = isError ? 'flex' : 'none';
-        }
-    }
-
-    /* ============ REVIEW POPULATION ============ */
+    /* ========================================
+       REVIEW POPULATION
+       ======================================== */
     function populateReview() {
         var catDisplay = selectedCategories.join('، ');
         document.getElementById('rev_type').innerText = catDisplay || '-';
@@ -275,18 +362,20 @@
         document.getElementById('rev_notes').innerText = notes || '-';
     }
 
-    /* ============ INIT ============ */
+    /* ========================================
+       INIT
+       ======================================== */
     function init() {
         initBlueprint();
         
-        // Hide all steps first
+        // Hide all steps
         var allSteps = document.querySelectorAll('.form-step');
         for (var i = 0; i < allSteps.length; i++) {
             allSteps[i].classList.remove('active');
             allSteps[i].style.display = 'none';
         }
         
-        // Show only step 1
+        // Show step 1
         var firstStep = document.getElementById('step-1');
         if (firstStep) {
             firstStep.classList.add('active');
@@ -297,91 +386,36 @@
         updateBlueprint();
         updateNavButtons();
         
-        /* --- Category Selection --- */
-        var cards = document.querySelectorAll('.selection-card');
-        for (var i = 0; i < cards.length; i++) {
-            (function(card) {
-                card.addEventListener('click', function() {
-                    var val = this.getAttribute('data-value');
-                    var checkIcon = this.querySelector('.check-circle i, .check-circle svg');
-                    var iconWrap = this.querySelector('.icon-wrap');
-                    
-                    if (this.classList.contains('selected')) {
-                        // Deselect
-                        this.classList.remove('selected');
-                        if (checkIcon) checkIcon.style.display = 'none';
-                        if (iconWrap) {
-                            iconWrap.style.backgroundColor = '#f8fafc';
-                            iconWrap.style.color = '#475569';
-                        }
-                        var idx = selectedCategories.indexOf(val);
-                        if (idx > -1) selectedCategories.splice(idx, 1);
-                    } else {
-                        // Select
-                        this.classList.add('selected');
-                        if (checkIcon) checkIcon.style.display = 'block';
-                        if (iconWrap) {
-                            iconWrap.style.backgroundColor = '#0ea5e9';
-                            iconWrap.style.color = '#ffffff';
-                        }
-                        selectedCategories.push(val);
-                    }
-                    
-                    var err = document.getElementById('step-1-error');
-                    if (err && selectedCategories.length > 0) err.style.display = 'none';
-                });
-            })(cards[i]);
-        }
+        initCategorySelection();
 
-        /* --- Next Button --- */
-        var btnNext = document.getElementById('btn-next');
-        if (btnNext) {
-            btnNext.addEventListener('click', function() {
-                if (!validateStep(currentStep)) {
-                    return;
+        // Next
+        document.getElementById('btn-next').addEventListener('click', function() {
+            if (!validateStep(currentStep)) return;
+            
+            if (currentStep < stepsCount - 1) {
+                if (currentStep === stepsCount - 2) populateReview();
+                showStep(currentStep + 1);
+            } else {
+                document.getElementById('form-navigation').style.display = 'none';
+                var steps = document.querySelectorAll('.form-step');
+                for (var j = 0; j < steps.length; j++) {
+                    steps[j].classList.remove('active');
+                    steps[j].style.display = 'none';
                 }
-                
-                if (currentStep < stepsCount - 1) {
-                    if (currentStep === stepsCount - 2) {
-                        populateReview();
-                    }
-                    showStep(currentStep + 1);
-                } else {
-                    // Final submit
-                    var nav = document.getElementById('form-navigation');
-                    if (nav) nav.style.display = 'none';
-                    
-                    var steps = document.querySelectorAll('.form-step');
-                    for (var j = 0; j < steps.length; j++) {
-                        steps[j].classList.remove('active');
-                        steps[j].style.display = 'none';
-                    }
-                    
-                    var success = document.getElementById('step-success');
-                    if (success) {
-                        success.classList.add('active');
-                        success.style.display = 'block';
-                    }
-                    
-                    var ul = document.getElementById('blueprint-list');
-                    if (ul) {
-                        ul.innerHTML = '<li style="display: flex; align-items: center; gap: 1rem;"><div style="width: 32px; height: 32px; border-radius: 50%; background: #22c55e; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(34, 197, 94, 0.5);"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div><span style="font-weight: bold; color: #16a34a;">' + (DICT.ready || 'READY') + '</span></li>';
-                    }
+                var success = document.getElementById('step-success');
+                if (success) {
+                    success.classList.add('active');
+                    success.style.display = 'block';
                 }
-            });
-        }
+            }
+        });
 
-        /* --- Prev Button --- */
-        var btnPrev = document.getElementById('btn-prev');
-        if (btnPrev) {
-            btnPrev.addEventListener('click', function() {
-                if (currentStep > 0) {
-                    showStep(currentStep - 1);
-                }
-            });
-        }
+        // Prev
+        document.getElementById('btn-prev').addEventListener('click', function() {
+            if (currentStep > 0) showStep(currentStep - 1);
+        });
 
-        /* --- Edit Buttons --- */
+        // Edit buttons
         var editBtns = document.querySelectorAll('.edit-btn');
         for (var e = 0; e < editBtns.length; e++) {
             (function(btn) {
@@ -391,7 +425,7 @@
             })(editBtns[e]);
         }
 
-        /* --- Char Counter --- */
+        // Char counter
         var descInput = document.getElementById('inp_desc');
         var charCounter = document.getElementById('char-counter');
         if (descInput && charCounter) {
@@ -405,7 +439,7 @@
             });
         }
 
-        /* --- Clear Errors on Input --- */
+        // Clear errors
         var clearOnInput = ['inp_name', 'inp_email', 'inp_phone', 'inp_contact_id'];
         for (var n = 0; n < clearOnInput.length; n++) {
             (function(id) {
@@ -421,24 +455,18 @@
             })(clearOnInput[n]);
         }
 
-        /* --- Contact Method Toggle --- */
+        // Contact method
         var radios = document.querySelectorAll('input[name="contactMethod"]');
         for (var r = 0; r < radios.length; r++) {
             (function(radio) {
                 radio.addEventListener('change', function() {
                     var wrapper = document.getElementById('dynamic-contact-wrapper');
-                    if (wrapper) {
-                        if (this.value === 'Telegram') {
-                            wrapper.style.display = 'block';
-                        } else {
-                            wrapper.style.display = 'none';
-                        }
-                    }
+                    if (wrapper) wrapper.style.display = this.value === 'Telegram' ? 'block' : 'none';
                 });
             })(radios[r]);
         }
 
-        /* --- Consent --- */
+        // Consent
         var consent = document.getElementById('consent_check');
         if (consent) {
             consent.addEventListener('change', function() {
@@ -447,16 +475,13 @@
             });
         }
 
-        /* --- File Upload --- */
+        // File upload
         var dropzone = document.getElementById('dropzone');
         var fileInput = document.getElementById('file_input');
         var fileList = document.getElementById('file-list');
         
         if (dropzone && fileInput) {
-            dropzone.addEventListener('click', function() {
-                fileInput.click();
-            });
-            
+            dropzone.addEventListener('click', function() { fileInput.click(); });
             fileInput.addEventListener('change', function() {
                 if (fileList) {
                     fileList.innerHTML = '';
@@ -471,7 +496,7 @@
         }
     }
 
-    /* ============ START ============ */
+    // Start
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {

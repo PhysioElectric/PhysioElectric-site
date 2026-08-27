@@ -56,8 +56,7 @@ $lang = lang();
                 </h3>
                 
                 <div class="relative">
-                    <div class="blueprint-line"></div>
-                    <ul class="space-y-8 relative z-10" id="blueprint-list" data-progress="0"></ul>
+                    <ul class="relative" id="blueprint-list"></ul>
                 </div>
 
                 <div class="mt-12 pt-6 border-t border-slate-100 flex items-center gap-3 bg-slate-50/50 p-4 rounded-xl">
@@ -72,7 +71,7 @@ $lang = lang();
         <!-- Form Container -->
         <section class="w-full lg:w-2/3 bg-white rounded-3xl ring-1 ring-slate-200 p-6 sm:p-10 min-h-[500px] relative overflow-hidden" id="form-container">
             
-            <!-- ====== STEP 1: Category Selection ====== -->
+            <!-- STEP 1 -->
             <div id="step-1" class="form-step active">
                 <h2 class="text-2xl sm:text-3xl font-bold text-physio-950 mb-3"><?= e(t('contact.s1.title')) ?></h2>
                 <p class="text-slate-500 mb-8 text-lg"><?= e(t('contact.s1.sub')) ?></p>
@@ -110,7 +109,7 @@ $lang = lang();
                 </div>
             </div>
 
-            <!-- ====== STEP 2: Client Info ====== -->
+            <!-- STEP 2 -->
             <div id="step-2" class="form-step" style="display: none;">
                 <h2 class="text-2xl sm:text-3xl font-bold text-physio-950 mb-3"><?= e(t('contact.s2.title')) ?></h2>
                 <p class="text-slate-500 mb-8 text-lg"><?= e(t('contact.s2.sub')) ?></p>
@@ -167,7 +166,7 @@ $lang = lang();
                 </div>
             </div>
 
-            <!-- ====== STEP 3: Description ====== -->
+            <!-- STEP 3 -->
             <div id="step-3" class="form-step" style="display: none;">
                 <h2 class="text-2xl sm:text-3xl font-bold text-physio-950 mb-3"><?= e(t('contact.s3.title')) ?></h2>
                 <p class="text-slate-500 mb-8 text-lg"><?= e(t('contact.s3.sub')) ?></p>
@@ -181,7 +180,7 @@ $lang = lang();
                 </div>
             </div>
 
-            <!-- ====== STEP 4: Scope ====== -->
+            <!-- STEP 4 -->
             <div id="step-4" class="form-step" style="display: none;">
                 <h2 class="text-2xl sm:text-3xl font-bold text-physio-950 mb-3"><?= e(t('contact.s4.title')) ?></h2>
                 <p class="text-slate-500 mb-10 text-lg"><?= e(t('contact.s4.sub')) ?></p>
@@ -203,7 +202,7 @@ $lang = lang();
                 </div>
             </div>
 
-            <!-- ====== STEP 5: Additional ====== -->
+            <!-- STEP 5 -->
             <div id="step-5" class="form-step" style="display: none;">
                 <h2 class="text-2xl sm:text-3xl font-bold text-physio-950 mb-3"><?= e(t('contact.s5.title')) ?></h2>
                 <p class="text-slate-500 mb-8 text-lg"><?= e(t('contact.s5.sub')) ?></p>
@@ -221,7 +220,7 @@ $lang = lang();
                 <div id="file-list" class="mt-4 space-y-3"></div>
             </div>
 
-            <!-- ====== STEP 6: Review ====== -->
+            <!-- STEP 6 -->
             <div id="step-6" class="form-step" style="display: none;">
                 <h2 class="text-2xl sm:text-3xl font-bold text-physio-950 mb-3"><?= e(t('contact.s6.title')) ?></h2>
                 <p class="text-slate-500 mb-8 text-lg"><?= e(t('contact.s6.sub')) ?></p>
@@ -274,7 +273,7 @@ $lang = lang();
                 <div class="error-message" id="err_consent" style="display: none;"><?= e(t('contact.err.consent')) ?></div>
             </div>
 
-            <!-- ====== SUCCESS ====== -->
+            <!-- SUCCESS -->
             <div id="step-success" class="form-step text-center py-16" style="display: none;">
                 <div class="w-28 h-28 bg-green-50 rounded-full mx-auto flex items-center justify-center mb-8">
                     <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
@@ -293,7 +292,7 @@ $lang = lang();
                 </div>
             </div>
 
-            <!-- ====== NAVIGATION ====== -->
+            <!-- NAVIGATION -->
             <div class="mt-12 pt-8 border-t border-slate-100 flex justify-between items-center" id="form-navigation">
                 <button id="btn-prev" class="px-6 py-3.5 text-sm font-bold text-slate-500 hover:text-slate-800 rounded-full flex items-center gap-2" style="display: none;">
                     <i data-lucide="arrow-left" class="w-4 h-4 rtl:rotate-180"></i>
@@ -310,7 +309,7 @@ $lang = lang();
     </div>
 </main>
 
-<!-- Direct Contact Links -->
+<!-- Direct Contact -->
 <section class="py-20 bg-white border-t border-slate-200">
     <div class="max-w-7xl mx-auto px-6 lg:px-8 text-center">
         <h3 class="text-3xl font-bold text-physio-950 mb-3"><?= e(t('contact.direct.title')) ?></h3>

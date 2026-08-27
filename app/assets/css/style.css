@@ -1173,3 +1173,61 @@ input[type="radio"].peer:checked + div {
     border-color: #cbd5e1;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
+
+/* ============ CONTACT FORM ============ */
+.form-step {
+    display: none !important;
+}
+.form-step.active {
+    display: block !important;
+}
+
+.selection-card {
+    border: 1.5px solid #e2e8f0;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+.selection-card:hover {
+    border-color: #bae6fd;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 20px -8px rgba(14, 165, 233, 0.15);
+}
+.selection-card.selected {
+    border-color: #0ea5e9;
+    background: #f0f9ff;
+    box-shadow: 0 0 0 2px #0ea5e9;
+}
+
+.custom-input {
+    background-color: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+.custom-input:focus {
+    outline: none;
+    background-color: #fff;
+    border-color: #0ea5e9;
+    box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15);
+}
+
+.error-message {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-top: 0.35rem;
+    display: none;
+    font-weight: 500;
+}
+.error-field {
+    border-color: #ef4444 !important;
+    background-color: #fef2f2 !important;
+}
+
+.dropzone {
+    border: 2px dashed #cbd5e1;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+.dropzone:hover {
+    border-color: #0ea5e9;
+    background: #f0f9ff;
+}
