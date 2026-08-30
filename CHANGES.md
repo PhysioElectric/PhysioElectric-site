@@ -1,29 +1,24 @@
-# Changes pack — Team members + Received messages  (incl. graceful-migration fix)
+# Changes pack — Team + Received messages (email validation aligned)
 
-Base: 6d68e52  ->  942bef8
-24 files changed. Drop over the existing project (paths are project-relative).
+Base: 6d68e52  ->  6461755
+27 files changed. Drop over the existing project (project-relative paths).
 
-IMPORTANT AFTER UPGRADE (existing database / old Docker volume):
-    cd app && php setup/migrate.php
-This creates team_members + messages and seeds 4 team members.
-If you forget it, the site/admin still works and shows a banner telling you to
-run it (no more 500 lock-out).
+LATEST FIX: the wizard's email check now matches the server (previously it only
+required an '@'), so an invalid email is caught at the contact step with a clear
+Persian message instead of a dead-end 422 at the end. A valid email submits fine
+even with no cookies/CSRF (verified on Apache + php -S).
 
-## What's new
-1. Admin > Team Members (/admin/team): CRUD + photo upload; About page renders
-   members from the DB (fa/en), markup/CSS unchanged.
-2. Admin > Received Messages (/admin/messages): inbox, unread badge, read
-   toggle, attachment download, delete.
-3. Public POST /{lang}/inquiry: CSRF 419; honeypot silent-drop; 5/hr/IP 429;
-   validation; attachments (max 3, pdf/doc/docx/png/jpg/jpeg/zip, <=2MB) stored
-   under uploads/attachments/ (not publicly served); contact.js now POSTs.
+VERIFY: cd app && php setup/selftest.php  (exit 0 = good); then Ctrl+F5 and submit.
+If anything ever fails, the error box shows status=... code=... for diagnosis.
 
-## Security
-CSP img-src allows https://images.unsplash.com (seeded team photos).
+## Features
+1. /admin/team: CRUD + photo upload; About renders from DB (fa/en).
+2. /admin/messages: inbox, unread badge, read toggle, attachment download, delete.
+3. POST /{lang}/inquiry: stores contact+project requests; attachments not public.
 
 ## Robustness
-Database::tableExists() guards the new read paths so an un-migrated DB degrades
-gracefully instead of 500-ing the admin.
+Schema self-heal; no CSRF needed on public form; audited JSON errors; 403 CSRF on
+admin; header de-dup (Apache parity).
 
 ## Tests
-63/63 unit, 44/44 sanitizer, 104/104 e2e -> ALL GREEN
+63/63 unit, 44/44 sanitizer, 104/104 e2e (Apache + php -S) -> ALL GREEN

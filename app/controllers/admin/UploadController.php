@@ -33,7 +33,7 @@ final class UploadController
         $token = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? ($_POST['csrf_token'] ?? '');
         if (!\Csrf::verify(is_string($token) ? $token : null)) {
             \Security::audit('upload.csrf_rejected');
-            self::fail('CSRF token missing', 419, 'csrf');
+            self::fail('CSRF token missing', 403, 'csrf');
         }
 
         if (empty($_FILES['image']) || !is_array($_FILES['image'])) {

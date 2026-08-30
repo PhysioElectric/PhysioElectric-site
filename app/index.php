@@ -31,6 +31,7 @@ Config::boot();
 
 require BASE_PATH . '/core/Security.php';
 require BASE_PATH . '/core/Database.php';
+require BASE_PATH . '/core/Schema.php';
 require BASE_PATH . '/core/Csrf.php';
 require BASE_PATH . '/core/RateLimiter.php';
 require BASE_PATH . '/core/Auth.php';
@@ -83,6 +84,10 @@ if (PHP_SAPI === 'cli-server') {
 $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
 Security::guardMethod($method);
 Security::guardBodySize(8 * 1024 * 1024);
+
+// Self-heal: create/seed the feature tables on first request when missing, so
+// an existing (un-migrated) database works without running setup/migrate.php.
+Schema::ensureFeatureTables();
 
 $path = Security::requestPath((string) ($_SERVER['REQUEST_URI'] ?? '/'));
 if ($path === '/index.php') {

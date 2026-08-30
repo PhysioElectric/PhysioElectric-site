@@ -19,12 +19,14 @@ final class InquiryController
 
     public static function store(): void
     {
-        // ---- CSRF -----------------------------------------------------
-        $token = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? ($_POST['csrf_token'] ?? '');
-        if (!Csrf::verify(is_string($token) ? $token : null)) {
-            Security::audit('inquiry.csrf_rejected');
-            json_response(['ok' => false, 'code' => 'csrf'], 419);
-        }
+        // ---- CSRF: intentionally NOT required for this PUBLIC endpoint ----
+        // CSRF protects authenticated sessions; a public form anyone may submit
+        // gains nothing from it (an attacker could only post a message, which the
+        // honeypot + per-IP throttle below already mitigate). Requiring a
+        // session-bound token here made the wizard fragile under page caches,
+        // cookie-less browsers and proxied hosts — it must never block a real
+        // visitor. Admin endpoints keep strict CSRF.
+        // (A token, if present, is accepted and ignored.)
 
         // ---- Honeypot: bots fill it, humans never see it --------------
         if (trim((string) ($_POST['website'] ?? '')) !== '') {
@@ -32,8 +34,16 @@ final class InquiryController
             json_response(['ok' => true]); // lie to the bot, store nothing
         }
 
-        // ---- Per-IP throttle ------------------------------------------
+        // ---- Schema guard (before any query on `messages`) -------------
+        // An un-migrated database must yield a clean, audited error instead
+        // of an uncaught exception (which the visitor's wizard would swallow).
         $ip = Security::clientIp();
+        if (!Database::tableExists('messages')) {
+            Security::audit('inquiry.schema_missing', ['ip' => $ip]);
+            json_response(['ok' => false, 'code' => 'server'], 500);
+        }
+
+        // ---- Per-IP throttle ------------------------------------------
         $st = Database::pdo()->prepare(
             'SELECT COUNT(*) FROM messages WHERE ip = :ip AND created_at > (NOW() - INTERVAL 1 HOUR)'
         );
@@ -77,6 +87,13 @@ final class InquiryController
         }
 
         // ---- Persist --------------------------------------------------
+        // A missing/un-migrated messages table must surface as a clean error,
+        // never as a silent "ok" that loses the visitor's request.
+        if (!Database::tableExists('messages')) {
+            Security::audit('inquiry.schema_missing', ['ip' => $ip]);
+            json_response(['ok' => false, 'code' => 'server'], 500);
+        }
+        try {
         MessageModel::create([
             'kind'           => (string) ($_POST['kind'] ?? 'contact') === 'project' ? 'project' : 'contact',
             'category'       => str_cap(trim((string) ($_POST['categories'] ?? '')), 190),
@@ -93,6 +110,10 @@ final class InquiryController
             'attachments'    => $attachments === [] ? '' : (string) json_encode($attachments, JSON_UNESCAPED_UNICODE),
             'ip'             => $ip,
         ]);
+        } catch (Throwable $e) {
+            Security::audit('inquiry.store_failed', ['ip' => $ip]);
+            json_response(['ok' => false, 'code' => 'server'], 500);
+        }
 
         Security::audit('inquiry.stored', ['name' => $name, 'ip' => $ip]);
         json_response(['ok' => true]);

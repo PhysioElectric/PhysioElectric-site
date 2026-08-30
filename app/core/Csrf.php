@@ -56,7 +56,7 @@ final class Csrf
     }
 
     /**
-     * Guard for state-changing admin requests. Aborts with 419 when the
+     * Guard for state-changing admin requests. Aborts with 403 when the
      * token is missing, malformed, or the request is cross-origin.
      */
     public static function protect(): void
@@ -68,9 +68,9 @@ final class Csrf
                 'path'  => $_SERVER['REQUEST_URI'] ?? '',
                 'has_token' => is_string($token) && $token !== '',
             ]);
-            http_response_code(419);
+            http_response_code(403);
             header('Content-Type: text/plain; charset=utf-8');
-            exit('419 - CSRF token mismatch. Go back, refresh the page and try again.');
+            exit('403 - CSRF token mismatch. Go back, refresh the page and try again.');
         }
 
         if (!Security::isSameOrigin()) {

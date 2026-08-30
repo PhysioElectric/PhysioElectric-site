@@ -136,12 +136,18 @@ final class Security
         self::$headersSent = true;
 
         header_remove('X-Powered-By');
-        header('X-Content-Type-Options: nosniff');
-        header('X-Frame-Options: SAMEORIGIN');
-        header('Referrer-Policy: strict-origin-when-cross-origin');
-        header('Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), interest-cohort=()');
+        // These five are also emitted by .htaccess (mod_headers) so static
+        // assets get them under Apache. To avoid duplicate headers on dynamic
+        // responses under Apache, PHP only adds them when NOT running under a
+        // real Apache module (i.e. the cli-server dev mode).
+        if (PHP_SAPI === 'cli-server') {
+            header('X-Content-Type-Options: nosniff');
+            header('X-Frame-Options: SAMEORIGIN');
+            header('Referrer-Policy: strict-origin-when-cross-origin');
+            header('Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), interest-cohort=()');
+            header('Cross-Origin-Resource-Policy: same-origin');
+        }
         header('Cross-Origin-Opener-Policy: same-origin');
-        header('Cross-Origin-Resource-Policy: same-origin');
         header('X-Request-Id: ' . self::requestId());
 
         if (self::cspEnabled()) {

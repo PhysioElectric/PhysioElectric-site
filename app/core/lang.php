@@ -234,6 +234,7 @@ return [
         'contact.err.email' => 'لطفاً یک ایمیل معتبر وارد کنید.',
         'contact.err.desc'  => 'لطفاً کمی درباره پروژه توضیح دهید.',
         'contact.err.consent' => 'برای ادامه باید موافقت کنید.',
+        'contact.err.submit'  => 'ارسال درخواست با خطا مواجه شد. لطفاً دوباره تلاش کنید یا از طریق تلگرام تماس بگیرید.',
         'contact.direct.title' => 'ترجیح می‌دهید مستقیم صحبت کنید؟',
         'contact.direct.sub'   => 'از طریق کانال‌های زیر با ما در ارتباط باشید.',
 
@@ -631,6 +632,7 @@ return [
         'contact.err.email' => 'Please enter a valid email address.',
         'contact.err.desc'  => 'Please tell us a little about your project.',
         'contact.err.consent' => 'You must agree to continue.',
+        'contact.err.submit'  => 'Sending the request failed. Please try again, or contact us via Telegram.',
         'contact.direct.title' => 'Prefer to talk directly?',
         'contact.direct.sub'   => 'You can also reach us through our social and professional channels.',
 

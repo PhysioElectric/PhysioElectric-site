@@ -208,7 +208,7 @@
                 document.getElementById('err_name').style.display = 'none';
             }
             
-            if (!email.value.trim() || email.value.indexOf('@') === -1) {
+            if (!isEmail(email.value)) {
                 email.classList.add('error-field');
                 document.getElementById('err_email').style.display = 'block';
                 isValid = false;
@@ -370,6 +370,13 @@
         return el ? el.value : '';
     }
 
+    // Mirrors the server's FILTER_VALIDATE_EMAIL closely enough that anything
+    // the wizard accepts here will also be accepted on submit (no dead-end).
+    function isEmail(v) {
+        v = (v || '').trim();
+        return /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(v);
+    }
+
     function submitInquiry() {
         var fd = new FormData();
         fd.append('csrf_token', gv('inp_csrf'));
@@ -400,9 +407,44 @@
         }
 
         var lang = (location.pathname.split('/')[1] === 'en') ? 'en' : 'fa';
-        fetch('/' + lang + '/inquiry', { method: 'POST', body: fd })
-            .then(function () { /* stored; the wizard already shows its success step */ })
-            .catch(function () { /* never leak transport errors to the visitor */ });
+        // Resolve to true only when the server actually stored the request.
+        return fetch('/' + lang + '/inquiry', { method: 'POST', body: fd })
+            .then(function (r) {
+                return r.json().then(function (j) {
+                    return { ok: !!(r.ok && j && j.ok === true), status: r.status, code: (j && j.code) || '' };
+                }).catch(function () { return { ok: false, status: r.status, code: '' }; });
+            })
+            .catch(function () { return { ok: false, status: 0, code: 'network' }; });
+    }
+
+    function showSubmitError(res) {
+        var holder = document.getElementById('form-container');
+        if (!holder) return;
+        var box = document.createElement('div');
+        box.className = 'bg-red-50 border border-red-200 text-red-600 rounded-2xl p-8 text-center';
+        var msg = document.createElement('p');
+        msg.className = 'font-bold text-lg leading-relaxed';
+        var fallback = (LANG === 'en')
+            ? 'Sending the request failed. Please try again, or contact us via Telegram.'
+            : 'ارسال درخواست با خطا مواجه شد. لطفاً دوباره تلاش کنید یا از طریق تلگرام تماس بگیرید.';
+        msg.textContent = DICT.submitError || fallback;
+        box.appendChild(msg);
+        // Diagnostic detail so any environment-specific failure is visible in a
+        // screenshot (status 0 = network/CORS, 500 = server/schema, 429 = rate).
+        if (res) {
+            var d = document.createElement('p');
+            d.dir = 'ltr';
+            d.style.cssText = 'direction:ltr;font-size:0.75rem;color:#94a3b8;margin-top:0.5rem;';
+            d.textContent = 'status=' + res.status + (res.code ? ' code=' + res.code : '');
+            box.appendChild(d);
+        }
+        var retry = document.createElement('button');
+        retry.type = 'button';
+        retry.className = 'mt-5 px-6 py-3 rounded-full bg-physio-900 text-white font-bold';
+        retry.textContent = DICT.next || 'OK';
+        retry.addEventListener('click', function () { location.reload(); });
+        box.appendChild(retry);
+        holder.appendChild(box);
     }
 
     /* ========================================
@@ -439,18 +481,23 @@
                 if (currentStep === stepsCount - 2) populateReview();
                 showStep(currentStep + 1);
             } else {
-                submitInquiry();
                 document.getElementById('form-navigation').style.display = 'none';
-                var steps = document.querySelectorAll('.form-step');
-                for (var j = 0; j < steps.length; j++) {
-                    steps[j].classList.remove('active');
-                    steps[j].style.display = 'none';
-                }
-                var success = document.getElementById('step-success');
-                if (success) {
-                    success.classList.add('active');
-                    success.style.display = 'block';
-                }
+                submitInquiry().then(function (res) {
+                    var steps = document.querySelectorAll('.form-step');
+                    for (var j = 0; j < steps.length; j++) {
+                        steps[j].classList.remove('active');
+                        steps[j].style.display = 'none';
+                    }
+                    if (res && res.ok) {
+                        var success = document.getElementById('step-success');
+                        if (success) {
+                            success.classList.add('active');
+                            success.style.display = 'block';
+                        }
+                    } else {
+                        showSubmitError(res);
+                    }
+                });
             }
         });
 

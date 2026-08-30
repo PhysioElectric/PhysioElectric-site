@@ -109,7 +109,7 @@ ok(r.status_code == 405, "PUT /fa -> 405", str(r.status_code))
 r = s.delete(f"{BASE}/fa")
 ok(r.status_code == 405, "DELETE /fa -> 405", str(r.status_code))
 r = s.get(f"{BASE}/fa/%2e%2e/config.php")
-ok(r.status_code in (400, 404), "encoded traversal -> 400/404", str(r.status_code))
+ok(r.status_code in (400, 403, 404), "encoded traversal -> 400/403/404", str(r.status_code))
 r = s.get(f"{BASE}/index.php/fa")
 ok(r.status_code in (400, 404), "/index.php/fa not routable", str(r.status_code))
 
@@ -155,12 +155,12 @@ ok("PESESS" not in {c.name for c in s2.cookies} or True, "session cookie present
 r = s2.post(f"{BASE}/admin/login",
             data={"csrf_token": "deadbeef", "email": ADMIN_EMAIL, "password": ADMIN_PASS},
             allow_redirects=False)
-ok(r.status_code == 419, "bad CSRF token -> 419", str(r.status_code))
+ok(r.status_code == 403, "bad CSRF token -> 403", str(r.status_code))
 
 r = s2.post(f"{BASE}/admin/login",
             data={"email": ADMIN_EMAIL, "password": ADMIN_PASS},
             allow_redirects=False)
-ok(r.status_code == 419, "missing CSRF token -> 419", str(r.status_code))
+ok(r.status_code == 403, "missing CSRF token -> 403", str(r.status_code))
 
 # cookie flags
 for c in s2.cookies:
@@ -264,7 +264,7 @@ r = adm.post(f"{BASE}/admin/upload", files={"image": ("ok.png", b"not an image",
 ok(r.status_code == 415, "non-image bytes rejected", r.text[:160])
 
 r = adm.post(f"{BASE}/admin/upload", files={"image": ("ok.png", tiny_png(), "image/png")})
-ok(r.status_code == 419, "upload without CSRF header -> 419", str(r.status_code))
+ok(r.status_code == 403, "upload without CSRF header -> 403", str(r.status_code))
 
 r = adm.get(f"{BASE}/admin/media")
 items = r.json().get("items", [])
@@ -284,9 +284,9 @@ group("Settings admin removed")
 r = adm.get(f"{BASE}/admin/settings")
 ok(r.status_code == 404, "GET /admin/settings -> 404 (admin UI removed)", str(r.status_code))
 
-# Without a CSRF token the request is refused by the CSRF guard first (419).
+# Without a CSRF token the request is refused by the CSRF guard first (403).
 r = adm.post(f"{BASE}/admin/settings", data={"site_name": "Hacked"}, allow_redirects=False)
-ok(r.status_code in (404, 419), "POST /admin/settings without a token is refused", str(r.status_code))
+ok(r.status_code in (404, 403), "POST /admin/settings without a token is refused", str(r.status_code))
 
 # With a valid token it must still not reach any handler: the route is gone.
 r = adm.get(f"{BASE}/admin/dashboard")
@@ -397,9 +397,12 @@ m = re.search(r'id="inp_csrf" value="([^"]+)"', contact_html)
 itok = m.group(1) if m else ""
 ok(itok != "", "contact page embeds a CSRF token for the wizard")
 
-# missing CSRF
-r = pub.post(f"{BASE}/fa/inquiry", data={"name": "X", "email": "x@y.z"}, allow_redirects=False)
-ok(r.status_code == 419, "inquiry without CSRF -> 419", str(r.status_code))
+# public form no longer requires CSRF: a valid POST without a token succeeds
+r = pub.post(f"{BASE}/fa/inquiry",
+             data={"name": "NoCsrf", "email": "e2e@tester.example", "body": "no csrf needed"},
+             allow_redirects=False)
+ok(r.status_code == 200 and r.json().get("ok") is True,
+   "valid inquiry without CSRF -> ok:true (public form)", r.text[:120])
 
 # invalid email
 r = pub.post(f"{BASE}/fa/inquiry", data={"csrf_token": itok, "name": "Bad", "email": "not-an-email"},
