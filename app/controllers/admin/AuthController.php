@@ -12,9 +12,8 @@ final class AuthController
         }
         $error = null;
         if (\RateLimiter::isLocked()) {
-            $error = t('admin.login.locked', [
-                'min' => (string) (int) ceil(\RateLimiter::lockSecondsLeft() / 60),
-            ]);
+            $error = self::lockedMessage();
+            http_response_code(429);
         }
         admin_view('login', ['error' => $error]);
     }
@@ -27,38 +26,46 @@ final class AuthController
         $result = \Auth::attemptLogin($email, $password);
 
         if ($result['ok']) {
-            flash('success', t('admin.welcome', ['name' => $result['name'] ?? '']));
-            redirect('/admin/dashboard');
+            flash('success', t('admin.welcome', ['name' => (string) ($result['name'] ?? '')]));
+            // Return to the page the admin originally asked for (allow-listed
+            // to /admin by Auth::takeLoginTarget).
+            redirect(\Auth::takeLoginTarget());
         }
 
-        $code = $result['code'] ?? 'invalid';
+        $code = (string) ($result['code'] ?? 'invalid');
         if ($code === 'locked') {
-            $error = t('admin.login.locked', [
-                'min' => (string) (int) ceil(\RateLimiter::lockSecondsLeft() / 60),
-            ]);
+            http_response_code(429);
+            $error = self::lockedMessage();
+            if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) || self::wantsJson()) {
+                header('Retry-After: ' . \RateLimiter::lockSecondsLeft());
+            }
         } elseif ($code === 'empty') {
+            http_response_code(400);
             $error = t('admin.login.empty');
         } else {
+            http_response_code(401);
             $error = t('admin.login.invalid');
         }
+
+        // Never echo the submitted password back; the e-mail is safe.
         admin_view('login', ['error' => $error, 'email' => $email]);
     }
 
     public static function logoutPost(): void
     {
         \Auth::logout();
-        // Fresh session for the login page.
-        session_name('PESESS');
-        session_set_cookie_params([
-            'lifetime' => 0,
-            'path'     => '/',
-            'domain'   => '',
-            'secure'   => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
-            'httponly' => true,
-            'samesite' => 'Lax',
-        ]);
-        session_start();
-        session_regenerate_id(true);
         redirect('/admin/login');
+    }
+
+    private static function lockedMessage(): string
+    {
+        $mins = (int) ceil(\RateLimiter::lockSecondsLeft() / 60);
+        return t('admin.login.locked', ['min' => (string) max(1, $mins)]);
+    }
+
+    private static function wantsJson(): bool
+    {
+        $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
+        return is_string($accept) && str_contains($accept, 'application/json');
     }
 }

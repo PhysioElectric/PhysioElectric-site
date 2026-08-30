@@ -13,6 +13,46 @@ function e(?string $value): string
 }
 
 /**
+ * Truncate to $max characters (not bytes) so a value can never overflow a
+ * VARCHAR column and turn into a SQLSTATE[22001] 500.
+ */
+function str_cap(string $value, int $max): string
+{
+    $value = trim($value);
+    if ($max <= 0) {
+        return '';
+    }
+    return mb_strlen($value) > $max ? mb_substr($value, 0, $max) : $value;
+}
+
+/**
+ * Read a scalar request value. Arrays (e.g. `field[]`) collapse to '' so a
+ * malformed body can never reach a `(string)` cast and emit a warning.
+ */
+function input_str(string $key, string $default = ''): string
+{
+    $v = $_POST[$key] ?? null;
+    return is_scalar($v) ? (string) $v : $default;
+}
+
+/** Slugs are ASCII, 2-150 chars, hyphen separated. */
+function is_valid_slug(string $s): bool
+{
+    return (bool) preg_match('/^[A-Za-z0-9\-]{2,150}$/', $s);
+}
+
+/** Read a request value that must be a whole number. */
+function input_int(string $key, int $default = 0): int
+{
+    $v = $_POST[$key] ?? null;
+    if (!is_scalar($v)) {
+        return $default;
+    }
+    $s = trim((string) $v);
+    return preg_match('/^-?\d{1,9}$/', $s) === 1 ? (int) $s : $default;
+}
+
+/**
  * UI translation for the active language with {placeholders}.
  */
 function t(string $key, array $replacements = []): string
@@ -425,7 +465,7 @@ function seo_head(array $seo): void
 
 <!-- Tailwind (local build of the play CDN used by the original design) -->
 <script src="/assets/js/tailwind.js"></script>
-<script>
+<script nonce="<?= e(\Security::nonce()) ?>">
 tailwind.config = {
     theme: {
         extend: {
@@ -455,7 +495,7 @@ tailwind.config = {
 </script>
 <link rel="stylesheet" href="/assets/css/style.css">
 <?php foreach ($jsonld as $block): ?>
-<script type="application/ld+json"><?= json_encode($block, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_INVALID_UTF8_SUBSTITUTE) ?></script>
+<script type="application/ld+json" nonce="<?= e(\Security::nonce()) ?>"><?= json_encode($block, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_INVALID_UTF8_SUBSTITUTE) ?></script>
 <?php endforeach; ?>
 </head>
 <body class="antialiased font-sans bg-[var(--bg-color)] text-[var(--text-main)] transition-colors duration-300">

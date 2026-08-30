@@ -13,54 +13,52 @@ if ($altPath === $currentPath) {
 }
 $activeNav   = basename((string) $currentPath); // home|projects|blog|about|contact
 ?>
-<!-- Navbar -->
-<nav id="navbar" class="fixed w-full z-50 glass-nav transition-all duration-300 py-4">
-    <div class="max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between">
+<!-- Bulletproof Navbar (Independent of Tailwind) -->
+<nav id="navbar" class="pe-navbar">
+    <div class="pe-nav-container">
         <!-- Logo -->
-        <a href="<?= e(url($lang)) ?>" class="flex items-center gap-2 group" aria-label="<?= e(setting('site_name', 'PhysioElectric')) ?>">
-            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-physio-500 to-physio-900 flex items-center justify-center text-white font-bold text-xl shadow-glow group-hover:scale-105 transition-transform">
-                P
-            </div>
-            <span class="text-xl font-bold tracking-tight text-physio-900"><?= e(setting('site_name', 'PhysioElectric')) ?></span>
+        <a href="<?= e(url($lang)) ?>" class="pe-logo-wrapper">
+            <div class="pe-logo-icon">P</div>
+            <span class="pe-logo-text"><?= e(setting('site_name', 'PhysioElectric')) ?></span>
         </a>
 
         <!-- Desktop Menu -->
-        <div class="hidden md:flex items-center gap-8">
-            <a href="<?= e(url($lang)) ?>" class="text-sm font-medium <?= $activeNav === 'home' || $currentPath === url($lang) ? 'text-physio-600' : 'text-slate-600 hover:text-physio-600' ?> transition-colors"><?= e(t('nav.home')) ?></a>
-            <a href="<?= e(url($lang, 'projects')) ?>" class="text-sm font-medium <?= $activeNav === 'projects' ? 'text-physio-600' : 'text-slate-600 hover:text-physio-600' ?> transition-colors"><?= e(t('nav.projects')) ?></a>
-            <a href="<?= e(url($lang, 'blog')) ?>" class="text-sm font-medium <?= $activeNav === 'blog' ? 'text-physio-600' : 'text-slate-600 hover:text-physio-600' ?> transition-colors"><?= e(t('nav.blog')) ?></a>
-            <a href="<?= e(url($lang, 'about')) ?>" class="text-sm font-medium <?= $activeNav === 'about' ? 'text-physio-600' : 'text-slate-600 hover:text-physio-600' ?> transition-colors"><?= e(t('nav.about')) ?></a>
-            <a href="<?= e(url($lang, 'contact')) ?>" class="text-sm font-medium <?= $activeNav === 'contact' ? 'text-physio-600' : 'text-slate-600 hover:text-physio-600' ?> transition-colors"><?= e(t('nav.contact')) ?></a>
+        <div class="pe-desktop-menu">
+            <a href="<?= e(url($lang)) ?>" class="pe-nav-link <?= $activeNav === 'home' || $currentPath === url($lang) ? 'active' : '' ?>"><?= e(t('nav.home')) ?></a>
+            <a href="<?= e(url($lang, 'projects')) ?>" class="pe-nav-link <?= $activeNav === 'projects' ? 'active' : '' ?>"><?= e(t('nav.projects')) ?></a>
+            <a href="<?= e(url($lang, 'blog')) ?>" class="pe-nav-link <?= $activeNav === 'blog' ? 'active' : '' ?>"><?= e(t('nav.blog')) ?></a>
+            <a href="<?= e(url($lang, 'about')) ?>" class="pe-nav-link <?= $activeNav === 'about' ? 'active' : '' ?>"><?= e(t('nav.about')) ?></a>
+            <a href="<?= e(url($lang, 'contact')) ?>" class="pe-nav-link <?= $activeNav === 'contact' ? 'active' : '' ?>"><?= e(t('nav.contact')) ?></a>
         </div>
 
         <!-- Right Actions -->
-        <div class="flex items-center gap-4">
+        <div class="pe-nav-actions">
             <!-- Language Switcher -->
-            <a href="<?= e($altPath) ?>" class="text-sm font-medium text-slate-500 hover:text-physio-900 transition-colors flex items-center gap-1" lang="<?= e(altLang()) ?>" aria-label="Switch language">
-                <i data-lucide="globe" class="w-4 h-4"></i>
+            <a href="<?= e($altPath) ?>" class="pe-nav-link" style="display: flex; gap: 0.25rem; align-items: center;" lang="<?= e(altLang()) ?>">
+                <i data-lucide="globe" style="width:18px;height:18px;"></i>
                 <span><?= e(t('lang.switch')) ?></span>
             </a>
 
-            <a href="<?= e(url($lang, 'contact')) ?>" class="hidden sm:inline-flex items-center justify-center px-5 py-2.5 text-sm font-medium text-white bg-physio-900 hover:bg-physio-950 rounded-full shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5">
+            <!-- CTA Button -->
+            <a href="<?= e(url($lang, 'contact')) ?>" class="pe-nav-cta">
                 <?= e(t('nav.cta')) ?>
             </a>
 
             <!-- Mobile Menu Button -->
-            <button class="md:hidden text-slate-600" id="mobileMenuBtn" aria-label="Menu">
-                <i data-lucide="menu" class="w-6 h-6"></i>
+            <button class="pe-mobile-btn" id="mobileMenuBtn">
+                <i data-lucide="menu" style="width:26px;height:26px;"></i>
             </button>
         </div>
     </div>
 
-    <!-- Mobile Menu -->
-    <div id="mobileMenu" class="md:hidden absolute top-full inset-x-0 glass-nav border-b border-slate-100">
-        <div class="px-6 py-4 flex flex-col gap-3">
-            <a href="<?= e(url($lang)) ?>" class="text-sm font-medium text-slate-700 py-2"><?= e(t('nav.home')) ?></a>
-            <a href="<?= e(url($lang, 'projects')) ?>" class="text-sm font-medium text-slate-700 py-2"><?= e(t('nav.projects')) ?></a>
-            <a href="<?= e(url($lang, 'blog')) ?>" class="text-sm font-medium text-slate-700 py-2"><?= e(t('nav.blog')) ?></a>
-            <a href="<?= e(url($lang, 'about')) ?>" class="text-sm font-medium text-slate-700 py-2"><?= e(t('nav.about')) ?></a>
-            <a href="<?= e(url($lang, 'contact')) ?>" class="text-sm font-medium text-slate-700 py-2"><?= e(t('nav.contact')) ?></a>
-            <a href="<?= e(url($lang, 'contact')) ?>" class="inline-flex items-center justify-center px-5 py-2.5 text-sm font-medium text-white bg-physio-900 rounded-full"><?= e(t('nav.cta')) ?></a>
+    <!-- Mobile Menu Dropdown -->
+    <div id="mobileMenu" style="display: none; position: absolute; top: 75px; left: 0; right: 0; background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+        <div style="display: flex; flex-direction: column; gap: 1.2rem;">
+            <a href="<?= e(url($lang)) ?>" class="pe-nav-link"><?= e(t('nav.home')) ?></a>
+            <a href="<?= e(url($lang, 'projects')) ?>" class="pe-nav-link"><?= e(t('nav.projects')) ?></a>
+            <a href="<?= e(url($lang, 'blog')) ?>" class="pe-nav-link"><?= e(t('nav.blog')) ?></a>
+            <a href="<?= e(url($lang, 'about')) ?>" class="pe-nav-link"><?= e(t('nav.about')) ?></a>
+            <a href="<?= e(url($lang, 'contact')) ?>" class="pe-nav-link"><?= e(t('nav.contact')) ?></a>
         </div>
     </div>
 </nav>

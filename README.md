@@ -10,22 +10,37 @@
 ## 🚀 اجرای سریع
 
 ```bash
-# 1) تنظیم متغیرهای محیطی
-cp .env.example .env
-#    -> حتماً ADMIN_PASSWORD را عوض کنید
-
-# 2) بالا آوردن همه‌چیز
 docker compose up -d --build
-
-# 3) صبر کنید تا DB آماده شود (چند ثانیه) و بعد:
-#    سایت:    http://localhost:8080      (خودش به /fa ریدایرکت می‌شود)
-#    پنل:     http://localhost:8080/admin
-#    ورود پنل: ایمیل و رمز تعریف‌شده در .env
 ```
 
-> اگر می‌خواهید سایت روی پورت 80 باشد: در `.env` مقدار `APP_PORT=80` بگذارید.
+همین. هیچ فایل `.env` و هیچ تنظیمی لازم نیست.
 
-برای ریست کامل دیتابیس (بازگشت به داده‌های اولیه):
+```
+سایت:     http://localhost:8080        (خودش به /fa ریدایرکت می‌شود)
+پنل:      http://localhost:8080/admin
+```
+
+رمز عبور پنل به‌صورت **تصادفی و قوی** (۳۲ کاراکتر) ساخته می‌شود و فقط یک بار
+تولید می‌شود. برای دیدنش:
+
+```bash
+docker compose logs app | grep -A3 "Admin panel"
+```
+
+```
+[entrypoint]  Admin panel : http://localhost:8080/admin
+[entrypoint]  Email       : admin@physioelectric.com
+[entrypoint]  Password    : <رمز تصادفی>
+```
+
+رمزها در volume ای به نام `secrets` نگه داشته می‌شوند و **هرگز داخل ریپو ذخیره
+نمی‌شوند**. اگر خواستی رمز خودت را بگذاری، یک فایل `.env` بساز (الگو:
+`.env.example`)؛ هر متغیری که آنجا تعریف کنی بر مقدار تصادفی اولویت دارد.
+
+> کانتینر به‌صورت غیر-root روی پورت داخلی **8080** گوش می‌دهد؛ `APP_PORT` فقط پورت
+> سمت host را تعیین می‌کند (پیش‌فرض 8080).
+
+برای ریست کامل (دیتابیس + رمزها + آپلودها):
 
 ```bash
 docker compose down -v
@@ -34,28 +49,97 @@ docker compose up -d --build
 
 ---
 
+## 🩺 عیب‌یابی
+
+اولین قدم همیشه دیدن لاگ همان سرویسی است که بالا نیامده:
+
+```bash
+docker compose logs db        # یا: logs app  /  logs init
+docker compose ps             # وضعیت و سلامت هر سرویس
+```
+
+| نشانه | علت | راه‌حل |
+|---|---|---|
+| `Conflict. The container name "/pe_..." is already in use` | کانتینر بازمانده از اجرای قبلی | `docker rm -f pe_db pe_app pe_init` |
+| `dependency failed to start: ... db is unhealthy` | دیتابیس بالا نیامده | `docker compose logs db` — معمولاً مشکل از رمز یا مجوز datadir است |
+| ورود به پنل با رمز درست رد می‌شود | رمز با volume قدیمی نمی‌خواند | `docker compose down -v` و بعد `up -d --build` |
+| آپلود تصویر خطا می‌دهد | سرویس `init` اجرا نشده | `docker compose logs init` باید `[init] ready` داشته باشد |
+
+برای شروع کاملاً تمیز (دیتابیس، رمزها و آپلودها از صفر):
+
+```bash
+docker compose down -v --remove-orphans
+docker compose up -d --build
+```
+
+---
+
+## 🧪 اجرای محلی بدون Docker (شبیه‌سازی)
+
+اگر Docker در دسترس نیست، همان کد با وب‌سرور داخلی PHP اجرا می‌شود:
+
+```bash
+# 1) یک MySQL/MariaDB محلی با همان اسکما
+mysql -uroot < db/init.sql
+mysql -uroot -e "CREATE USER IF NOT EXISTS 'pe_user'@'%' IDENTIFIED BY 'pe_secret_2026';
+                 GRANT ALL PRIVILEGES ON physioelectric.* TO 'pe_user'@'%'; FLUSH PRIVILEGES;"
+
+# 2) متغیرهای محیطی + migration + ساخت ادمین (رمز >= 12 کاراکتر)
+export DB_HOST=127.0.0.1 DB_NAME=physioelectric DB_USER=pe_user DB_PASS=pe_secret_2026
+export TRUSTED_HOSTS=localhost,127.0.0.1
+export ADMIN_EMAIL=admin@physioelectric.com ADMIN_PASSWORD='یک-رمز-حداقل-۱۲-کاراکتری'
+
+cd app
+php setup/migrate.php
+php setup/create_admin.php
+
+# 3) اجرا
+php -S 0.0.0.0:8080 index.php     # http://localhost:8080  ->  /fa
+```
+
+برای دیدن stack trace در حالت توسعه، `export APP_ENV=development` را هم اضافه کن.
+
+## ✅ تست‌ها
+
+```bash
+./tests/run-all.sh                      # همهٔ سوئیت‌ها
+./tests/run-all.sh http://host:port     # روی یک سرور در حال اجرا
+RESET_DB=0 ./tests/run-all.sh           # بدون پاک‌سازی دادهٔ تست
+```
+
+| سوئیت | پوشش |
+|---|---|
+| `tests/test_units.php` | زمان‌بندی هش، رگلاژ، allowlist هاست، CSRF، اسلاگ، سقف طول، تقویم جلالی (مقایسه با ICU روی ۶۰۸۸ تاریخ) |
+| `tests/test_sanitizer.php` | ۴۴ سناریوی XSS و فیلتر URL |
+| `tests/test_e2e.py` | ۸۰ ادعا روی HTTP واقعی: مسیرها، هدرهای امنیتی، لاگین، CRUD، آپلود، حذف پنل تنظیمات، خروج |
+
+---
+
 ## 🗂 ساختار پروژه
 
 ```
 .
-├── docker-compose.yml          # سرویس‌های app + db
-├── Dockerfile                  # PHP 8.3 + Apache + pdo_mysql + gd
-├── .env.example                # الگوی متغیرهای محیطی
+├── docker-compose.yml          # سرویس‌های app + db (hardened)
+├── Dockerfile                  # PHP 8.3 + Apache + pdo_mysql + gd(+webp)
+├── .env.example                # الگوی متغیرهای محیطی (اختیاری)
+├── tests/                      # unit + sanitizer + e2e
 ├── db/
 │   └── init.sql                # سکما + داده‌های اولیه (دو زبانه)
-└── app/                        # DocumentRoot (mount روی /var/www/html)
+└── app/                        # DocumentRoot (mount روی /var/www/html، read-only)
     ├── .htaccess               # روتینگ SEO + هدرهای امنیتی
     ├── index.php               # Front Controller / روتر
     ├── config.php              # خواندن env
     ├── entrypoint.sh           # صبر برای DB + ساخت ادمین + پراخت
     ├── setup/
     │   ├── create_admin.php    # ساخت ادمین در اولین بوت (idempotent)
+    │   ├── migrate.php         # migrationهای idempotent برای volumeهای قدیمی
     │   └── db_ready.php        # چک TCP دیتابیس
     ├── core/
-    │   ├── Database.php        # PDO (prepared statements)
-    │   ├── Csrf.php            # توکن ضد CSRF
-    │   ├── RateLimiter.php     # محدودسازی brute-force لاگین
-    │   ├── Auth.php            # احراز هویت + Argon2id
+    │   ├── Database.php        # PDO (prepared statements بومی)
+    │   ├── Security.php        # هدرهای امنیتی، CSP/nonce، ممیزی، گارد درخواست
+    │   ├── Csrf.php            # توکن ضد CSRF + چرخش + بررسی Origin
+    │   ├── RateLimiter.php     # محدودسازی brute-force (IP + حساب کاربری)
+    │   ├── Auth.php            # احراز هویت + Argon2id + مهلت سشن
     │   ├── HtmlSanitizer.php   # ساینایزر خروجی WYSIWYG (ضد XSS)
     │   ├── functions.php       # i18n، URL، SEO، CTA، هیلپرها
     │   └── lang.php            # دیکشنری UI فارسی/انگلیسی
@@ -98,24 +182,34 @@ docker compose up -d --build
 | `/admin` | پنل مدیریت (لایهٔ ورود) |
 | `/admin/login` , `/admin/dashboard` | ورود / داشبورد |
 | `/admin/posts` , `/admin/projects` | CRUD مطالب و پروژه‌ها |
-| `/admin/settings` | تنظیمات سایت (تلگرام، ایمیل، هیرو و…) |
 
 هر صفحهٔ عمومی در هر دو زبان قابل دسترس است:
 `/en/projects/simulation/heat-exchanger-simulation` ← `/fa/projects/simulation/heat-exchanger-simulation`
 
 ## 🔐 امنیت (OWASP Top 10)
 
-- **SQLi**: تمام کوئری‌ها PDO + prepared statement
-- **XSS**: خروجی با `htmlspecialchars`؛ محتوای WYSIWYG هنگام ذخیره با
-  ساینایزر whitelist‌محور پاک‌سازی می‌شود (تگ/attribut/URL نامعتبر حذف)
-- **CSRF**: توکن سشن‌محور در همهٔ فرم‌ها + هدر `X-CSRF-TOKEN` برای آپلود AJAX
-- **احراز هویت**: `password_hash` با Argon2id (فالبک bcrypt)،
-  `session_regenerate_id` هنگام ورود، کوکیز HttpOnly + SameSite=Lax (+Secure در HTTPS)
-- **آپلود امن**: whitelist پسوند (jpg/png/webp) + بررسی واقعی MIME با finfo +
-  `getimagesize` + سقف ۲MB + نام‌گذاری تصادفی + پوشهٔ بدون اجرای PHP
-- **Brute-force**: ۵ تلاش ناموفق در ۱۵ دقیقه = قفل IP (مستقر در MySQL)
-- **سرور**: هدرهای nosniff / X-Frame-Options / Referrer-Policy،
-  block dotfiles، بدون فهرست‌بندی دایرکتوری
+> کنترل‌های امنیتی فعال: هدرهای CSP/COOP/CORP با nonce، محافظت در برابر
+> host-header injection، CSRF روی همهٔ نوشتن‌ها، rate-limit ورود، هش argon2id،
+> ضدعفونی HTML محتوا، بازنویسی تصویرهای آپلودی با gd، و اجرای غیر-root کانتینر.
+
+- **SQLi**: تمام کوئری‌ها PDO + prepared statement بومی (بدون emulation)
+- **XSS**: خروجی با `htmlspecialchars`؛ محتوای WYSIWYG هنگام ذخیره با ساینایزر
+  whitelist‌محور پاک‌سازی می‌شود؛ `javascript:`/`data:`/`vbscript:` و URLهای
+  protocol-relative (`//evil.com`) رد می‌شوند
+- **CSP**: `script-src` با nonce per-request، بدون `unsafe-inline` و بدون `unsafe-eval`
+- **CSRF**: توکن سشن‌محور + چرخش هنگام ورود/خروج + بررسی Origin به‌عنوان لایهٔ دوم
+- **احراز هویت**: Argon2id با پارامتر صریح، بدون اوراکل زمانی تشخیص کاربر،
+  `session_regenerate_id` هنگام ورود، مهلت بی‌فعالیت و مطلق سشن،
+  کوکی HttpOnly + SameSite=Lax (+Secure روی HTTPS)
+- **آپلود امن**: `is_uploaded_file` → اندازهٔ واقعی از دیسک → whitelist پسوند →
+  MIME با finfo → `getimagesize` + سقف ابعاد/پیکسل → **بازکدگذاری با GD** →
+  نام تصادفی → سقف تعداد فایل
+- **Brute-force**: ۵ تلاش ناموفق در ۱۵ دقیقه ⇒ قفل **IP و حساب کاربری**
+  (مستقر در MySQL، fail-closed)
+- **Host-Header Injection**: URLهای مطلق فقط از `SITE_BASE_URL` یا `TRUSTED_HOSTS`
+- **سرور/کانتینر**: غیر-root، `cap_drop: ALL`، سورس `:ro`، `disable_functions`،
+  `ServerTokens Prod`، `TraceEnable Off`، HSTS/COOP/CORP، بدون فهرست‌بندی دایرکتوری
+- **لاگ امنیتی**: `Security::audit()` — بدون رمز عبور، توکن یا شناسهٔ سشن
 
 ## 🔎 سئو
 

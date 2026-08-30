@@ -7,7 +7,6 @@ final class DashboardController
 {
     public static function index(): void
     {
-        $pdo          = \Database::pdo();
         $posts        = \PostModel::all();
         $projects     = \ProjectModel::allWithCategory();
         $published    = \PostModel::countPublished() + \ProjectModel::countPublished();
@@ -25,6 +24,7 @@ final class DashboardController
         ]);
     }
 
+    /** Count of stored *images* (index.html used to be counted as an upload). */
     private static function uploadsCount(): int
     {
         $dir = BASE_PATH . '/uploads';
@@ -33,10 +33,10 @@ final class DashboardController
         }
         $n = 0;
         foreach (scandir($dir) ?: [] as $f) {
-            if ($f === '.' || $f === '..' || str_starts_with($f, '.')) {
+            if (!is_string($f) || $f === '.' || $f === '..' || str_starts_with($f, '.')) {
                 continue;
             }
-            if (is_file($dir . '/' . $f)) {
+            if (preg_match('/\.(jpe?g|png|webp)$/i', $f) && is_file($dir . '/' . $f)) {
                 $n++;
             }
         }

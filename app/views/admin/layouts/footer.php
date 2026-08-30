@@ -4,7 +4,7 @@
 
 <script src="/assets/js/lucide.min.js"></script>
 <script src="/assets/js/admin.js" data-csrf="<?= e(Csrf::token()) ?>"></script>
-<script>
+<script nonce="<?= e(\Security::nonce()) ?>">
     document.addEventListener('DOMContentLoaded', function () {
         lucide.createIcons();
     });

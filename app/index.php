@@ -17,13 +17,19 @@ declare(strict_types=1);
  *
  * URL map (admin, secured):
  *   /admin, /admin/login, /admin/logout, /admin/dashboard,
- *   /admin/posts[...], /admin/projects[...], /admin/settings,
+ *   /admin/posts[...], /admin/projects[...],
  *   /admin/upload (POST, JSON), /admin/media (JSON)
+ *
+ * Ops:
+ *   /healthz              -> liveness probe (no database access)
  */
 
 define('BASE_PATH', __DIR__);
 
 require BASE_PATH . '/config.php';
+Config::boot();
+
+require BASE_PATH . '/core/Security.php';
 require BASE_PATH . '/core/Database.php';
 require BASE_PATH . '/core/Csrf.php';
 require BASE_PATH . '/core/RateLimiter.php';
@@ -33,39 +39,80 @@ require BASE_PATH . '/core/functions.php';
 require BASE_PATH . '/models/CategoryModel.php';
 require BASE_PATH . '/models/ProjectModel.php';
 require BASE_PATH . '/models/PostModel.php';
-require BASE_PATH . '/models/SettingsModel.php';
+require BASE_PATH . '/models/TeamModel.php';
+require BASE_PATH . '/models/MessageModel.php';
 require BASE_PATH . '/controllers/HomeController.php';
 require BASE_PATH . '/controllers/AboutController.php';
 require BASE_PATH . '/controllers/ContactController.php';
 require BASE_PATH . '/controllers/BlogController.php';
 require BASE_PATH . '/controllers/ProjectController.php';
+require BASE_PATH . '/controllers/InquiryController.php';
 require BASE_PATH . '/controllers/admin/AuthController.php';
 require BASE_PATH . '/controllers/admin/DashboardController.php';
 require BASE_PATH . '/controllers/admin/PostController.php';
 require BASE_PATH . '/controllers/admin/ProjectController.php';
-require BASE_PATH . '/controllers/admin/SettingsController.php';
 require BASE_PATH . '/controllers/admin/UploadController.php';
+require BASE_PATH . '/controllers/admin/TeamController.php';
+require BASE_PATH . '/controllers/admin/MessageController.php';
 
 // ---------------- dev server static passthrough ----------------
 // (Apache handles static files via .htaccess; this is for `php -S` dev mode)
 if (PHP_SAPI === 'cli-server') {
     $staticPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
-    if ($staticPath !== '/' && is_file(__DIR__ . $staticPath)) {
-        return false;
+    if (is_string($staticPath) && $staticPath !== '/' && $staticPath !== '') {
+        $real = realpath(__DIR__ . $staticPath);
+        $root = realpath(__DIR__);
+        // Only serve real files that live inside the document root, and never
+        // hand out PHP sources or dotfiles.
+        if ($real !== false && $root !== false
+            && str_starts_with($real, $root . DIRECTORY_SEPARATOR)
+            && is_file($real)
+            && !str_ends_with($real, '.php')
+            && !str_contains($staticPath, '/.')
+            // Mirror uploads/.htaccess under the dev server: /uploads only
+            // ever serves images.
+            && (!str_starts_with($staticPath, '/uploads/')
+                || (bool) preg_match('/\.(jpe?g|png|webp)$/i', $staticPath))
+        ) {
+            return false;
+        }
     }
 }
 
-// ---------------- error handling -------------------------------
-error_reporting(E_ALL);
-if (Config::isProduction()) {
-    ini_set('display_errors', '0');
-    ini_set('log_errors', '1');
+// ---------------- request context ------------------------------
+$method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
+Security::guardMethod($method);
+Security::guardBodySize(8 * 1024 * 1024);
+
+$path = Security::requestPath((string) ($_SERVER['REQUEST_URI'] ?? '/'));
+if ($path === '/index.php') {
+    $path = '/';
 }
 
-set_exception_handler(function (Throwable $e): void {
-    error_log('[PE] Uncaught ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
-    http_response_code(500);
-    echo '<!doctype html><html><head><meta charset="utf-8"></head><body style="font-family:sans-serif;padding:3rem;background:#f8fafc;color:#0f172a"><h1>500</h1><p>Server error. Please try again later.</p></body></html>';
+// ---------------- error handling -------------------------------
+set_exception_handler(static function (Throwable $e): void {
+    $req = Security::requestId();
+    error_log(sprintf(
+        '[PE] req=%s Uncaught %s: %s @ %s:%d',
+        $req,
+        $e::class,
+        $e->getMessage(),
+        $e->getFile(),
+        $e->getLine()
+    ));
+    Security::audit('uncaught_exception', ['class' => $e::class]);
+    if (!headers_sent()) {
+        http_response_code(500);
+        header('Content-Type: text/html; charset=utf-8');
+        header('Cache-Control: no-store');
+        header('X-Request-Id: ' . $req);
+    }
+    echo '<!doctype html><html lang="en"><head><meta charset="utf-8">'
+        . '<title>500 Internal Server Error</title></head>'
+        . '<body style="font-family:sans-serif;padding:3rem;background:#f8fafc;color:#0f172a">'
+        . '<h1>500</h1><p>Server error. Please try again later.</p>'
+        . '<p style="color:#64748b;font-size:.85rem">request id: ' . htmlspecialchars($req, ENT_QUOTES, 'UTF-8') . '</p>'
+        . '</body></html>';
 });
 
 // ---------------- session hardening ----------------------------
@@ -74,30 +121,21 @@ session_set_cookie_params([
     'lifetime' => 0,
     'path'     => '/',
     'domain'   => '',
-    'secure'   => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
+    'secure'   => Config::isHttps(),
     'httponly' => true,
     'samesite' => 'Lax',
 ]);
+// PHP's default cache limiter stamps "Cache-Control: no-store, no-cache" on
+// EVERY response as soon as a session starts — including the public, fully
+// cacheable pages. Caching is decided explicitly per context below instead.
+session_cache_limiter('');
 session_start();
 
 // ---------------- security headers ------------------------------
-header('X-Content-Type-Options: nosniff');
-header('Referrer-Policy: strict-origin-when-cross-origin');
-header('X-Frame-Options: SAMEORIGIN');
-header_remove('X-Powered-By');
+$isAdmin = ($path === '/admin' || str_starts_with($path, '/admin/'));
+Security::sendHeaders($isAdmin);
 
-// ---------------- request context ------------------------------
-$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-$uri    = $_SERVER['REQUEST_URI'] ?? '/';
-$path   = rawurldecode((string) parse_url($uri, PHP_URL_PATH));
-$path   = '/' . trim($path, '/');
-if ($path !== '/') {
-    $path = '/' . rtrim(trim($path, '/'), '/');
-}
-if ($path === '/index.php') {
-    $path = '/';
-}
-
+// ---------------- helpers ---------------------------------------
 $SLUG = '[A-Za-z0-9\-]+';
 
 function flash(string $type, string $message): void
@@ -127,14 +165,25 @@ function not_found(): never
     exit;
 }
 
-function is_valid_slug(string $s): bool
+/** 405 for a route that exists but not for this verb. */
+function method_not_allowed(string $allow): never
 {
-    return (bool) preg_match('/^[A-Za-z0-9\-]{2,150}$/', $s);
+    http_response_code(405);
+    header('Allow: ' . $allow);
+    exit('405 - Method Not Allowed');
 }
 
 // =================================================================
 //  ROUTING
 // =================================================================
+
+// 0) Liveness probe — intentionally touches no database.
+if ($path === '/healthz') {
+    http_response_code(200);
+    header('Content-Type: application/json; charset=utf-8');
+    header('Cache-Control: no-store');
+    exit(json_encode(['status' => 'ok', 'ts' => date('c')]));
+}
 
 // 1) Root -> default language (Persian)
 if ($path === '/') {
@@ -142,10 +191,10 @@ if ($path === '/') {
 }
 
 // 2) Admin panel (no language prefix)
-if ($path === '/admin' || str_starts_with($path, '/admin/')) {
+if ($isAdmin) {
     $adminSub = trim(substr($path, strlen('/admin')), '/'); // '' | 'login' | 'posts/3/edit' ...
 
-    // Public endpoints
+    // ---- public endpoints ----
     if ($adminSub === 'login') {
         if ($method === 'POST') {
             Csrf::protect();
@@ -156,14 +205,15 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
     }
 
     if ($adminSub === 'logout') {
-        if ($method === 'POST') {
-            Csrf::protect();
-            Admin\AuthController::logoutPost();
+        if ($method !== 'POST') {
+            redirect('/admin/login');
         }
-        redirect('/admin/login');
+        Csrf::protect();
+        Admin\AuthController::logoutPost();
+        exit;
     }
 
-    // Everything else requires authentication
+    // ---- everything else requires authentication ----
     Auth::requireLogin();
 
     if ($method === 'POST') {
@@ -171,11 +221,14 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
     }
 
     if ($adminSub === '' || $adminSub === 'dashboard') {
+        if ($method !== 'GET') {
+            method_not_allowed('GET');
+        }
         Admin\DashboardController::index();
         exit;
     }
 
-    // Posts CRUD
+    // ---- Posts CRUD ----
     if ($adminSub === 'posts') {
         if ($method === 'POST') {
             Admin\PostController::create();
@@ -191,6 +244,9 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
         exit;
     }
     if (preg_match('#^posts/(\d+)/edit$#', $adminSub, $m)) {
+        if ($method !== 'GET') {
+            method_not_allowed('GET');
+        }
         Admin\PostController::editForm((int) $m[1]);
         exit;
     }
@@ -203,7 +259,7 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
         exit;
     }
 
-    // Projects CRUD
+    // ---- Projects CRUD ----
     if ($adminSub === 'projects') {
         if ($method === 'POST') {
             Admin\ProjectController::create();
@@ -219,6 +275,9 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
         exit;
     }
     if (preg_match('#^projects/(\d+)/edit$#', $adminSub, $m)) {
+        if ($method !== 'GET') {
+            method_not_allowed('GET');
+        }
         Admin\ProjectController::editForm((int) $m[1]);
         exit;
     }
@@ -231,22 +290,81 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
         exit;
     }
 
-    // Settings
-    if ($adminSub === 'settings') {
-        if ($method === 'POST') {
-            Admin\SettingsController::save();
+    // ---- Uploads (AJAX JSON endpoints) ----
+    if ($adminSub === 'upload') {
+        if ($method !== 'POST') {
+            method_not_allowed('POST');
         }
-        Admin\SettingsController::form();
-        exit;
-    }
-
-    // Uploads (AJAX JSON endpoints)
-    if ($adminSub === 'upload' && $method === 'POST') {
         Admin\UploadController::upload();
         exit;
     }
-    if ($adminSub === 'media' && $method === 'GET') {
+    if ($adminSub === 'media') {
+        if ($method !== 'GET') {
+            method_not_allowed('GET');
+        }
         Admin\UploadController::media();
+        exit;
+    }
+
+    // ---- Team members (About page) ----
+    if ($adminSub === 'team') {
+        if ($method !== 'GET') {
+            method_not_allowed('GET');
+        }
+        Admin\TeamController::index();
+        exit;
+    }
+    if ($adminSub === 'team/create') {
+        if ($method === 'POST') {
+            Admin\TeamController::create();
+        }
+        Admin\TeamController::createForm();
+        exit;
+    }
+    if (preg_match('#^team/(\d+)/edit$#', $adminSub, $m)) {
+        if ($method === 'POST') {
+            method_not_allowed('GET');
+        }
+        Admin\TeamController::editForm((int) $m[1]);
+        exit;
+    }
+    if (preg_match('#^team/(\d+)$#', $adminSub, $m) && $method === 'POST') {
+        Admin\TeamController::update((int) $m[1]);
+        exit;
+    }
+    if ($adminSub === 'team/delete' && $method === 'POST') {
+        Admin\TeamController::delete();
+        exit;
+    }
+
+    // ---- Received messages (public inquiries) ----
+    if ($adminSub === 'messages') {
+        if ($method !== 'GET') {
+            method_not_allowed('GET');
+        }
+        Admin\MessageController::index();
+        exit;
+    }
+    if (preg_match('#^messages/(\d+)/read$#', $adminSub, $m) && $method === 'POST') {
+        Admin\MessageController::toggleRead((int) $m[1]);
+        exit;
+    }
+    if (preg_match('#^messages/(\d+)/file/(\d+)$#', $adminSub, $m)) {
+        if ($method !== 'GET') {
+            method_not_allowed('GET');
+        }
+        Admin\MessageController::download((int) $m[1], (int) $m[2]);
+        exit;
+    }
+    if (preg_match('#^messages/(\d+)$#', $adminSub, $m)) {
+        if ($method !== 'GET') {
+            method_not_allowed('GET');
+        }
+        Admin\MessageController::show((int) $m[1]);
+        exit;
+    }
+    if ($adminSub === 'messages/delete' && $method === 'POST') {
+        Admin\MessageController::delete();
         exit;
     }
 
@@ -257,6 +375,16 @@ if ($path === '/admin' || str_starts_with($path, '/admin/')) {
 if (preg_match('#^/(fa|en)(?:/([A-Za-z0-9\-]+(?:/[A-Za-z0-9\-]+)*))?$#', $path, $m)) {
     setLang($m[1]);
     $sub = $m[2] ?? '';
+
+    // Public inquiry submission from the contact / project-order wizard.
+    if ($sub === 'inquiry' && $method === 'POST') {
+        InquiryController::store();
+        exit;
+    }
+
+    if ($method !== 'GET' && $method !== 'HEAD') {
+        method_not_allowed('GET, HEAD');
+    }
 
     try {
         if ($sub === '' || $sub === 'index') {
@@ -294,7 +422,14 @@ if (preg_match('#^/(fa|en)(?:/([A-Za-z0-9\-]+(?:/[A-Za-z0-9\-]+)*))?$#', $path, 
             exit;
         }
     } catch (Throwable $e) {
-        error_log('[PE] ' . $e->getMessage() . ' @ ' . $e->getFile() . ':' . $e->getLine());
+        error_log(sprintf(
+            '[PE] req=%s route error %s: %s @ %s:%d',
+            Security::requestId(),
+            $e::class,
+            $e->getMessage(),
+            $e->getFile(),
+            $e->getLine()
+        ));
         http_response_code(500);
         exit('500 - Internal server error.');
     }

@@ -2,8 +2,9 @@
 /**
  * Admin layout header (Persian UI, RTL).
  */
-$adminActive = $adminActive ?? '';
-$adminUser   = Auth::check() ? Auth::userName() : '';
+$adminActive    = $adminActive ?? '';
+$adminUser      = Auth::check() ? Auth::userName() : '';
+$unreadMessages = Auth::check() ? MessageModel::unreadCount() : 0;
 ?>
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
@@ -15,7 +16,7 @@ $adminUser   = Auth::check() ? Auth::userName() : '';
 <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
 <link rel="stylesheet" href="/assets/fonts/fonts.css">
 <script src="/assets/js/tailwind.js"></script>
-<script>
+<script nonce="<?= e(\Security::nonce()) ?>">
 tailwind.config = {
     theme: {
         extend: {
@@ -58,9 +59,16 @@ tailwind.config = {
                 <i data-lucide="folder-git2" class="w-5 h-5"></i>
                 <?= e(t('admin.projects')) ?>
             </a>
-            <a href="/admin/settings" class="admin-navlink <?= $adminActive === 'settings' ? 'active' : '' ?>">
-                <i data-lucide="settings" class="w-5 h-5"></i>
-                <?= e(t('admin.settings')) ?>
+            <a href="/admin/team" class="admin-navlink <?= $adminActive === 'team' ? 'active' : '' ?>">
+                <i data-lucide="users" class="w-5 h-5"></i>
+                <?= e(t('admin.team.title')) ?>
+            </a>
+            <a href="/admin/messages" class="admin-navlink <?= $adminActive === 'messages' ? 'active' : '' ?>">
+                <i data-lucide="inbox" class="w-5 h-5"></i>
+                <?= e(t('admin.msg.title')) ?>
+                <?php if ($unreadMessages > 0): ?>
+                    <span class="ms-auto inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-physio-500 text-white text-[11px] font-bold"><?= (int) $unreadMessages ?></span>
+                <?php endif; ?>
             </a>
         </nav>
 

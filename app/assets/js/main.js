@@ -3,12 +3,12 @@
    - Lucide icons
    - Navbar scroll state
    - Mobile menu
-   - Scroll reveal (IntersectionObserver)
-   - Hero particle canvas
-   - Project slider (drag + buttons, RTL aware)
+   - Scroll reveal (Chrome/Firefox Fixed)
+   - Hero particle canvas (Smooth Constellation)
+   - Project slider
    - FAQ accordion
-   - Process timeline progress
-   - Telegram deep-link (tg:// with https fallback)
+   - Process timeline progress (Chrome RTL Fixed)
+   - Telegram deep-link
    ============================================================= */
 (function () {
     'use strict';
@@ -53,14 +53,12 @@
         });
     }
 
-    /* ---------------- Scroll reveal ---------------- */
-    function initReveal() {
+   
+ /* ---------------- Scroll reveal (Fixed for Chrome) ---------------- */
+ function initReveal() {
         var els = document.querySelectorAll('.reveal');
         if (!els.length) { return; }
-        if (!('IntersectionObserver' in window)) {
-            els.forEach(function (el) { el.classList.add('active'); });
-            return;
-        }
+
         var io = new IntersectionObserver(function (entries) {
             entries.forEach(function (entry) {
                 if (entry.isIntersecting) {
@@ -68,66 +66,119 @@
                     io.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-        els.forEach(function (el) { io.observe(el); });
-    }
+        }, { threshold: 0.01, rootMargin: '50px' });
 
-    /* ---------------- Hero particle canvas ---------------- */
+        els.forEach(function (el) { io.observe(el); });
+
+        // سیستم بک‌آپ برای کروم و سافاری تا المان‌ها هرگز مخفی نمانند
+        setTimeout(function() {
+            var vh = window.innerHeight || document.documentElement.clientHeight;
+            els.forEach(function (el) {
+                var rect = el.getBoundingClientRect();
+                if (rect.top < vh + 100) {
+                    el.classList.add('active');
+                }
+            });
+        }, 400);
+    }
+/* ---------------- Interactive Hero Canvas (Soft Magnetic Constellation) ---------------- */
     function initHeroCanvas() {
         var canvas = document.getElementById('hero-canvas');
-        if (!canvas) { return; }
+        if (!canvas) return;
+
         var ctx = canvas.getContext('2d');
         var particles = [];
-        var count, w, h, dpr;
+        var w, h;
+
+        var mouse = { 
+            x: null, 
+            y: null, 
+            radius: 150 // شعاع اتصال متعادل
+        };
+
+        window.addEventListener('mousemove', function (e) {
+            var rect = canvas.getBoundingClientRect();
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
+        });
+
+        window.addEventListener('mouseout', function () {
+            mouse.x = null;
+            mouse.y = null;
+        });
 
         function resize() {
-            dpr = Math.min(window.devicePixelRatio || 1, 2);
-            w = canvas.clientWidth || canvas.parentElement.clientWidth || window.innerWidth;
-            h = canvas.clientHeight || canvas.parentElement.clientHeight || window.innerHeight;
-            canvas.width = w * dpr;
-            canvas.height = h * dpr;
-            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            w = canvas.parentElement.clientWidth || window.innerWidth;
+            h = canvas.parentElement.clientHeight || window.innerHeight;
+            canvas.width = w;
+            canvas.height = h;
         }
 
         function spawn() {
             particles = [];
-            count = Math.max(28, Math.min(90, Math.floor(w / 16)));
+            var count = Math.max(90, Math.floor((w * h) / 8500));
             for (var i = 0; i < count; i++) {
                 particles.push({
                     x: Math.random() * w,
                     y: Math.random() * h,
-                    r: Math.random() * 1.8 + 0.6,
-                    vx: (Math.random() - 0.5) * 0.45,
-                    vy: (Math.random() - 0.5) * 0.45
+                    r: Math.random() * 1.8 + 1.2,
+                    vx: (Math.random() - 0.5) * 0.5, // حرکت بسیار نرم
+                    vy: (Math.random() - 0.5) * 0.5
                 });
             }
         }
 
         function step() {
             ctx.clearRect(0, 0, w, h);
+            
             for (var i = 0; i < particles.length; i++) {
                 var p = particles[i];
-                p.x += p.vx; p.y += p.vy;
-                if (p.x < 0 || p.x > w) { p.vx *= -1; }
-                if (p.y < 0 || p.y > h) { p.vy *= -1; }
+
+                p.x += p.vx;
+                p.y += p.vy;
+
+                if (p.x < 0 || p.x > w) p.vx *= -1;
+                if (p.y < 0 || p.y > h) p.vy *= -1;
+
+                if (mouse.x !== null && mouse.y !== null) {
+                    var dx = mouse.x - p.x;
+                    var dy = mouse.y - p.y;
+                    var dist = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (dist < mouse.radius) {
+                        var alpha = (1 - dist / mouse.radius) * 0.4;
+                        ctx.beginPath();
+                        ctx.strokeStyle = 'rgba(14, 165, 233, ' + alpha.toFixed(3) + ')';
+                        ctx.lineWidth = 1;
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(mouse.x, mouse.y);
+                        ctx.stroke();
+
+                        // مگنت بسیار ملایم (جلوگیری از توده‌ای شدن)
+                        var force = (mouse.radius - dist) / mouse.radius;
+                        p.x -= (dx / dist) * force * 0.15;
+                        p.y -= (dy / dist) * force * 0.15;
+                    }
+                }
+
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(14, 165, 233, 0.55)'; // physio-500
+                ctx.fillStyle = 'rgba(2, 132, 199, 0.65)'; 
                 ctx.fill();
-            }
-            var linkDist = Math.min(130, w / 8);
-            for (var a = 0; a < particles.length; a++) {
-                for (var b = a + 1; b < particles.length; b++) {
-                    var dx = particles[a].x - particles[b].x;
-                    var dy = particles[a].y - particles[b].y;
-                    var d2 = dx * dx + dy * dy;
-                    if (d2 < linkDist * linkDist) {
-                        var alpha = (1 - Math.sqrt(d2) / linkDist) * 0.22;
-                        ctx.strokeStyle = 'rgba(14, 165, 233,' + alpha.toFixed(3) + ')';
-                        ctx.lineWidth = 1;
+
+                for (var j = i + 1; j < particles.length; j++) {
+                    var p2 = particles[j];
+                    var dx2 = p.x - p2.x;
+                    var dy2 = p.y - p2.y;
+                    var dist2 = Math.sqrt(dx2 * dx2 + dy2 * dy2);
+                    
+                    if (dist2 < 110) {
+                        var linkAlpha = (1 - dist2 / 110) * 0.2;
                         ctx.beginPath();
-                        ctx.moveTo(particles[a].x, particles[a].y);
-                        ctx.lineTo(particles[b].x, particles[b].y);
+                        ctx.strokeStyle = 'rgba(14, 165, 233, ' + linkAlpha.toFixed(3) + ')';
+                        ctx.lineWidth = 0.8;
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
                         ctx.stroke();
                     }
                 }
@@ -163,7 +214,6 @@
             if (!isDown) { return; }
             e.preventDefault();
             var walk = (e.pageX - startX) * 1.6;
-            // In RTL the scroll axis is inverted in most browsers.
             slider.scrollLeft = IS_RTL ? startScroll + walk : startScroll - walk;
         });
 
@@ -172,12 +222,18 @@
             var w = card ? card.offsetWidth + 24 : (window.innerWidth > 768 ? 600 : window.innerWidth * 0.85);
             return w;
         };
-        document.getElementById('nextBtn') && document.getElementById('nextBtn').addEventListener('click', function () {
-            slider.scrollBy({ left: IS_RTL ? -scrollAmount() : scrollAmount(), behavior: 'smooth' });
-        });
-        document.getElementById('prevBtn') && document.getElementById('prevBtn').addEventListener('click', function () {
-            slider.scrollBy({ left: IS_RTL ? scrollAmount() : -scrollAmount(), behavior: 'smooth' });
-        });
+        var nextBtn = document.getElementById('nextBtn');
+        var prevBtn = document.getElementById('prevBtn');
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function () {
+                slider.scrollBy({ left: IS_RTL ? -scrollAmount() : scrollAmount(), behavior: 'smooth' });
+            });
+        }
+        if (prevBtn) {
+            prevBtn.addEventListener('click', function () {
+                slider.scrollBy({ left: IS_RTL ? scrollAmount() : -scrollAmount(), behavior: 'smooth' });
+            });
+        }
     }
 
     /* ---------------- FAQ accordion ---------------- */
@@ -208,29 +264,43 @@
             });
         });
     }
-
-    /* ---------------- Process timeline ---------------- */
+/* ---------------- Process timeline (Pure CSS Fix) ---------------- */
     function initTimeline() {
         var wrap = document.getElementById('processTimeline');
         var bar = document.getElementById('timelineProgress');
         if (!wrap || !bar) { return; }
+
         var update = function () {
             var rect = wrap.getBoundingClientRect();
-            var vh = window.innerHeight;
-            var progress = (vh * 0.6 - rect.top) / rect.height;
+            var vh = window.innerHeight || document.documentElement.clientHeight;
+            
+            var startOffset = vh * 0.75;
+            var progress = (startOffset - rect.top) / rect.height;
             progress = Math.max(0, Math.min(1, progress));
+            
             bar.style.height = (progress * 100).toFixed(1) + '%';
+
+            // روشن شدن دایره‌ها
+            var steps = wrap.querySelectorAll('.pe-step');
+            steps.forEach(function(step) {
+                var stepRect = step.getBoundingClientRect();
+                var dot = step.querySelector('.pe-dot');
+                if (dot) {
+                    if (stepRect.top < vh * 0.65) {
+                        dot.classList.add('active-dot');
+                    } else {
+                        dot.classList.remove('active-dot');
+                    }
+                }
+            });
         };
+
         window.addEventListener('scroll', update, { passive: true });
         window.addEventListener('resize', update);
         update();
+        setTimeout(update, 300);
     }
-
-    /* ---------------- Telegram deep link ----------------
-       href="https://t.me/user" (works everywhere, no JS needed)
-       + data-tg-link="tg://resolve?domain=user"
-       On mobile we try the app first; if it is not installed we
-       fall back to the web link after a short delay.            */
+    /* ---------------- Telegram deep link ---------------- */
     function initTelegramLinks() {
         var links = document.querySelectorAll('[data-tg-link]');
         if (!links.length) { return; }
@@ -238,7 +308,7 @@
         links.forEach(function (link) {
             link.addEventListener('click', function (e) {
                 var scheme = link.getAttribute('data-tg-link');
-                if (!scheme || !mobile) { return; } // desktop: plain https link
+                if (!scheme || !mobile) { return; } 
                 e.preventDefault();
                 var webUrl = link.getAttribute('href');
                 var fallback = setTimeout(function () {
@@ -253,7 +323,8 @@
         });
     }
 })();
-// --- Interactive 3D Hover Effect for IoT Icons ---
+
+// --- Interactive 3D Hover Effect for IoT Cards ---
 document.addEventListener('DOMContentLoaded', () => {
     const iotCards = document.querySelectorAll('.iot-card');
 
@@ -261,16 +332,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const icon = card.querySelector('.iot-icon');
         if (!icon) return;
 
-        // وقتی موس روی کارت حرکت می‌کند
         card.addEventListener('mousemove', (e) => {
             const rect = card.getBoundingClientRect();
-            
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             const centerX = rect.width / 2;
             const centerY = rect.height / 2;
             
-            // زاویه متناسب با حرکت موس روی کارت
             const rotateX = ((y - centerY) / centerY) * -20;
             const rotateY = ((x - centerX) / centerX) * 20;
 
@@ -279,7 +347,6 @@ document.addEventListener('DOMContentLoaded', () => {
             icon.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.1, 1.1, 1.1)`;
         });
 
-        // وقتی موس از روی کارت خارج می‌شود
         card.addEventListener('mouseleave', () => {
             icon.style.transition = 'transform 0.5s ease-out';
             icon.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
@@ -291,3 +358,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+/* ---------------- Mobile menu ---------------- */
+    function initMobileMenu() {
+        var btn = document.getElementById('mobileMenuBtn');
+        var menu = document.getElementById('mobileMenu');
+        if (!btn || !menu) return;
+        btn.addEventListener('click', function () {
+            if(menu.style.display === 'none' || menu.style.display === ''){
+                menu.style.display = 'block';
+                setTimeout(() => menu.style.transform = 'scaleY(1)', 10);
+            } else {
+                menu.style.transform = 'scaleY(0)';
+                setTimeout(() => menu.style.display = 'none', 300);
+            }
+        });
+    }

@@ -16,7 +16,7 @@ final class ProjectModel
                 WHERE p.status = "published"
                 ORDER BY p.sort_order ASC, p.created_at DESC, p.id DESC';
         if ($limit !== null) {
-            $sql .= ' LIMIT ' . (int) $limit;
+            $sql .= ' LIMIT ' . max(1, (int) $limit);
         }
         return Database::pdo()->query($sql)->fetchAll();
     }

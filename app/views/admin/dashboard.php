@@ -34,7 +34,8 @@ $cards = [
     <div class="flex flex-wrap gap-3">
         <a href="/admin/posts/create" class="admin-btn admin-btn-primary"><i data-lucide="plus" class="w-4 h-4"></i><?= e(t('admin.newPost')) ?></a>
         <a href="/admin/projects/create" class="admin-btn admin-btn-primary"><i data-lucide="plus" class="w-4 h-4"></i><?= e(t('admin.newProject')) ?></a>
-        <a href="/admin/settings" class="admin-btn admin-btn-ghost"><i data-lucide="settings" class="w-4 h-4"></i><?= e(t('admin.settings')) ?></a>
+        <a href="/admin/team" class="admin-btn admin-btn-ghost"><i data-lucide="users" class="w-4 h-4"></i><?= e(t('admin.team.title')) ?></a>
+        <a href="/admin/messages" class="admin-btn admin-btn-ghost"><i data-lucide="inbox" class="w-4 h-4"></i><?= e(t('admin.msg.title')) ?></a>
         <a href="/" class="admin-btn admin-btn-ghost"><i data-lucide="external-link" class="w-4 h-4"></i><?= e(t('admin.viewSite')) ?></a>
     </div>
 </div>

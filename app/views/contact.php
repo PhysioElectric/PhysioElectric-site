@@ -70,7 +70,11 @@ $lang = lang();
 
         <!-- Form Container -->
         <section class="w-full lg:w-2/3 bg-white rounded-3xl ring-1 ring-slate-200 p-6 sm:p-10 min-h-[500px] relative overflow-hidden" id="form-container">
-            
+
+            <!-- Backend wiring: CSRF token + honeypot (humans never fill it). -->
+            <input type="hidden" id="inp_csrf" value="<?= e(Csrf::token()) ?>">
+            <input type="text" id="inp_website" name="website" class="hidden" tabindex="-1" autocomplete="off" aria-hidden="true">
+
             <!-- STEP 1 -->
             <div id="step-1" class="form-step active">
                 <h2 class="text-2xl sm:text-3xl font-bold text-physio-950 mb-3"><?= e(t('contact.s1.title')) ?></h2>
@@ -326,7 +330,7 @@ $lang = lang();
 </section>
 
 <!-- Pass data to JS -->
-<script>
+<script nonce="<?= e(\Security::nonce()) ?>">
 var PE_CONTACT_LANG = '<?= e($lang) ?>';
 var PE_CONTACT_DICT = {
     bpLabels: [
