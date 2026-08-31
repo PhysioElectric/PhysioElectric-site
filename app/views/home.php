@@ -37,7 +37,6 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
         </div>
     </div>
 </section>
-
 <!-- ============ CAPABILITIES ============ -->
 <section id="capabilities" class="py-24 md:py-32 bg-white relative overflow-hidden overflow-x-hidden">
     <div class="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-40 z-0"></div>
@@ -50,7 +49,7 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
         </div>
 
         <div class="space-y-32">
-            <!-- 01: Core Tech -->
+            <!-- 01: Core Tech (ویدیو پلی شونده با اسکرول) -->
             <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
                 <div class="w-full lg:w-1/2 reveal-from-right">
                     <span class="text-physio-500 font-bold text-xl mb-2 block">01</span>
@@ -61,41 +60,34 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
                     </a>
                 </div>
                 <div class="w-full lg:w-1/2 reveal-from-left">
-                     <div class="bg-slate-900 rounded-2xl h-[300px] flex items-center justify-center relative overflow-hidden shadow-premium p-6 border border-slate-800">
-                        <div class="absolute inset-0 bg-gradient-radial from-physio-600/20 to-transparent"></div>
-                        <div class="relative z-10 flex flex-wrap justify-center gap-3">
-                            <span class="tech-tag" style="animation-delay: 0s;">Python</span>
-                            <span class="tech-tag" style="animation-delay: 0.5s;">C++</span>
-                            <span class="tech-tag" style="animation-delay: 1.2s;">React</span>
-                            <span class="tech-tag" style="animation-delay: 0.8s;">Django</span>
-                            <span class="tech-tag" style="animation-delay: 0.2s;">OpenCV</span>
-                            <span class="tech-tag" style="animation-delay: 1.5s;">PHP 8.3</span>
-                            <span class="tech-tag" style="animation-delay: 0.6s;">Tailwind</span>
+                     <div class="bg-slate-950 rounded-2xl h-[300px] flex items-center justify-center relative overflow-hidden shadow-premium border border-slate-800">
+                        <video src="/assets/videos/code.mp4" muted loop playsinline class="scroll-play-vid absolute inset-0 w-full h-full object-cover opacity-50 transition-opacity duration-700"></video>
+                        <div class="play-icon-overlay absolute inset-0 flex items-center justify-center pointer-events-none z-10 transition-all duration-700">
+                            <div class="w-16 h-16 rounded-full bg-slate-900/50 backdrop-blur-sm border border-white/20 flex items-center justify-center shadow-lg">
+                                <i data-lucide="play" class="w-6 h-6 text-white/90 translate-x-0.5"></i>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-4 left-0 w-full flex flex-wrap justify-center gap-2 z-10 pointer-events-none opacity-90">
+                            <span class="px-2 py-1 bg-slate-900/60 backdrop-blur rounded text-xs text-slate-200 border border-slate-700/50">Python</span>
+                            <span class="px-2 py-1 bg-slate-900/60 backdrop-blur rounded text-xs text-slate-200 border border-slate-700/50">C++</span>
+                            <span class="px-2 py-1 bg-slate-900/60 backdrop-blur rounded text-xs text-slate-200 border border-slate-700/50">OpenCV</span>
                         </div>
                      </div>
                 </div>
             </div>
 
-            <!-- 02: Web Dev -->
+            <!-- 02: Web Dev (عکس بلند اسکرول شونده) -->
             <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
                 <div class="w-full lg:w-1/2 order-2 lg:order-1 reveal-from-right">
-                    <div class="mock-browser w-full h-[300px] flex flex-col transform transition-transform hover:scale-[1.02] duration-500 shadow-premium">
-                        <div class="mock-browser-header">
-                            <div class="mock-dot"></div><div class="mock-dot"></div><div class="mock-dot"></div>
+                    <div class="mock-browser w-full h-[300px] flex flex-col transform transition-transform hover:scale-[1.02] duration-500 shadow-premium overflow-hidden group border border-slate-200">
+                        <div class="mock-browser-header shrink-0 relative z-10 bg-slate-100 border-b border-slate-200 flex items-center px-4 gap-2 h-8">
+                            <div class="w-2.5 h-2.5 rounded-full bg-rose-400"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-amber-400"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
                         </div>
-                        <div class="p-6 flex-1 bg-slate-50 flex flex-col gap-4">
-                            <div class="w-1/3 h-4 bg-slate-200 rounded"></div>
-                            <div class="w-full h-32 bg-white border border-slate-100 rounded-lg shadow-sm flex items-center justify-center">
-                                <div class="w-1/2 h-2/3 flex flex-col gap-2">
-                                    <div class="w-full h-2 bg-physio-100 rounded"></div>
-                                    <div class="w-3/4 h-2 bg-physio-100 rounded"></div>
-                                    <div class="w-5/6 h-2 bg-physio-100 rounded"></div>
-                                </div>
-                            </div>
-                            <div class="flex gap-4">
-                                <div class="w-1/2 h-16 bg-white border border-slate-100 rounded shadow-sm"></div>
-                                <div class="w-1/2 h-16 bg-white border border-slate-100 rounded shadow-sm"></div>
-                            </div>
+                        <!-- عکس بلند که با موس اسکرول می‌شود -->
+                        <div class="w-full h-full bg-cover bg-top group-hover:bg-bottom transition-all ease-in-out cursor-ns-resize" 
+                             style="background-image: url('/assets/images/web.jpg'); transition-duration: 7s;">
                         </div>
                     </div>
                 </div>
@@ -109,7 +101,7 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
                 </div>
             </div>
 
-            <!-- 03: MATLAB/COMSOL -->
+            <!-- 03: MATLAB/COMSOL (ویدیو پلی شونده با اسکرول) -->
             <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
                 <div class="w-full lg:w-1/2 reveal-from-right">
                     <span class="text-physio-500 font-bold text-xl mb-2 block">03</span>
@@ -120,43 +112,35 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
                     </a>
                 </div>
                 <div class="w-full lg:w-1/2 reveal-from-left">
-                    <div class="bg-white rounded-2xl h-[300px] border border-slate-200 flex items-center justify-center overflow-hidden relative shadow-premium">
-                        <div class="absolute inset-0 bg-gradient-radial from-physio-50 to-slate-100"></div>
-                        <div class="cube-container z-10">
-                            <div class="cube">
-                                <div class="cube-face face-front"></div>
-                                <div class="cube-face face-back"></div>
-                                <div class="cube-face face-right"></div>
-                                <div class="cube-face face-left"></div>
-                                <div class="cube-face face-top"></div>
-                                <div class="cube-face face-bottom"></div>
+                    <div class="bg-slate-950 rounded-2xl h-[300px] border border-slate-800 flex items-center justify-center overflow-hidden relative shadow-premium">
+                        <video src="/assets/videos/sim.mp4" muted loop playsinline class="scroll-play-vid absolute inset-0 w-full h-full object-cover opacity-50 transition-opacity duration-700"></video>
+                        <div class="play-icon-overlay absolute inset-0 flex items-center justify-center pointer-events-none z-10 transition-all duration-700">
+                            <div class="w-16 h-16 rounded-full bg-slate-900/50 backdrop-blur-sm border border-white/20 flex items-center justify-center shadow-lg">
+                                <i data-lucide="play" class="w-6 h-6 text-white/90 translate-x-0.5"></i>
                             </div>
                         </div>
-                        <div class="absolute top-4 right-4 flex flex-col gap-1 rtl:right-auto rtl:left-4">
+                        <div class="absolute top-4 right-4 flex flex-col gap-1 rtl:right-auto rtl:left-4 z-10 pointer-events-none">
                             <div class="w-16 h-1 bg-gradient-to-r from-red-500 to-blue-500 rounded"></div>
-                            <div class="text-[10px] text-slate-400 font-mono text-right rtl:text-left">Mesh: Fine</div>
+                            <div class="text-[10px] text-white/90 font-mono text-right rtl:text-left drop-shadow-md">Mesh: Fine</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 04: AI & Programming -->
+            <!-- 04: AI & Programming (ویدیو پلی شونده با اسکرول) -->
             <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
                 <div class="w-full lg:w-1/2 order-2 lg:order-1 reveal-from-right">
-                     <div class="bg-slate-900 rounded-2xl p-8 h-[300px] flex items-center justify-center relative shadow-premium border border-slate-800">
-                        <svg class="w-full h-full" viewBox="0 0 200 100">
-                            <path d="M30 50 L80 50 L120 20 L170 20" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-dasharray="4,4" class="animate-[dash_2s_linear_infinite]" />
-                            <path d="M80 50 L120 80 L170 80" fill="none" stroke="#0ea5e9" stroke-width="2" />
-                            <circle cx="30" cy="50" r="8" fill="#fff" />
-                            <text x="30" y="70" fill="#94a3b8" font-size="8" text-anchor="middle" font-family="monospace">Input</text>
-                            <rect x="70" y="40" width="20" height="20" rx="4" fill="#0284c7" />
-                            <text x="80" y="70" fill="#94a3b8" font-size="8" text-anchor="middle" font-family="monospace">Agent</text>
-                            <circle cx="120" cy="20" r="6" fill="#64748b" />
-                            <circle cx="120" cy="80" r="6" fill="#fff" />
-                            <rect x="160" y="10" width="20" height="20" rx="2" fill="none" stroke="#64748b" stroke-width="2"/>
-                            <circle cx="170" cy="80" r="8" fill="#0ea5e9" />
-                            <text x="170" y="100" fill="#0ea5e9" font-size="8" text-anchor="middle" font-family="monospace">Output</text>
-                        </svg>
+                     <div class="bg-slate-950 rounded-2xl h-[300px] border border-slate-800 flex items-center justify-center overflow-hidden relative shadow-premium">
+                        <video src="/assets/videos/ai-programming.mp4" muted loop playsinline class="scroll-play-vid absolute inset-0 w-full h-full object-cover opacity-50 transition-opacity duration-700"></video>
+                        <div class="play-icon-overlay absolute inset-0 flex items-center justify-center pointer-events-none z-10 transition-all duration-700">
+                            <div class="w-16 h-16 rounded-full bg-slate-900/50 backdrop-blur-sm border border-white/20 flex items-center justify-center shadow-lg">
+                                <i data-lucide="play" class="w-6 h-6 text-white/90 translate-x-0.5"></i>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-4 left-0 w-full flex flex-wrap justify-center gap-2 z-10 pointer-events-none opacity-90">
+                            <span class="px-2 py-1 bg-slate-900/60 backdrop-blur rounded text-xs text-slate-200 border border-slate-700/50">Deep Learning</span>
+                            <span class="px-2 py-1 bg-slate-900/60 backdrop-blur rounded text-xs text-slate-200 border border-slate-700/50">Computer Vision</span>
+                        </div>
                      </div>
                 </div>
                 <div class="w-full lg:w-1/2 order-1 lg:order-2 reveal-from-left">
@@ -169,7 +153,7 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
                 </div>
             </div>
 
-            <!-- 05: Embedded / IoT -->
+            <!-- 05: Embedded / IoT (ویدیو پلی شونده با اسکرول) -->
             <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
                 <div class="w-full lg:w-1/2 reveal-from-right">
                     <span class="text-physio-500 font-bold text-xl mb-2 block">05</span>
@@ -180,22 +164,16 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
                     </a>
                 </div>
                 <div class="w-full lg:w-1/2 reveal-from-left">
-                    <div class="bg-slate-900 rounded-2xl h-[300px] flex items-center justify-center relative overflow-hidden shadow-premium border border-slate-800">
-                        <svg class="absolute inset-0 w-full h-full opacity-30" viewBox="0 0 200 200" preserveAspectRatio="none">
-                            <path d="M0 50 L50 50 L70 70 L100 70" fill="none" stroke="#0ea5e9" stroke-width="1.5" />
-                            <path d="M200 150 L150 150 L130 130 L100 130" fill="none" stroke="#0ea5e9" stroke-width="1.5" />
-                            <path d="M50 200 L50 150 L70 130 L100 130" fill="none" stroke="#0284c7" stroke-width="1.5" />
-                            <path d="M150 0 L150 50 L130 70 L100 70" fill="none" stroke="#0284c7" stroke-width="1.5" />
-                            <circle cx="100" cy="100" r="45" fill="none" stroke="rgba(14,165,233,0.3)" stroke-width="1" stroke-dasharray="4,4"/>
-                        </svg>
-                        <div class="relative z-10 w-32 h-32 bg-slate-800 rounded-lg border-2 border-slate-700 shadow-[0_0_25px_rgba(14,165,233,0.2)] flex items-center justify-center flex-col transform hover:scale-105 transition-transform duration-500">
-                            <div class="absolute -top-2.5 w-full flex justify-around px-3"><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div></div>
-                            <div class="absolute -bottom-2.5 w-full flex justify-around px-3"><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div><div class="w-2.5 h-3 bg-slate-500 rounded-sm"></div></div>
-                            <div class="absolute -left-2.5 h-full flex flex-col justify-around py-3"><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div></div>
-                            <div class="absolute -right-2.5 h-full flex flex-col justify-around py-3"><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div><div class="w-3 h-2.5 bg-slate-500 rounded-sm"></div></div>
-                            <div class="text-physio-500 font-mono text-lg font-bold tracking-wider mb-1">STM32</div>
-                            <div class="w-12 h-px bg-slate-600 my-1"></div>
-                            <div class="text-slate-400 font-mono text-sm">ESP32</div>
+                    <div class="bg-slate-950 rounded-2xl h-[300px] border border-slate-800 flex items-center justify-center overflow-hidden relative shadow-premium">
+                        <video src="/assets/videos/iot-embedded.mp4" muted loop playsinline class="scroll-play-vid absolute inset-0 w-full h-full object-cover opacity-50 transition-opacity duration-700"></video>
+                        <div class="play-icon-overlay absolute inset-0 flex items-center justify-center pointer-events-none z-10 transition-all duration-700">
+                            <div class="w-16 h-16 rounded-full bg-slate-900/50 backdrop-blur-sm border border-white/20 flex items-center justify-center shadow-lg">
+                                <i data-lucide="play" class="w-6 h-6 text-white/90 translate-x-0.5"></i>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-4 left-0 w-full flex flex-wrap justify-center gap-2 z-10 pointer-events-none opacity-90">
+                            <span class="px-2 py-1 bg-slate-900/60 backdrop-blur rounded text-xs text-slate-200 border border-slate-700/50">STM32 / ESP32</span>
+                            <span class="px-2 py-1 bg-slate-900/60 backdrop-blur rounded text-xs text-slate-200 border border-slate-700/50">MQTT / IoT</span>
                         </div>
                     </div>
                 </div>

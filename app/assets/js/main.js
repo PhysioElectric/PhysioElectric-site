@@ -25,6 +25,7 @@
         initProjectSlider();
         initTerminalBackground();
         initBlogSlider();
+        initScrollVideos();
         initFaq();
         initTimeline();
         initTelegramLinks();
@@ -241,6 +242,49 @@ function initReveal() {
                 slider.scrollBy({ left: IS_RTL ? scrollAmount() : -scrollAmount(), behavior: 'smooth' });
             });
         }
+    }
+    /* ---------------- Scroll to Play Videos ---------------- */
+    function initScrollVideos() {
+        var vids = document.querySelectorAll('.scroll-play-vid');
+        if (!vids.length) return;
+
+        var io = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                var vid = entry.target;
+                // پیدا کردن آیکون پلی که روی ویدیو قرار دارد
+                var playIcon = vid.parentElement.querySelector('.play-icon-overlay');
+
+                if (entry.isIntersecting) {
+                    // وقتی ویدیو وارد صفحه می‌شود
+                    var playPromise = vid.play();
+                    if (playPromise !== undefined) {
+                        playPromise.then(function() {
+                            // پس از شروع پخش: ویدیو کاملاً روشن و آیکون محو می‌شود
+                            vid.style.opacity = '1';
+                            if (playIcon) {
+                                playIcon.style.opacity = '0';
+                                playIcon.style.transform = 'scale(1.2)';
+                            }
+                        }).catch(function(error) {
+                            console.log("Auto-play prevented by browser.", error);
+                        });
+                    }
+                } else {
+                    // وقتی ویدیو از صفحه خارج می‌شود
+                    vid.pause();
+                    // بازگشت به حالت تاریک و نمایش مجدد آیکون
+                    vid.style.opacity = '0.5';
+                    if (playIcon) {
+                        playIcon.style.opacity = '1';
+                        playIcon.style.transform = 'scale(1)';
+                    }
+                }
+            });
+        }, { threshold: 0.4 }); // وقتی 40 درصد ویدیو وارد صفحه شد، پخش شروع می‌شود
+
+        vids.forEach(function(vid) {
+            io.observe(vid);
+        });
     }
 /* ---------------- Background Terminal Typing Effect ---------------- */
 function initTerminalBackground() {
