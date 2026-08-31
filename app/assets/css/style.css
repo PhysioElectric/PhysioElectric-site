@@ -1409,3 +1409,66 @@ html[dir="rtl"] .pe-dot { left: auto; right: -65px; }
     }
     .pe-nav-cta:hover { background-color: #020617 !important; }
 } 
+/* ============ Reveal From Left & Right (Enhanced) ============ */
+.reveal-from-right {
+    opacity: 0;
+    transform: translateX(140px);
+    transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+}
+.reveal-from-left {
+    opacity: 0;
+    transform: translateX(-140px);
+    transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+}
+.reveal-from-right.active, 
+.reveal-from-left.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+html[dir="ltr"] .reveal-from-right { transform: translateX(100px); }
+html[dir="ltr"] .reveal-from-left { transform: translateX(-100px); }
+
+/* ============ 2. Neon Glass Card (Moving Lights) ============ */
+.neon-glass-wrapper {
+    position: relative;
+    border-radius: 1.2rem;
+    padding: 2px; /* ضخامت حاشیه نوری */
+    overflow: hidden;
+    background: #0f172a; /* رنگ پس‌زمینه پیش‌فرض */
+    z-index: 1;
+}
+/* ۳ نور متحرک زیر کارت */
+.neon-glass-wrapper::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+        transparent, rgba(14, 165, 233, 0.1), transparent 30%,
+        transparent, rgba(139, 92, 246, 0.8), transparent 60%,
+        transparent, rgba(236, 72, 153, 0.8), transparent 90%
+    );
+    animation: rotate-neon 4s linear infinite;
+    z-index: -1;
+}
+/* بخش شیشه‌ای و مات روی کارت */
+.neon-glass-inner {
+    position: relative;
+    background: rgba(15, 23, 42, 0.85); /* سرمه‌ای تاریک با شفافیت */
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 1.1rem;
+    height: 100%;
+    width: 100%;
+    z-index: 2;
+    overflow: hidden;
+}
+
+@keyframes rotate-neon {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

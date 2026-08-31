@@ -23,6 +23,8 @@
         initReveal();
         initHeroCanvas();
         initProjectSlider();
+        initTerminalBackground();
+        initBlogSlider();
         initFaq();
         initTimeline();
         initTelegramLinks();
@@ -54,33 +56,36 @@
     }
 
    
- /* ---------------- Scroll reveal (Fixed for Chrome) ---------------- */
- function initReveal() {
-        var els = document.querySelectorAll('.reveal');
-        if (!els.length) { return; }
+ /* ---------------- Scroll reveal (Bi-directional interactive) ---------------- */
+function initReveal() {
+    var els = document.querySelectorAll('.reveal, .reveal-from-left, .reveal-from-right');
+    if (!els.length) { return; }
 
-        var io = new IntersectionObserver(function (entries) {
-            entries.forEach(function (entry) {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                    io.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.01, rootMargin: '50px' });
+    var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+            } else {
+                // با خروج المان از صفحه، کلاس active برداشته می‌شود تا با ورود مجدد انیمیشن تکرار شود
+                entry.target.classList.remove('active');
+            }
+        });
+    // تنظیم threshold روی 0.15 باعث می‌شود انیمیشن زمانی شروع شود که کمی از المان وارد صفحه شده باشد
+    }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
 
-        els.forEach(function (el) { io.observe(el); });
+    els.forEach(function (el) { io.observe(el); });
 
-        // سیستم بک‌آپ برای کروم و سافاری تا المان‌ها هرگز مخفی نمانند
-        setTimeout(function() {
-            var vh = window.innerHeight || document.documentElement.clientHeight;
-            els.forEach(function (el) {
-                var rect = el.getBoundingClientRect();
-                if (rect.top < vh + 100) {
-                    el.classList.add('active');
-                }
-            });
-        }, 400);
-    }
+    // سیستم بک‌آپ برای کروم و سافاری تا المان‌هایی که از قبل در صفحه (Viewport) هستند مخفی نمانند
+    setTimeout(function() {
+        var vh = window.innerHeight || document.documentElement.clientHeight;
+        els.forEach(function (el) {
+            var rect = el.getBoundingClientRect();
+            if (rect.top < vh) {
+                el.classList.add('active');
+            }
+        });
+    }, 400);
+}
 /* ---------------- Interactive Hero Canvas (Soft Magnetic Constellation) ---------------- */
     function initHeroCanvas() {
         var canvas = document.getElementById('hero-canvas');
@@ -93,7 +98,7 @@
         var mouse = { 
             x: null, 
             y: null, 
-            radius: 150 // شعاع اتصال متعادل
+            radius: 250 // شعاع اتصال متعادل
         };
 
         window.addEventListener('mousemove', function (e) {
@@ -146,18 +151,18 @@
                     var dist = Math.sqrt(dx * dx + dy * dy);
                     
                     if (dist < mouse.radius) {
-                        var alpha = (1 - dist / mouse.radius) * 0.4;
-                        ctx.beginPath();
-                        ctx.strokeStyle = 'rgba(14, 165, 233, ' + alpha.toFixed(3) + ')';
-                        ctx.lineWidth = 1;
-                        ctx.moveTo(p.x, p.y);
-                        ctx.lineTo(mouse.x, mouse.y);
-                        ctx.stroke();
+                          var alpha = (1 - dist / mouse.radius) * 0.6; // خطوط پررنگ‌تر
+                            ctx.beginPath();
+                            ctx.strokeStyle = 'rgba(14, 165, 233, ' + alpha.toFixed(3) + ')';
+                            ctx.lineWidth = 1.5; // خطوط ضخیم‌تر
+                            ctx.moveTo(p.x, p.y);
+                            ctx.lineTo(mouse.x, mouse.y);
+                            ctx.stroke();
 
-                        // مگنت بسیار ملایم (جلوگیری از توده‌ای شدن)
-                        var force = (mouse.radius - dist) / mouse.radius;
-                        p.x -= (dx / dist) * force * 0.15;
-                        p.y -= (dy / dist) * force * 0.15;
+    // مگنت قدرتمندتر (تغییر از 0.15 به 1.5)
+                            var force = (mouse.radius - dist) / mouse.radius;
+                                p.x -= (dx / dist) * force * 1.5; 
+                                p.y -= (dy / dist) * force * 1.5;
                     }
                 }
 
@@ -191,7 +196,6 @@
         step();
         window.addEventListener('resize', function () { resize(); spawn(); });
     }
-
     /* ---------------- Project slider ---------------- */
     function initProjectSlider() {
         var slider = document.getElementById('projectSlider');
@@ -218,12 +222,15 @@
         });
 
         var scrollAmount = function () {
-            var card = slider.querySelector('.min-w-\\[85vw\\]');
+            var card = slider.querySelector('.snap-center');
             var w = card ? card.offsetWidth + 24 : (window.innerWidth > 768 ? 600 : window.innerWidth * 0.85);
             return w;
         };
-        var nextBtn = document.getElementById('nextBtn');
-        var prevBtn = document.getElementById('prevBtn');
+        
+        // اتصال دکمه‌های هدر
+        var nextBtn = document.getElementById('projNextBtn');
+        var prevBtn = document.getElementById('projPrevBtn');
+        
         if (nextBtn) {
             nextBtn.addEventListener('click', function () {
                 slider.scrollBy({ left: IS_RTL ? -scrollAmount() : scrollAmount(), behavior: 'smooth' });
@@ -234,6 +241,78 @@
                 slider.scrollBy({ left: IS_RTL ? scrollAmount() : -scrollAmount(), behavior: 'smooth' });
             });
         }
+    }
+/* ---------------- Background Terminal Typing Effect ---------------- */
+function initTerminalBackground() {
+    var el = document.getElementById('terminal-bg-text');
+    if (!el) return;
+    
+    var snippets = [
+        "import torch\nimport torch.nn as nn\n\nclass PhysioNet(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.conv = nn.Conv2d(1, 64, 3)\n\n    def forward(self, x):\n        return self.conv(x)",
+        "clear;\nclc;\n\n% Initialize FEM Simulation\nmesh = createMesh('geometry.stl');\nbc = applyBoundary(mesh, 'dirichlet');\n\nsolution = solvePDE(bc);\nplotResults(solution);",
+        "// Real-time Control Loop\nvoid control_task() {\n    while(running) {\n        auto state = read_sensors();\n        auto output = pid.compute(state);\n        set_actuators(output);\n        delay(10);\n    }\n}"
+    ];
+    
+    var snippetIndex = 0;
+    var charIndex = 0;
+    var isDeleting = false;
+    
+    function type() {
+        var currentSnippet = snippets[snippetIndex];
+        
+        if (isDeleting) {
+            el.textContent = currentSnippet.substring(0, charIndex - 1);
+            charIndex--;
+        } else {
+            el.textContent = currentSnippet.substring(0, charIndex + 1);
+            charIndex++;
+        }
+
+        var speed = isDeleting ? 10 : 35; // سرعت تایپ و پاک شدن
+
+        if (!isDeleting && charIndex === currentSnippet.length) {
+            speed = 3000; // مکث بعد از اتمام تایپ یک قطعه کد
+            isDeleting = true;
+        } else if (isDeleting && charIndex === 0) {
+            isDeleting = false;
+            snippetIndex = (snippetIndex + 1) % snippets.length;
+            speed = 500;
+        }
+
+        setTimeout(type, speed);
+    }
+    setTimeout(type, 1000);
+}
+/* ---------------- Blog slider ---------------- */
+    function initBlogSlider() {
+        var slider = document.getElementById('blogSlider');
+        if (!slider) { return; }
+        var isDown = false, startX = 0, startScroll = 0;
+
+        slider.addEventListener('mousedown', function (e) {
+            isDown = true; slider.classList.add('active');
+            startX = e.pageX; startScroll = slider.scrollLeft;
+        });
+        ['mouseleave', 'mouseup', 'blur'].forEach(function (ev) {
+            slider.addEventListener(ev, function () {
+                isDown = false; slider.classList.remove('active');
+            });
+        });
+        slider.addEventListener('mousemove', function (e) {
+            if (!isDown) { return; }
+            e.preventDefault();
+            var walk = (e.pageX - startX) * 1.6;
+            slider.scrollLeft = IS_RTL ? startScroll + walk : startScroll - walk;
+        });
+
+        var scrollAmount = function () {
+            var card = slider.querySelector('.snap-center');
+            return card ? card.offsetWidth + 24 : 400;
+        };
+        var nextBtn = document.getElementById('blogNextBtn');
+        var prevBtn = document.getElementById('blogPrevBtn');
+        if (nextBtn) nextBtn.addEventListener('click', function () { slider.scrollBy({ left: IS_RTL ? -scrollAmount() : scrollAmount(), behavior: 'smooth' }); });
+        if (prevBtn) prevBtn.addEventListener('click', function () { slider.scrollBy({ left: IS_RTL ? scrollAmount() : -scrollAmount(), behavior: 'smooth' }); });
     }
 
     /* ---------------- FAQ accordion ---------------- */

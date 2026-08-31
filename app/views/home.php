@@ -37,8 +37,9 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
         </div>
     </div>
 </section>
+
 <!-- ============ CAPABILITIES ============ -->
-<section id="capabilities" class="py-24 md:py-32 bg-white relative overflow-hidden">
+<section id="capabilities" class="py-24 md:py-32 bg-white relative overflow-hidden overflow-x-hidden">
     <div class="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] opacity-40 z-0"></div>
     <div class="absolute top-1/2 left-0 w-[600px] h-[600px] bg-physio-50 rounded-full blur-[100px] -translate-y-1/2 -translate-x-1/4 z-0 pointer-events-none"></div>
 
@@ -50,8 +51,8 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
 
         <div class="space-y-32">
             <!-- 01: Core Tech -->
-            <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24 reveal">
-                <div class="w-full lg:w-1/2">
+            <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
+                <div class="w-full lg:w-1/2 reveal-from-right">
                     <span class="text-physio-500 font-bold text-xl mb-2 block">01</span>
                     <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4"><?= e(t('cap.c0.title')) ?></h3>
                     <p class="text-slate-600 mb-8 text-lg leading-relaxed"><?= e(t('cap.c0.desc')) ?></p>
@@ -59,7 +60,7 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
                         <?= e(t('cap.c0.link')) ?> <i data-lucide="arrow-right" class="w-4 h-4 mx-1 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180"></i>
                     </a>
                 </div>
-                <div class="w-full lg:w-1/2">
+                <div class="w-full lg:w-1/2 reveal-from-left">
                      <div class="bg-slate-900 rounded-2xl h-[300px] flex items-center justify-center relative overflow-hidden shadow-premium p-6 border border-slate-800">
                         <div class="absolute inset-0 bg-gradient-radial from-physio-600/20 to-transparent"></div>
                         <div class="relative z-10 flex flex-wrap justify-center gap-3">
@@ -76,8 +77,8 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
             </div>
 
             <!-- 02: Web Dev -->
-            <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24 reveal">
-                <div class="w-full lg:w-1/2 order-2 lg:order-1">
+            <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
+                <div class="w-full lg:w-1/2 order-2 lg:order-1 reveal-from-right">
                     <div class="mock-browser w-full h-[300px] flex flex-col transform transition-transform hover:scale-[1.02] duration-500 shadow-premium">
                         <div class="mock-browser-header">
                             <div class="mock-dot"></div><div class="mock-dot"></div><div class="mock-dot"></div>
@@ -98,7 +99,7 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
                         </div>
                     </div>
                 </div>
-                <div class="w-full lg:w-1/2 order-1 lg:order-2">
+                <div class="w-full lg:w-1/2 order-1 lg:order-2 reveal-from-left">
                     <span class="text-physio-500 font-bold text-xl mb-2 block">02</span>
                     <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4"><?= e(t('cap.c3.title')) ?></h3>
                     <p class="text-slate-600 mb-8 text-lg leading-relaxed"><?= e(t('cap.c3.desc')) ?></p>
@@ -109,8 +110,8 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
             </div>
 
             <!-- 03: MATLAB/COMSOL -->
-            <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24 reveal">
-                <div class="w-full lg:w-1/2">
+            <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
+                <div class="w-full lg:w-1/2 reveal-from-right">
                     <span class="text-physio-500 font-bold text-xl mb-2 block">03</span>
                     <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4"><?= e(t('cap.c1.title')) ?></h3>
                     <p class="text-slate-600 mb-8 text-lg leading-relaxed"><?= e(t('cap.c1.desc')) ?></p>
@@ -118,7 +119,7 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
                         <?= e(t('cap.c1.link')) ?> <i data-lucide="arrow-right" class="w-4 h-4 mx-1 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180"></i>
                     </a>
                 </div>
-                <div class="w-full lg:w-1/2">
+                <div class="w-full lg:w-1/2 reveal-from-left">
                     <div class="bg-white rounded-2xl h-[300px] border border-slate-200 flex items-center justify-center overflow-hidden relative shadow-premium">
                         <div class="absolute inset-0 bg-gradient-radial from-physio-50 to-slate-100"></div>
                         <div class="cube-container z-10">
@@ -140,8 +141,8 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
             </div>
 
             <!-- 04: AI & Programming -->
-            <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24 reveal">
-                <div class="w-full lg:w-1/2 order-2 lg:order-1">
+            <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
+                <div class="w-full lg:w-1/2 order-2 lg:order-1 reveal-from-right">
                      <div class="bg-slate-900 rounded-2xl p-8 h-[300px] flex items-center justify-center relative shadow-premium border border-slate-800">
                         <svg class="w-full h-full" viewBox="0 0 200 100">
                             <path d="M30 50 L80 50 L120 20 L170 20" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-dasharray="4,4" class="animate-[dash_2s_linear_infinite]" />
@@ -158,7 +159,7 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
                         </svg>
                      </div>
                 </div>
-                <div class="w-full lg:w-1/2 order-1 lg:order-2">
+                <div class="w-full lg:w-1/2 order-1 lg:order-2 reveal-from-left">
                     <span class="text-physio-500 font-bold text-xl mb-2 block">04</span>
                     <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4"><?= e(t('cap.c2.title')) ?></h3>
                     <p class="text-slate-600 mb-8 text-lg leading-relaxed"><?= e(t('cap.c2.desc')) ?></p>
@@ -169,8 +170,8 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
             </div>
 
             <!-- 05: Embedded / IoT -->
-            <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24 reveal">
-                <div class="w-full lg:w-1/2">
+            <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
+                <div class="w-full lg:w-1/2 reveal-from-right">
                     <span class="text-physio-500 font-bold text-xl mb-2 block">05</span>
                     <h3 class="text-2xl md:text-3xl font-bold text-physio-950 mb-4"><?= e(t('cap.c4.title')) ?></h3>
                     <p class="text-slate-600 mb-8 text-lg leading-relaxed"><?= e(t('cap.c4.desc')) ?></p>
@@ -178,7 +179,7 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
                         <?= e(t('cap.c4.link')) ?> <i data-lucide="arrow-right" class="w-4 h-4 mx-1 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180"></i>
                     </a>
                 </div>
-                <div class="w-full lg:w-1/2">
+                <div class="w-full lg:w-1/2 reveal-from-left">
                     <div class="bg-slate-900 rounded-2xl h-[300px] flex items-center justify-center relative overflow-hidden shadow-premium border border-slate-800">
                         <svg class="absolute inset-0 w-full h-full opacity-30" viewBox="0 0 200 200" preserveAspectRatio="none">
                             <path d="M0 50 L50 50 L70 70 L100 70" fill="none" stroke="#0ea5e9" stroke-width="1.5" />
@@ -202,85 +203,124 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
         </div>
     </div>
 </section>
-
 <!-- ============ FEATURED PROJECTS ============ -->
-<section id="projects" class="py-24 bg-slate-900 text-white overflow-hidden relative border-y border-slate-800">
-    <div class="max-w-7xl mx-auto px-6 lg:px-8 mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 reveal">
+<section id="projects" class="py-24 bg-slate-950 text-white overflow-hidden relative border-y border-slate-800">
+    
+    <!-- Abstract Background: Grid + Safe Terminal -->
+    <div class="absolute inset-0 z-0 pointer-events-none flex items-center justify-center overflow-hidden">
+        <!-- Glow effects -->
+        <div class="absolute top-0 right-1/4 w-96 h-96 bg-physio-600/10 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-0 left-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-[120px]"></div>
+        
+        <!-- Engineering Grid -->
+        <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-40"></div>
+    </div>
+
+    <!-- Animated Terminal Box (Confined to avoid text overlap) -->
+    <div class="absolute rtl:left-[5%] ltr:right-[5%] top-[15%] w-[350px] md:w-[450px] h-[280px] bg-slate-900/30 backdrop-blur-sm border border-slate-800/50 rounded-xl overflow-hidden z-0 hidden lg:flex flex-col opacity-30 pointer-events-none shadow-2xl">
+        <div class="h-8 bg-slate-900/80 border-b border-slate-800/50 flex items-center px-4 gap-2">
+            <div class="w-2.5 h-2.5 rounded-full bg-rose-500/40"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-amber-500/40"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-emerald-500/40"></div>
+            <span class="ml-2 text-[10px] font-mono text-slate-500">physio_core ~ bash</span>
+        </div>
+        <div class="p-5 flex-1 text-left" dir="ltr">
+            <span id="terminal-bg-text" class="text-physio-400/80 font-mono text-sm md:text-base whitespace-pre-wrap leading-relaxed"></span><span class="inline-block w-2 h-4 bg-physio-400/80 ml-1 animate-pulse align-middle"></span>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 mb-12 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 relative z-10 reveal">
         <div class="max-w-2xl">
             <h2 class="text-3xl md:text-5xl font-bold tracking-tight"><?= e(t('home.projects.title')) ?></h2>
             <p class="mt-4 text-lg text-slate-400"><?= e(t('home.projects.subtitle')) ?></p>
         </div>
-        <div class="flex items-center gap-4 shrink-0">
-            <div class="hidden md:flex p-1.5 bg-slate-800 border border-slate-700 rounded-full items-center gap-1 shadow-lg">
-                <button id="prevBtn" class="w-12 h-12 rounded-full flex items-center justify-center hover:bg-slate-700 text-slate-400 hover:text-white transition-all">
+        <div class="flex flex-wrap items-center gap-4 shrink-0">
+            <!-- Header Controls -->
+            <div class="hidden md:flex p-1.5 bg-slate-800/80 backdrop-blur border border-slate-700 rounded-full items-center gap-1 shadow-lg">
+                <button id="projPrevBtn" class="w-12 h-12 rounded-full flex items-center justify-center hover:bg-physio-600 hover:shadow-[0_0_15px_rgba(14,165,233,0.4)] text-slate-400 hover:text-white transition-all">
                     <i data-lucide="chevron-left" class="w-5 h-5 rtl:rotate-180"></i>
                 </button>
                 <div class="w-px h-5 bg-slate-700"></div>
-                <button id="nextBtn" class="w-12 h-12 rounded-full flex items-center justify-center hover:bg-slate-700 text-slate-400 hover:text-white transition-all">
+                <button id="projNextBtn" class="w-12 h-12 rounded-full flex items-center justify-center hover:bg-physio-600 hover:shadow-[0_0_15px_rgba(14,165,233,0.4)] text-slate-400 hover:text-white transition-all">
                     <i data-lucide="chevron-right" class="w-5 h-5 rtl:rotate-180"></i>
                 </button>
             </div>
-            <a href="<?= e(url(lang(), 'projects')) ?>" class="inline-flex items-center gap-2 text-physio-400 font-semibold text-sm hover:text-physio-300 transition-colors">
+            <a href="<?= e(url(lang(), 'projects')) ?>" class="inline-flex items-center gap-2 text-physio-400 font-semibold text-sm hover:text-white transition-colors bg-slate-800/50 px-5 py-2.5 rounded-full border border-slate-700/50 backdrop-blur shadow-sm hover:shadow-[0_0_15px_rgba(14,165,233,0.3)]">
                 <?= e(t('home.projects.viewAll')) ?> <i data-lucide="arrow-right" class="w-4 h-4 rtl:rotate-180"></i>
             </a>
         </div>
     </div>
 
-    <div class="slider-container flex gap-6 px-6 md:px-8 lg:px-12 overflow-x-auto hide-scrollbar snap-x snap-mandatory py-8 cursor-grab" id="projectSlider">
-        <?php if (empty($featured)): ?>
-            <div class="min-w-[85vw] md:min-w-[600px] flex-shrink-0 snap-center">
-                <div class="bg-slate-800 rounded-2xl aspect-[16/9] border border-slate-700 flex items-center justify-center text-slate-500">
-                    <?= e(t('projects.notFound')) ?>
+    <!-- ============ SLIDER AREA WITH FLOATING BUTTONS ============ -->
+    <div class="relative z-10 w-full max-w-[100vw] group/slider mt-4">
+        
+        <!-- Floating Right Button (Previous in RTL) -->
+        <button id="slideRightBtn" class="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 z-40 w-12 h-12 md:w-14 md:h-14 bg-slate-900/80 backdrop-blur-xl border border-slate-600 rounded-full flex items-center justify-center text-white shadow-[0_0_20px_rgba(14,165,233,0.4)] hover:bg-physio-600 hover:scale-110 hover:border-physio-400 transition-all duration-300 opacity-90 md:opacity-0 md:group-hover/slider:opacity-100">
+            <i data-lucide="chevron-right" class="w-6 h-6 rtl:rotate-180"></i>
+        </button>
+
+        <!-- Floating Left Button (Next in RTL) -->
+        <button id="slideLeftBtn" class="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 z-40 w-12 h-12 md:w-14 md:h-14 bg-slate-900/80 backdrop-blur-xl border border-slate-600 rounded-full flex items-center justify-center text-white shadow-[0_0_20px_rgba(14,165,233,0.4)] hover:bg-physio-600 hover:scale-110 hover:border-physio-400 transition-all duration-300 opacity-90 md:opacity-0 md:group-hover/slider:opacity-100">
+            <i data-lucide="chevron-left" class="w-6 h-6 rtl:rotate-180"></i>
+        </button>
+
+        <div class="slider-container flex gap-6 px-6 md:px-12 overflow-x-auto hide-scrollbar snap-x snap-mandatory py-8 cursor-grab" id="projectSlider">
+            <?php if (empty($featured)): ?>
+                <div class="min-w-[85vw] md:min-w-[600px] flex-shrink-0 snap-center">
+                    <div class="bg-slate-800 rounded-2xl aspect-[16/9] border border-slate-700 flex items-center justify-center text-slate-500">
+                        <?= e(t('projects.notFound')) ?>
+                    </div>
                 </div>
-            </div>
-        <?php else: ?>
-        <?php foreach ($featured as $p): ?>
-            <?php
-            $pTitle = L($p, 'title');
-            $pImg   = (string) ($p['image'] ?? '');
-            $pCat   = L($p, 'category_name');
-            $pUrl   = url(lang(), 'projects/' . e($p['category_slug']) . '/' . e(slugOf($p)));
-            $pTags  = array_slice(tech_tags($p['tech_tags']), 0, 3);
-            ?>
-            <div class="min-w-[85vw] md:min-w-[600px] flex-shrink-0 snap-center group">
-                <a href="<?= e($pUrl) ?>" class="block">
-                    <div class="relative bg-slate-800 rounded-2xl overflow-hidden aspect-[16/9] border border-slate-700 transition-transform duration-500 group-hover:scale-[1.02]">
-                        <?php if ($pImg !== ''): ?>
-                            <img src="<?= e($pImg) ?>" alt="<?= e($pTitle) ?>" class="absolute inset-0 w-full h-full object-cover pe-img-zoom" loading="lazy">
-                        <?php else: ?>
-                            <div class="absolute inset-0 bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center">
-                                <div class="w-32 h-32 border-4 border-physio-500/30 rounded-full flex items-center justify-center animate-spin-slow">
-                                    <div class="w-16 h-16 bg-physio-500/20 rounded-full blur-xl"></div>
-                                </div>
-                            </div>
-                        <?php endif; ?>
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/50 to-transparent opacity-90"></div>
-                        <div class="absolute bottom-0 start-0 p-8 w-full">
-                            <div class="flex justify-between items-end">
-                                <div>
-                                    <span class="text-physio-400 text-sm font-semibold uppercase tracking-wider mb-2 block"><?= e($pCat) ?></span>
-                                    <h3 class="text-2xl md:text-3xl font-bold text-white mb-3"><?= e($pTitle) ?></h3>
-                                    <div class="flex flex-wrap gap-2">
-                                        <?php foreach ($pTags as $tag): ?>
-                                            <span class="px-2 py-1 bg-slate-800/80 rounded text-xs text-slate-300 backdrop-blur border border-slate-600/50"><?= e($tag) ?></span>
-                                        <?php endforeach; ?>
+            <?php else: ?>
+            <?php foreach ($featured as $p): ?>
+                <?php
+                $pTitle = L($p, 'title');
+                $pImg   = (string) ($p['image'] ?? '');
+                $pCat   = L($p, 'category_name');
+                $pUrl   = url(lang(), 'projects/' . e($p['category_slug']) . '/' . e(slugOf($p)));
+                $pTags  = array_slice(tech_tags($p['tech_tags']), 0, 3);
+                ?>
+                <div class="min-w-[85vw] md:min-w-[600px] flex-shrink-0 snap-center group p-2">
+                    <a href="<?= e($pUrl) ?>" class="block">
+                        <div class="neon-glass-wrapper aspect-[16/9] transition-transform duration-500 group-hover:scale-[1.02]">
+                            <div class="neon-glass-inner">
+                                <?php if ($pImg !== ''): ?>
+                                    <img src="<?= e($pImg) ?>" alt="<?= e($pTitle) ?>" class="absolute inset-0 w-full h-full object-cover pe-img-zoom opacity-80" loading="lazy">
+                                <?php else: ?>
+                                    <div class="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
+                                        <div class="w-32 h-32 border-4 border-physio-500/30 rounded-full flex items-center justify-center animate-spin-slow">
+                                            <div class="w-16 h-16 bg-physio-500/20 rounded-full blur-xl"></div>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/60 to-transparent opacity-95"></div>
+                                <div class="absolute bottom-0 start-0 p-8 w-full z-20">
+                                    <div class="flex justify-between items-end">
+                                        <div>
+                                            <span class="text-physio-400 text-sm font-semibold uppercase tracking-wider mb-2 block"><?= e($pCat) ?></span>
+                                            <h3 class="text-2xl md:text-3xl font-bold text-white mb-3"><?= e($pTitle) ?></h3>
+                                            <div class="flex flex-wrap gap-2">
+                                                <?php foreach ($pTags as $tag): ?>
+                                                    <span class="px-2 py-1 bg-slate-800/80 rounded text-xs text-slate-300 backdrop-blur border border-slate-600/50"><?= e($tag) ?></span>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        </div>
+                                        <span class="w-12 h-12 rounded-full bg-white text-slate-900 flex items-center justify-center opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-lg shrink-0 ms-4">
+                                            <i data-lucide="arrow-up-right" class="w-5 h-5 rtl:-scale-x-100"></i>
+                                        </span>
                                     </div>
                                 </div>
-                                <span class="w-12 h-12 rounded-full bg-white text-slate-900 flex items-center justify-center opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-lg shrink-0 ms-4">
-                                    <i data-lucide="arrow-up-right" class="w-5 h-5 rtl:-scale-x-100"></i>
-                                </span>
                             </div>
                         </div>
-                    </div>
-                </a>
-            </div>
-        <?php endforeach; ?>
-        <?php endif; ?>
+                    </a>
+                </div>
+            <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
     </div>
 </section>
-
 <!-- ============ ABOUT ============ -->
-<section id="about" class="py-24 md:py-32 bg-slate-50 relative overflow-hidden border-b border-slate-200">
+ <section id="about" class="py-24 md:py-32 bg-slate-50 relative overflow-hidden border-b border-slate-200">
     <div class="absolute right-0 bottom-0 w-[800px] h-[800px] bg-[radial-gradient(circle_at_center,rgba(14,165,233,0.05)_0,transparent_50%)] pointer-events-none"></div>
     <div class="absolute -left-40 top-1/4 w-[400px] h-[400px] border-[40px] border-white rounded-full z-0 pointer-events-none opacity-50"></div>
 
@@ -308,30 +348,88 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
             </div>
             
             <div class="flex justify-center reveal reveal-delay-2 h-[400px] relative w-full">
-                <div class="relative w-full max-w-[400px] h-[400px] flex items-center justify-center">
-                    <svg class="absolute inset-0 w-full h-full pointer-events-none z-0" viewBox="0 0 400 400">
-                        <line x1="200" y1="200" x2="110" y2="110" stroke="#cbd5e1" stroke-width="2" class="line-dashed" />
-                        <line x1="200" y1="200" x2="300" y2="130" stroke="#cbd5e1" stroke-width="2" class="line-dashed-reverse" />
-                        <line x1="200" y1="200" x2="290" y2="290" stroke="#cbd5e1" stroke-width="2" class="line-dashed" />
-                        <line x1="200" y1="200" x2="100" y2="270" stroke="#0ea5e9" stroke-width="2" class="line-dashed-reverse opacity-60" />
-                    </svg>
-                    <div class="w-64 h-64 border border-slate-300 rounded-full absolute animate-[spin_20s_linear_infinite] z-0"></div>
-                    <div class="w-48 h-48 border border-physio-200 rounded-full absolute animate-[spin_15s_linear_infinite_reverse] z-0"></div>
+                <!-- استفاده از dir="ltr" و مختصات درصدی برای تطابق کامل خطوط و باکس‌ها در موبایل و دسکتاپ -->
+                <div class="relative w-full max-w-[400px] h-[400px] flex items-center justify-center" dir="ltr">
                     
-                    <div class="w-32 h-32 bg-white rounded-3xl rotate-45 shadow-premium flex items-center justify-center overflow-hidden z-10 relative border border-slate-100">
-                        <div class="w-full h-full bg-physio-50/50 flex items-center justify-center -rotate-45 font-bold text-physio-900 text-3xl tracking-tighter">PE</div>
+                    <!-- Glow Background (هاله نورانی زیر چیپ) -->
+                    <div class="absolute w-[160px] h-[160px] bg-physio-500/20 blur-2xl rounded-full z-0 pointer-events-none"></div>
+
+                    <!-- Concentric Rings (حلقه‌های پس‌زمینه) -->
+                    <div class="w-[340px] h-[340px] border border-slate-200 border-dashed rounded-full absolute z-0 pointer-events-none"></div>
+                    <div class="w-[260px] h-[260px] border border-slate-200 rounded-full absolute z-0 pointer-events-none"></div>
+                    <div class="w-[180px] h-[180px] border border-physio-400 rounded-full absolute z-0 pointer-events-none shadow-[0_0_15px_rgba(14,165,233,0.1)]"></div>
+                    
+                    <!-- Connection Lines (SVG) - خطوط ۴ گانه اتصال به تخصص‌ها -->
+                    <svg class="absolute inset-0 w-full h-full pointer-events-none z-0" viewBox="0 0 400 400">
+                        <!-- Top Left (طراحی وب) -->
+                        <path d="M 160 160 L 110 110 L 40 110" fill="none" stroke="#0ea5e9" stroke-width="1.5" stroke-dasharray="4 4" />
+                        <circle cx="110" cy="110" r="3.5" fill="#0ea5e9" />
+                        <circle cx="40" cy="110" r="3.5" fill="#0ea5e9" />
+
+                        <!-- Bottom Left (اینترنت اشیا) -->
+                        <path d="M 160 240 L 110 290 L 40 290" fill="none" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4 4" />
+                        <circle cx="110" cy="290" r="3.5" fill="#64748b" />
+                        <circle cx="40" cy="290" r="3.5" fill="#64748b" />
+
+                        <!-- Top Right (متلب / کامسول) -->
+                        <path d="M 240 160 L 290 110 L 360 110" fill="none" stroke="#64748b" stroke-width="1.5" stroke-dasharray="4 4" />
+                        <circle cx="290" cy="110" r="3.5" fill="#64748b" />
+                        <circle cx="360" cy="110" r="3.5" fill="#64748b" />
+
+                        <!-- Bottom Right (هوش مصنوعی) -->
+                        <path d="M 240 240 L 290 290 L 360 290" fill="none" stroke="#0ea5e9" stroke-width="1.5" stroke-dasharray="4 4" />
+                        <circle cx="290" cy="290" r="3.5" fill="#0ea5e9" />
+                        <circle cx="360" cy="290" r="3.5" fill="#0ea5e9" />
+                    </svg>
+                    
+                    <!-- Central Chip (چیپست مرکزی PE) -->
+                    <div class="relative z-10 w-[120px] h-[120px] bg-[#0f172a] rounded-[24px] shadow-[0_15px_40px_rgba(14,165,233,0.35)] flex items-center justify-center border border-slate-800">
+                        <!-- Top Pins (پایه‌های بالا) -->
+                        <div class="absolute -top-1.5 w-full flex justify-center gap-3">
+                            <div class="w-3 h-2 bg-physio-500 rounded-t-sm shadow-[0_-2px_5px_rgba(14,165,233,0.5)]"></div>
+                            <div class="w-3 h-2 bg-physio-500 rounded-t-sm shadow-[0_-2px_5px_rgba(14,165,233,0.5)]"></div>
+                            <div class="w-3 h-2 bg-physio-500 rounded-t-sm shadow-[0_-2px_5px_rgba(14,165,233,0.5)]"></div>
+                        </div>
+                        <!-- Bottom Pins (پایه‌های پایین) -->
+                        <div class="absolute -bottom-1.5 w-full flex justify-center gap-3">
+                            <div class="w-3 h-2 bg-physio-500 rounded-b-sm shadow-[0_2px_5px_rgba(14,165,233,0.5)]"></div>
+                            <div class="w-3 h-2 bg-physio-500 rounded-b-sm shadow-[0_2px_5px_rgba(14,165,233,0.5)]"></div>
+                            <div class="w-3 h-2 bg-physio-500 rounded-b-sm shadow-[0_2px_5px_rgba(14,165,233,0.5)]"></div>
+                        </div>
+                        
+                        <!-- Inner Screen -->
+                        <div class="w-[92px] h-[92px] bg-[#020617] rounded-[18px] flex items-center justify-center border border-slate-800 shadow-inner">
+                            <span class="font-bold text-white text-4xl tracking-tighter drop-shadow-[0_0_10px_rgba(255,255,255,0.6)]">PE</span>
+                        </div>
                     </div>
                     
-                    <div class="absolute bg-white shadow-md border border-slate-100 px-4 py-2 rounded-xl text-sm font-bold text-slate-700 z-20" style="top: 110px; left: 110px; transform: translate(-50%, -50%);"><?= e(t('domain.sw')) ?></div>
-                    <div class="absolute bg-white shadow-md border border-slate-100 px-4 py-2 rounded-xl text-sm font-bold text-slate-700 z-20" style="top: 130px; left: 300px; transform: translate(-50%, -50%);"><?= e(t('domain.matlab')) ?></div>
-                    <div class="absolute bg-white shadow-md border border-slate-100 px-4 py-2 rounded-xl text-sm font-bold text-slate-700 z-20" style="top: 290px; left: 290px; transform: translate(-50%, -50%);"><?= e(t('domain.math')) ?></div>
-                    <div class="absolute bg-white shadow-md border border-physio-200 px-4 py-2 rounded-xl text-sm font-bold text-physio-600 z-20" style="top: 270px; left: 100px; transform: translate(-50%, -50%);"><?= e(t('domain.ai')) ?></div>
+                    <!-- Labels (۴ شاخه تخصصی با مختصات دقیق درصدی) -->
+                    
+                    <!-- 1. Web Design (طراحی وب) -->
+                    <div class="absolute top-[27.5%] left-[18.75%] -translate-x-1/2 -translate-y-1/2 bg-white shadow-xl border border-slate-100 px-4 py-2 rounded-xl text-[12px] md:text-sm font-bold text-slate-800 z-20 whitespace-nowrap">
+                        <?= lang() === 'fa' ? 'طراحی وب' : 'Web Design' ?>
+                    </div>
+
+                    <!-- 2. IoT (اینترنت اشیا) -->
+                    <div class="absolute top-[72.5%] left-[18.75%] -translate-x-1/2 -translate-y-1/2 bg-slate-800 shadow-xl border border-slate-700 px-4 py-2 rounded-xl text-[12px] md:text-sm font-bold text-slate-200 z-20 whitespace-nowrap">
+                        <?= lang() === 'fa' ? 'اینترنت اشیا' : 'IoT' ?>
+                    </div>
+
+                    <!-- 3. MATLAB / COMSOL -->
+                    <div class="absolute top-[27.5%] left-[81.25%] -translate-x-1/2 -translate-y-1/2 bg-[#0f172a] shadow-[0_10px_30px_rgba(14,165,233,0.25)] border border-slate-800 px-4 py-2 rounded-xl text-[12px] md:text-sm font-bold text-physio-400 z-20 whitespace-nowrap text-center">
+                        <?= lang() === 'fa' ? 'متلب / کامسول' : 'MATLAB / COMSOL' ?>
+                    </div>
+
+                    <!-- 4. AI (هوش مصنوعی) -->
+                    <div class="absolute top-[72.5%] left-[81.25%] -translate-x-1/2 -translate-y-1/2 bg-physio-600 shadow-[0_10px_30px_rgba(14,165,233,0.3)] border border-physio-500 px-4 py-2 rounded-xl text-[12px] md:text-sm font-bold text-white z-20 whitespace-nowrap">
+                        <?= lang() === 'fa' ? 'هوش مصنوعی' : 'AI' ?>
+                    </div>
+
                 </div>
             </div>
         </div>
     </div>
 </section>
-
 <!-- ============ PROCESS TIMELINE ============ -->
 <section id="process" class="py-24 bg-white relative overflow-hidden">
     <div class="max-w-4xl mx-auto px-6 lg:px-8 relative z-10">
@@ -368,59 +466,61 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
 </section>
 
 <!-- ============ LATEST ARTICLES ============ -->
-<section id="articles" class="py-24 bg-slate-50 relative z-20 border-t border-slate-200">
-    <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-100/50 rounded-full blur-[120px] z-0 pointer-events-none"></div>
-
-    <div class="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6 reveal">
-            <div class="max-w-2xl">
-                <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-physio-950"><?= e(t('home.blog.title')) ?></h2>
-                <p class="mt-4 text-lg text-slate-500"><?= e(t('home.blog.subtitle')) ?></p>
+<section id="articles" class="py-24 bg-slate-900 text-white relative z-20 border-t border-slate-800 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6 reveal">
+        <div class="max-w-2xl">
+            <h2 class="text-3xl md:text-5xl font-bold tracking-tight"><?= e(t('home.blog.title')) ?></h2>
+            <p class="mt-4 text-lg text-slate-400"><?= e(t('home.blog.subtitle')) ?></p>
+        </div>
+        <div class="flex items-center gap-4 shrink-0">
+            <div class="hidden md:flex p-1.5 bg-slate-800 border border-slate-700 rounded-full items-center gap-1 shadow-lg">
+                <button id="blogPrevBtn" class="w-12 h-12 rounded-full flex items-center justify-center hover:bg-slate-700 text-slate-400 hover:text-white transition-all"><i data-lucide="chevron-left" class="w-5 h-5 rtl:rotate-180"></i></button>
+                <div class="w-px h-5 bg-slate-700"></div>
+                <button id="blogNextBtn" class="w-12 h-12 rounded-full flex items-center justify-center hover:bg-slate-700 text-slate-400 hover:text-white transition-all"><i data-lucide="chevron-right" class="w-5 h-5 rtl:rotate-180"></i></button>
             </div>
-            <a href="<?= e(url(lang(), 'blog')) ?>" class="hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white hover:bg-slate-100 border border-slate-200 text-physio-900 font-medium transition-all group shrink-0 shadow-sm">
-                <?= e(t('home.blog.viewAll')) ?> <i data-lucide="arrow-right" class="w-4 h-4 text-physio-500 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180"></i>
+            <a href="<?= e(url(lang(), 'blog')) ?>" class="inline-flex items-center gap-2 text-physio-400 font-semibold text-sm hover:text-physio-300 transition-colors">
+                <?= e(t('home.blog.viewAll')) ?> <i data-lucide="arrow-right" class="w-4 h-4 rtl:rotate-180"></i>
             </a>
         </div>
+    </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <?php if (empty($latestPosts)): ?>
-                <div class="md:col-span-3 text-center text-slate-400 py-10"><?= e(t('blog.noPosts')) ?></div>
-            <?php else: ?>
-            <?php foreach ($latestPosts as $index => $post): ?>
-                <?php
-                $postTitle = L($post, 'title');
-                $postImg   = (string) ($post['image'] ?? '');
-                $postUrl   = url(lang(), 'blog/' . e(slugOf($post)));
-                $delayClass = $index == 1 ? 'reveal-delay-1' : ($index == 2 ? 'reveal-delay-2' : '');
-                ?>
-                <a href="<?= e($postUrl) ?>" class="group block reveal <?= $delayClass ?> bg-white rounded-2xl p-3 shadow-sm hover:shadow-md transition-shadow border border-slate-100">
-                    <div class="relative overflow-hidden rounded-xl mb-5 aspect-[4/3] bg-slate-100 transition-all duration-500">
-                        <?php if ($postImg !== ''): ?>
-                            <img src="<?= e($postImg) ?>" alt="<?= e($postTitle) ?>" class="w-full h-full object-cover pe-img-zoom" loading="lazy">
-                        <?php else: ?>
-                            <div class="absolute inset-0 bg-slate-900 transition-transform duration-700 group-hover:scale-105 flex items-center justify-center">
-                                <div class="absolute inset-0" style="background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 16px 16px;"></div>
-                                <div class="text-physio-500/50 font-mono text-4xl font-bold">&lt;/&gt;</div>
+    <!-- اسلایدر مطالب -->
+    <div class="slider-container flex gap-6 px-6 md:px-8 lg:px-12 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-8 cursor-grab" id="blogSlider">
+        <?php if (empty($latestPosts)): ?>
+            <div class="w-full text-center text-slate-500 py-10"><?= e(t('blog.noPosts')) ?></div>
+        <?php else: ?>
+        <?php foreach ($latestPosts as $index => $post): ?>
+            <?php
+            $postTitle = L($post, 'title');
+            $postImg   = (string) ($post['image'] ?? '');
+            $postUrl   = url(lang(), 'blog/' . e(slugOf($post)));
+            ?>
+            <div class="w-[85vw] md:w-[400px] flex-shrink-0 snap-center group p-2">
+                <a href="<?= e($postUrl) ?>" class="block h-full">
+                    <div class="neon-glass-wrapper h-full transition-transform duration-500 group-hover:scale-[1.03]">
+                        <div class="neon-glass-inner flex flex-col p-4 h-full">
+                            <div class="relative overflow-hidden rounded-xl mb-4 aspect-[4/3] bg-slate-800">
+                                <?php if ($postImg !== ''): ?>
+                                    <img src="<?= e($postImg) ?>" alt="<?= e($postTitle) ?>" class="absolute inset-0 w-full h-full object-cover pe-img-zoom opacity-80" loading="lazy">
+                                <?php else: ?>
+                                    <div class="absolute inset-0 bg-slate-900 flex items-center justify-center">
+                                        <div class="text-physio-500/50 font-mono text-4xl font-bold">&lt;/&gt;</div>
+                                    </div>
+                                <?php endif; ?>
                             </div>
-                        <?php endif; ?>
-                    </div>
-                    <div class="flex flex-col px-2">
-                        <span class="text-sm text-slate-400 mb-2 font-mono"><?= e(format_date((string) ($post['published_at'] ?? $post['created_at']))) ?></span>
-                        <h3 class="text-xl font-bold text-physio-950 mb-3 leading-snug group-hover:text-physio-600 transition-colors"><?= e($postTitle) ?></h3>
-                        <div class="mt-2 flex items-center text-sm font-semibold text-physio-600 opacity-0 -translate-x-2 rtl:translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 rtl:group-hover:translate-x-0 transition-all duration-300 pb-2">
-                            <?= e(t('blog.readMore')) ?> <i data-lucide="arrow-right" class="w-4 h-4 ml-1 rtl:ml-0 rtl:mr-1 rtl:rotate-180"></i>
+                            <div class="flex flex-col px-2 pb-2 grow">
+                                <span class="text-sm text-slate-400 mb-2 font-mono"><?= e(format_date((string) ($post['published_at'] ?? $post['created_at']))) ?></span>
+                                <h3 class="text-xl font-bold text-white mb-4 leading-snug group-hover:text-physio-400 transition-colors"><?= e($postTitle) ?></h3>
+                                <div class="mt-auto flex items-center text-sm font-semibold text-physio-500 group-hover:text-physio-400 transition-all duration-300">
+                                    <?= e(t('blog.readMore')) ?> <i data-lucide="arrow-right" class="w-4 h-4 ml-1 rtl:ml-0 rtl:mr-1 rtl:rotate-180"></i>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </a>
-            <?php endforeach; ?>
-            <?php endif; ?>
-        </div>
-        
-        <div class="mt-10 flex justify-center md:hidden reveal">
-            <a href="<?= e(url(lang(), 'blog')) ?>" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white border border-slate-200 text-physio-900 font-medium transition-all group w-full justify-center shadow-sm">
-                <?= e(t('home.blog.viewAll')) ?> <i data-lucide="arrow-right" class="w-4 h-4 text-physio-500 rtl:rotate-180"></i>
-            </a>
-        </div>
+            </div>
+        <?php endforeach; ?>
+        <?php endif; ?>
     </div>
 </section>
 
