@@ -131,7 +131,7 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
             <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
                 <div class="w-full lg:w-1/2 order-2 lg:order-1 reveal-from-right">
                      <div class="bg-slate-950 rounded-2xl h-[300px] border border-slate-800 flex items-center justify-center overflow-hidden relative shadow-premium">
-                        <video src="/assets/videos/ai-programming.mp4" muted loop playsinline class="scroll-play-vid absolute inset-0 w-full h-full object-cover opacity-50 transition-opacity duration-700"></video>
+                        <video src="/assets/videos/AI.mp4" muted loop playsinline class="scroll-play-vid absolute inset-0 w-full h-full object-cover opacity-50 transition-opacity duration-700"></video>
                         <div class="play-icon-overlay absolute inset-0 flex items-center justify-center pointer-events-none z-10 transition-all duration-700">
                             <div class="w-16 h-16 rounded-full bg-slate-900/50 backdrop-blur-sm border border-white/20 flex items-center justify-center shadow-lg">
                                 <i data-lucide="play" class="w-6 h-6 text-white/90 translate-x-0.5"></i>
@@ -165,7 +165,7 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
                 </div>
                 <div class="w-full lg:w-1/2 reveal-from-left">
                     <div class="bg-slate-950 rounded-2xl h-[300px] border border-slate-800 flex items-center justify-center overflow-hidden relative shadow-premium">
-                        <video src="/assets/videos/iot-embedded.mp4" muted loop playsinline class="scroll-play-vid absolute inset-0 w-full h-full object-cover opacity-50 transition-opacity duration-700"></video>
+                        <video src="/assets/videos/IOT.mp4" muted loop playsinline class="scroll-play-vid absolute inset-0 w-full h-full object-cover opacity-50 transition-opacity duration-700"></video>
                         <div class="play-icon-overlay absolute inset-0 flex items-center justify-center pointer-events-none z-10 transition-all duration-700">
                             <div class="w-16 h-16 rounded-full bg-slate-900/50 backdrop-blur-sm border border-white/20 flex items-center justify-center shadow-lg">
                                 <i data-lucide="play" class="w-6 h-6 text-white/90 translate-x-0.5"></i>
