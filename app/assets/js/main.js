@@ -26,6 +26,7 @@
         initTerminalBackground();
         initBlogSlider();
         initScrollVideos();
+        initScrollMockups();
         initFaq();
         initTimeline();
         initTelegramLinks();
@@ -284,6 +285,31 @@ function initReveal() {
 
         vids.forEach(function(vid) {
             io.observe(vid);
+        });
+    }
+/* ---------------- Scroll to Pan Images (طراحی وب) ---------------- */
+    function initScrollMockups() {
+        var mockups = document.querySelectorAll('.scroll-pan-image');
+        if (!mockups.length) return;
+
+        var io = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    // با ورود به صفحه: با یک تاخیر میلی‌ثانیه‌ای، انیمیشن 7 ثانیه‌ای فعال و به پایین اسکرول می‌شود
+                    setTimeout(function() {
+                        entry.target.style.transitionDuration = '7s';
+                        entry.target.style.backgroundPosition = 'bottom';
+                    }, 50);
+                } else {
+                    // با خروج از صفحه: حذف انیمیشن و پرش فوری به بالای عکس برای دفعه بعد
+                    entry.target.style.transitionDuration = '0s';
+                    entry.target.style.backgroundPosition = 'top';
+                }
+            });
+        }, { threshold: 0.4 });
+
+        mockups.forEach(function(mockup) {
+            io.observe(mockup);
         });
     }
 /* ---------------- Background Terminal Typing Effect ---------------- */

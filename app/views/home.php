@@ -76,18 +76,19 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
                 </div>
             </div>
 
-            <!-- 02: Web Dev (عکس بلند اسکرول شونده) -->
+           <!-- 02: Web Dev (عکس بلند اسکرول شونده خودکار) -->
             <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
                 <div class="w-full lg:w-1/2 order-2 lg:order-1 reveal-from-right">
-                    <div class="mock-browser w-full h-[300px] flex flex-col transform transition-transform hover:scale-[1.02] duration-500 shadow-premium overflow-hidden group border border-slate-200">
+                    <div class="mock-browser w-full h-[300px] flex flex-col transform transition-transform hover:scale-[1.02] duration-500 shadow-premium overflow-hidden border border-slate-200">
                         <div class="mock-browser-header shrink-0 relative z-10 bg-slate-100 border-b border-slate-200 flex items-center px-4 gap-2 h-8">
                             <div class="w-2.5 h-2.5 rounded-full bg-rose-400"></div>
                             <div class="w-2.5 h-2.5 rounded-full bg-amber-400"></div>
                             <div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
                         </div>
-                        <!-- عکس بلند که با موس اسکرول می‌شود -->
-                        <div class="w-full h-full bg-cover bg-top group-hover:bg-bottom transition-all ease-in-out cursor-ns-resize" 
-                             style="background-image: url('/assets/images/web.jpg'); transition-duration: 7s;">
+                        <!-- عکس بلند که با رسیدن به این بخش به طور خودکار حرکت می‌کند -->
+                        <!-- عکس بلند که با رسیدن به این بخش به طور خودکار حرکت می‌کند -->
+                        <div class="scroll-pan-image w-full h-full bg-cover transition-all ease-in-out cursor-ns-resize" 
+                             style="background-image: url('/assets/images/web.jpg'); background-position: top;">
                         </div>
                     </div>
                 </div>
@@ -100,7 +101,6 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
                     </a>
                 </div>
             </div>
-
             <!-- 03: MATLAB/COMSOL (ویدیو پلی شونده با اسکرول) -->
             <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
                 <div class="w-full lg:w-1/2 reveal-from-right">
