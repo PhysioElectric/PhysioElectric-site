@@ -1,9 +1,11 @@
 # =============================================================
 #  PhysioElectric - Apache configuration
 #  SEO-friendly routing + hardening
+#  (The dynamic security headers — CSP, HSTS, CORP, ... — are sent
+#   by PHP so the same policy also applies under `php -S`.)
 # =============================================================
 
-Options -Indexes
+Options -Indexes -Includes -ExecCGI -MultiViews
 DirectoryIndex index.php
 
 <IfModule mod_rewrite.c>
@@ -17,13 +19,18 @@ DirectoryIndex index.php
     RewriteRule ^ index.php [QSA,L]
 </IfModule>
 
-# Block dotfiles (.git, .env, .htaccess, ...)
+# ---- Block dotfiles (.git, .env, .htaccess, ...) -------------------
 <FilesMatch "^\.">
     Require all denied
 </FilesMatch>
 
-# Block config & core sources if ever probed directly
-<FilesMatch "^(config\.php|entrypoint\.sh)$">
+# ---- Block sources, configs and dumps if ever probed directly --------
+# index.php is the only PHP entry point; every other PHP file (config.php,
+# core/*, models/*, controllers/*, setup/*) is refused.
+<FilesMatch "^(?!index\.php$).*\.(php|phar|phtml|php[0-9]|inc)$">
+    Require all denied
+</FilesMatch>
+<FilesMatch "\.(sql|sh|ini|env|md|lock|log|bak|old|swp|dist|example)$">
     Require all denied
 </FilesMatch>
 
@@ -31,8 +38,11 @@ DirectoryIndex index.php
     Header always set X-Content-Type-Options "nosniff"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     Header always set X-Frame-Options "SAMEORIGIN"
-    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
+    Header always set Cross-Origin-Resource-Policy "same-origin"
     Header always unset X-Powered-By
+    # HSTS only when this request really came in over TLS.
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=HTTPS
 </IfModule>
 
 # Sensible caching for static assets

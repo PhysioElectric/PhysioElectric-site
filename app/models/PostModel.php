@@ -3,12 +3,18 @@ declare(strict_types=1);
 
 final class PostModel
 {
+    /**
+     * Published posts that are actually due. A post saved with a future
+     * published_at used to appear on the site immediately.
+     */
     public static function allPublished(?int $limit = null): array
     {
-        $sql = 'SELECT * FROM posts WHERE status = "published"
+        $sql = 'SELECT * FROM posts
+                WHERE status = "published"
+                  AND (published_at IS NULL OR published_at <= NOW())
                 ORDER BY published_at DESC, id DESC';
         if ($limit !== null) {
-            $sql .= ' LIMIT ' . (int) $limit;
+            $sql .= ' LIMIT ' . max(1, (int) $limit);
         }
         return Database::pdo()->query($sql)->fetchAll();
     }
@@ -34,8 +40,10 @@ final class PostModel
     public static function related(int $excludeId, int $limit = 3): array
     {
         $st = Database::pdo()->prepare(
-            'SELECT * FROM posts WHERE status = "published" AND id != :id
-             ORDER BY published_at DESC, id DESC LIMIT ' . (int) $limit
+            'SELECT * FROM posts
+             WHERE status = "published" AND id != :id
+               AND (published_at IS NULL OR published_at <= NOW())
+             ORDER BY published_at DESC, id DESC LIMIT ' . max(1, (int) $limit)
         );
         $st->execute([':id' => $excludeId]);
         return $st->fetchAll();

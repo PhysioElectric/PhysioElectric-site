@@ -363,6 +363,49 @@
     }
 
     /* ========================================
+       SUBMIT TO BACKEND (received-messages inbox)
+       ======================================== */
+    function gv(id) {
+        var el = document.getElementById(id);
+        return el ? el.value : '';
+    }
+
+    function submitInquiry() {
+        var fd = new FormData();
+        fd.append('csrf_token', gv('inp_csrf'));
+        // Honeypot: left empty by humans; bots fill it and get dropped server-side.
+        fd.append('website', gv('inp_website'));
+        fd.append('lang', LANG);
+        fd.append('kind', 'contact');
+        fd.append('categories', selectedCategories.join(', '));
+        fd.append('name', gv('inp_name'));
+        fd.append('company', gv('inp_company'));
+        fd.append('email', gv('inp_email'));
+        fd.append('phone', gv('inp_phone'));
+
+        var methodChecked = document.querySelector('input[name="contactMethod"]:checked');
+        fd.append('contact_method', methodChecked ? methodChecked.value : '');
+        fd.append('contact_id', gv('inp_contact_id'));
+
+        var timeChecked = document.querySelector('input[name="timeline"]:checked');
+        fd.append('timeline', (timeChecked && timeChecked.nextElementSibling) ? timeChecked.nextElementSibling.innerText : '');
+        fd.append('body', gv('inp_desc'));
+        fd.append('notes', gv('inp_notes'));
+
+        var fileInput = document.getElementById('file_input');
+        if (fileInput && fileInput.files) {
+            for (var i = 0; i < fileInput.files.length; i++) {
+                fd.append('files[]', fileInput.files[i], fileInput.files[i].name);
+            }
+        }
+
+        var lang = (location.pathname.split('/')[1] === 'en') ? 'en' : 'fa';
+        fetch('/' + lang + '/inquiry', { method: 'POST', body: fd })
+            .then(function () { /* stored; the wizard already shows its success step */ })
+            .catch(function () { /* never leak transport errors to the visitor */ });
+    }
+
+    /* ========================================
        INIT
        ======================================== */
     function init() {
@@ -396,6 +439,7 @@
                 if (currentStep === stepsCount - 2) populateReview();
                 showStep(currentStep + 1);
             } else {
+                submitInquiry();
                 document.getElementById('form-navigation').style.display = 'none';
                 var steps = document.querySelectorAll('.form-step');
                 for (var j = 0; j < steps.length; j++) {

@@ -58,36 +58,33 @@
     }
 
    
- /* ---------------- Scroll reveal (Bi-directional interactive) ---------------- */
-function initReveal() {
-    var els = document.querySelectorAll('.reveal, .reveal-from-left, .reveal-from-right');
-    if (!els.length) { return; }
+ /* ---------------- Scroll reveal (Fixed for Chrome) ---------------- */
+ function initReveal() {
+        var els = document.querySelectorAll('.reveal');
+        if (!els.length) { return; }
 
-    var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('active');
-            } else {
-                // با خروج المان از صفحه، کلاس active برداشته می‌شود تا با ورود مجدد انیمیشن تکرار شود
-                entry.target.classList.remove('active');
-            }
-        });
-    // تنظیم threshold روی 0.15 باعث می‌شود انیمیشن زمانی شروع شود که کمی از المان وارد صفحه شده باشد
-    }, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+        var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    io.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.01, rootMargin: '50px' });
 
-    els.forEach(function (el) { io.observe(el); });
+        els.forEach(function (el) { io.observe(el); });
 
-    // سیستم بک‌آپ برای کروم و سافاری تا المان‌هایی که از قبل در صفحه (Viewport) هستند مخفی نمانند
-    setTimeout(function() {
-        var vh = window.innerHeight || document.documentElement.clientHeight;
-        els.forEach(function (el) {
-            var rect = el.getBoundingClientRect();
-            if (rect.top < vh) {
-                el.classList.add('active');
-            }
-        });
-    }, 400);
-}
+        // سیستم بک‌آپ برای کروم و سافاری تا المان‌ها هرگز مخفی نمانند
+        setTimeout(function() {
+            var vh = window.innerHeight || document.documentElement.clientHeight;
+            els.forEach(function (el) {
+                var rect = el.getBoundingClientRect();
+                if (rect.top < vh + 100) {
+                    el.classList.add('active');
+                }
+            });
+        }, 400);
+    }
 /* ---------------- Interactive Hero Canvas (Soft Magnetic Constellation) ---------------- */
     function initHeroCanvas() {
         var canvas = document.getElementById('hero-canvas');
@@ -100,7 +97,7 @@ function initReveal() {
         var mouse = { 
             x: null, 
             y: null, 
-            radius: 250 // شعاع اتصال متعادل
+            radius: 150 // شعاع اتصال متعادل
         };
 
         window.addEventListener('mousemove', function (e) {
@@ -153,18 +150,18 @@ function initReveal() {
                     var dist = Math.sqrt(dx * dx + dy * dy);
                     
                     if (dist < mouse.radius) {
-                          var alpha = (1 - dist / mouse.radius) * 0.6; // خطوط پررنگ‌تر
-                            ctx.beginPath();
-                            ctx.strokeStyle = 'rgba(14, 165, 233, ' + alpha.toFixed(3) + ')';
-                            ctx.lineWidth = 1.5; // خطوط ضخیم‌تر
-                            ctx.moveTo(p.x, p.y);
-                            ctx.lineTo(mouse.x, mouse.y);
-                            ctx.stroke();
+                        var alpha = (1 - dist / mouse.radius) * 0.4;
+                        ctx.beginPath();
+                        ctx.strokeStyle = 'rgba(14, 165, 233, ' + alpha.toFixed(3) + ')';
+                        ctx.lineWidth = 1;
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(mouse.x, mouse.y);
+                        ctx.stroke();
 
-    // مگنت قدرتمندتر (تغییر از 0.15 به 1.5)
-                            var force = (mouse.radius - dist) / mouse.radius;
-                                p.x -= (dx / dist) * force * 1.5; 
-                                p.y -= (dy / dist) * force * 1.5;
+                        // مگنت بسیار ملایم (جلوگیری از توده‌ای شدن)
+                        var force = (mouse.radius - dist) / mouse.radius;
+                        p.x -= (dx / dist) * force * 0.15;
+                        p.y -= (dy / dist) * force * 0.15;
                     }
                 }
 
@@ -228,11 +225,8 @@ function initReveal() {
             var w = card ? card.offsetWidth + 24 : (window.innerWidth > 768 ? 600 : window.innerWidth * 0.85);
             return w;
         };
-        
-        // اتصال دکمه‌های هدر
-        var nextBtn = document.getElementById('projNextBtn');
-        var prevBtn = document.getElementById('projPrevBtn');
-        
+        var nextBtn = document.getElementById('nextBtn');
+        var prevBtn = document.getElementById('prevBtn');
         if (nextBtn) {
             nextBtn.addEventListener('click', function () {
                 slider.scrollBy({ left: IS_RTL ? -scrollAmount() : scrollAmount(), behavior: 'smooth' });
@@ -243,146 +237,6 @@ function initReveal() {
                 slider.scrollBy({ left: IS_RTL ? scrollAmount() : -scrollAmount(), behavior: 'smooth' });
             });
         }
-    }
-    /* ---------------- Scroll to Play Videos ---------------- */
-    function initScrollVideos() {
-        var vids = document.querySelectorAll('.scroll-play-vid');
-        if (!vids.length) return;
-
-        var io = new IntersectionObserver(function(entries) {
-            entries.forEach(function(entry) {
-                var vid = entry.target;
-                // پیدا کردن آیکون پلی که روی ویدیو قرار دارد
-                var playIcon = vid.parentElement.querySelector('.play-icon-overlay');
-
-                if (entry.isIntersecting) {
-                    // وقتی ویدیو وارد صفحه می‌شود
-                    var playPromise = vid.play();
-                    if (playPromise !== undefined) {
-                        playPromise.then(function() {
-                            // پس از شروع پخش: ویدیو کاملاً روشن و آیکون محو می‌شود
-                            vid.style.opacity = '1';
-                            if (playIcon) {
-                                playIcon.style.opacity = '0';
-                                playIcon.style.transform = 'scale(1.2)';
-                            }
-                        }).catch(function(error) {
-                            console.log("Auto-play prevented by browser.", error);
-                        });
-                    }
-                } else {
-                    // وقتی ویدیو از صفحه خارج می‌شود
-                    vid.pause();
-                    // بازگشت به حالت تاریک و نمایش مجدد آیکون
-                    vid.style.opacity = '0.5';
-                    if (playIcon) {
-                        playIcon.style.opacity = '1';
-                        playIcon.style.transform = 'scale(1)';
-                    }
-                }
-            });
-        }, { threshold: 0.4 }); // وقتی 40 درصد ویدیو وارد صفحه شد، پخش شروع می‌شود
-
-        vids.forEach(function(vid) {
-            io.observe(vid);
-        });
-    }
-/* ---------------- Scroll to Pan Images (طراحی وب) ---------------- */
-    function initScrollMockups() {
-        var mockups = document.querySelectorAll('.scroll-pan-image');
-        if (!mockups.length) return;
-
-        var io = new IntersectionObserver(function(entries) {
-            entries.forEach(function(entry) {
-                if (entry.isIntersecting) {
-                    // با ورود به صفحه: با یک تاخیر میلی‌ثانیه‌ای، انیمیشن 7 ثانیه‌ای فعال و به پایین اسکرول می‌شود
-                    setTimeout(function() {
-                        entry.target.style.transitionDuration = '7s';
-                        entry.target.style.backgroundPosition = 'bottom';
-                    }, 50);
-                } else {
-                    // با خروج از صفحه: حذف انیمیشن و پرش فوری به بالای عکس برای دفعه بعد
-                    entry.target.style.transitionDuration = '0s';
-                    entry.target.style.backgroundPosition = 'top';
-                }
-            });
-        }, { threshold: 0.4 });
-
-        mockups.forEach(function(mockup) {
-            io.observe(mockup);
-        });
-    }
-/* ---------------- Background Terminal Typing Effect ---------------- */
-function initTerminalBackground() {
-    var el = document.getElementById('terminal-bg-text');
-    if (!el) return;
-    
-    var snippets = [
-        "import torch\nimport torch.nn as nn\n\nclass PhysioNet(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.conv = nn.Conv2d(1, 64, 3)\n\n    def forward(self, x):\n        return self.conv(x)",
-        "clear;\nclc;\n\n% Initialize FEM Simulation\nmesh = createMesh('geometry.stl');\nbc = applyBoundary(mesh, 'dirichlet');\n\nsolution = solvePDE(bc);\nplotResults(solution);",
-        "// Real-time Control Loop\nvoid control_task() {\n    while(running) {\n        auto state = read_sensors();\n        auto output = pid.compute(state);\n        set_actuators(output);\n        delay(10);\n    }\n}"
-    ];
-    
-    var snippetIndex = 0;
-    var charIndex = 0;
-    var isDeleting = false;
-    
-    function type() {
-        var currentSnippet = snippets[snippetIndex];
-        
-        if (isDeleting) {
-            el.textContent = currentSnippet.substring(0, charIndex - 1);
-            charIndex--;
-        } else {
-            el.textContent = currentSnippet.substring(0, charIndex + 1);
-            charIndex++;
-        }
-
-        var speed = isDeleting ? 10 : 35; // سرعت تایپ و پاک شدن
-
-        if (!isDeleting && charIndex === currentSnippet.length) {
-            speed = 3000; // مکث بعد از اتمام تایپ یک قطعه کد
-            isDeleting = true;
-        } else if (isDeleting && charIndex === 0) {
-            isDeleting = false;
-            snippetIndex = (snippetIndex + 1) % snippets.length;
-            speed = 500;
-        }
-
-        setTimeout(type, speed);
-    }
-    setTimeout(type, 1000);
-}
-/* ---------------- Blog slider ---------------- */
-    function initBlogSlider() {
-        var slider = document.getElementById('blogSlider');
-        if (!slider) { return; }
-        var isDown = false, startX = 0, startScroll = 0;
-
-        slider.addEventListener('mousedown', function (e) {
-            isDown = true; slider.classList.add('active');
-            startX = e.pageX; startScroll = slider.scrollLeft;
-        });
-        ['mouseleave', 'mouseup', 'blur'].forEach(function (ev) {
-            slider.addEventListener(ev, function () {
-                isDown = false; slider.classList.remove('active');
-            });
-        });
-        slider.addEventListener('mousemove', function (e) {
-            if (!isDown) { return; }
-            e.preventDefault();
-            var walk = (e.pageX - startX) * 1.6;
-            slider.scrollLeft = IS_RTL ? startScroll + walk : startScroll - walk;
-        });
-
-        var scrollAmount = function () {
-            var card = slider.querySelector('.snap-center');
-            return card ? card.offsetWidth + 24 : 400;
-        };
-        var nextBtn = document.getElementById('blogNextBtn');
-        var prevBtn = document.getElementById('blogPrevBtn');
-        if (nextBtn) nextBtn.addEventListener('click', function () { slider.scrollBy({ left: IS_RTL ? -scrollAmount() : scrollAmount(), behavior: 'smooth' }); });
-        if (prevBtn) prevBtn.addEventListener('click', function () { slider.scrollBy({ left: IS_RTL ? scrollAmount() : -scrollAmount(), behavior: 'smooth' }); });
     }
 
     /* ---------------- FAQ accordion ---------------- */

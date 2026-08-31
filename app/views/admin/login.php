@@ -14,7 +14,7 @@
 <link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
 <link rel="stylesheet" href="/assets/fonts/fonts.css">
 <script src="/assets/js/tailwind.js"></script>
-<script>
+<script nonce="<?= e(\Security::nonce()) ?>">
 tailwind.config = {
     theme: {
         extend: {
@@ -79,6 +79,6 @@ tailwind.config = {
 </div>
 
 <script src="/assets/js/lucide.min.js"></script>
-<script>document.addEventListener('DOMContentLoaded', () => lucide.createIcons());</script>
+<script nonce="<?= e(\Security::nonce()) ?>">document.addEventListener('DOMContentLoaded', () => lucide.createIcons());</script>
 </body>
 </html>

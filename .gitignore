@@ -1,0 +1,20 @@
+# Secrets — never commit
+.env
+.env.local
+*.pem
+*.key
+
+# Runtime artefacts
+app/uploads/*
+!app/uploads/.htaccess
+!app/uploads/index.html
+
+# Editors / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Python test caches
+tests/__pycache__/
+__pycache__/

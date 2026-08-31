@@ -28,6 +28,8 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_users_email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- E-mail lookups are case-insensitive; the app lower-cases on write and on
+-- read so the UNIQUE index cannot be bypassed with Admin@ vs admin@.
 
 -- -------------------------------------------------------------
 -- 2. Project Categories (3 fixed + extensible)
@@ -128,11 +130,73 @@ DROP TABLE IF EXISTS `login_attempts`;
 CREATE TABLE `login_attempts` (
   `id`           BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `ip`           VARBINARY(16)   NOT NULL,
+  `identifier`   VARCHAR(190)    NULL DEFAULT NULL,
   `attempted_at` DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `success`      TINYINT(1)      NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
-  KEY `idx_attempts_ip_time` (`ip`, `attempted_at`)
+  KEY `idx_attempts_ip_time` (`ip`, `attempted_at`),
+  KEY `idx_attempts_ident_time` (`identifier`, `attempted_at`),
+  KEY `idx_attempts_time` (`attempted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Team members shown on the About page (managed from the admin panel).
+CREATE TABLE `team_members` (
+  `id`         INT UNSIGNED  NOT NULL AUTO_INCREMENT,
+  `name_fa`    VARCHAR(120)  NOT NULL DEFAULT '',
+  `name_en`    VARCHAR(120)  NOT NULL DEFAULT '',
+  `role_fa`    VARCHAR(160)  NOT NULL DEFAULT '',
+  `role_en`    VARCHAR(160)  NOT NULL DEFAULT '',
+  `desc_fa`    VARCHAR(600)  NOT NULL DEFAULT '',
+  `desc_en`    VARCHAR(600)  NOT NULL DEFAULT '',
+  `image`      VARCHAR(255)  NOT NULL DEFAULT '',
+  `sort_order` INT           NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_team_sort` (`sort_order`, `id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Inquiries submitted through the public contact / project-order wizard.
+CREATE TABLE `messages` (
+  `id`             INT UNSIGNED  NOT NULL AUTO_INCREMENT,
+  `kind`           VARCHAR(20)   NOT NULL DEFAULT 'contact',
+  `category`       VARCHAR(190)  NOT NULL DEFAULT '',
+  `name`           VARCHAR(120)  NOT NULL,
+  `company`        VARCHAR(160)  NOT NULL DEFAULT '',
+  `email`          VARCHAR(190)  NOT NULL,
+  `phone`          VARCHAR(40)   NOT NULL DEFAULT '',
+  `contact_method` VARCHAR(20)   NOT NULL DEFAULT '',
+  `contact_id`     VARCHAR(120)  NOT NULL DEFAULT '',
+  `timeline`       VARCHAR(60)   NOT NULL DEFAULT '',
+  `body`           TEXT          NOT NULL,
+  `notes`          VARCHAR(500)  NOT NULL DEFAULT '',
+  `lang`           VARCHAR(5)    NOT NULL DEFAULT 'fa',
+  `attachments`    TEXT          NULL,
+  `is_read`        TINYINT(1)    NOT NULL DEFAULT 0,
+  `ip`             VARCHAR(45)   NOT NULL DEFAULT '',
+  `created_at`     TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_msg_read` (`is_read`, `created_at`),
+  KEY `idx_msg_ip_time` (`ip`, `created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =============================================================
+--  SEED: Team Members
+-- =============================================================
+INSERT INTO `team_members`
+  (`name_fa`, `name_en`, `role_fa`, `role_en`, `desc_fa`, `desc_en`, `image`, `sort_order`)
+VALUES
+  ('دکتر امیر حسینی', 'Dr. Amir Hosseini', 'مهندس ارشد / سیستم‌های AI', 'Lead Engineer / AI Systems',
+   'طراحی معماری سیستم‌های هوشمند و نظارت بر مدل‌های پیچیده محاسباتی.', 'Architecting intelligent systems and overseeing complex computational models.',
+   'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=800&auto=format&fit=crop', 1),
+  ('سارا رادمنش', 'Sara Radmanesh', 'آرشیتکت نرم‌افزار', 'Software Architect',
+   'طراحی زیرساخت‌های مقیاس‌پذیر وب و پر کردن شکاف بین ریاضیات و کد.', 'Designing scalable web infrastructure and bridging the gap between math and code.',
+   'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop', 2),
+  ('محمدرضا افراز', 'Mohammad Reza Afraz', 'شبیه‌سازی و تحلیل', 'Simulation & Analysis',
+   'تبدیل پدیده‌های فیزیکی دنیای واقعی به مدل‌های کامسول با دقت بالا.', 'Translating real-world physical phenomena into highly accurate COMSOL models.',
+   'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop', 3),
+  ('ندا وحدتی', 'Neda Vahdati', 'سیستم‌های نهفته', 'Embedded Systems',
+   'توسعه سخت‌افزارهای IoT و بهینه‌سازی میکروکنترلرها برای محاسبات لبه.', 'Developing IoT hardware and optimizing microcontrollers for edge computing.',
+   'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=800&auto=format&fit=crop', 4);
 
 -- =============================================================
 --  SEED: Settings
