@@ -217,13 +217,18 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
     </div>
 
     <!-- Animated Terminal Box (Confined to avoid text overlap) -->
-    <div class="absolute rtl:left-[5%] ltr:right-[5%] top-[15%] w-[350px] md:w-[450px] h-[280px] bg-slate-900/30 backdrop-blur-sm border border-slate-800/50 rounded-xl overflow-hidden z-0 hidden lg:flex flex-col opacity-30 pointer-events-none shadow-2xl">
+    <div class="absolute right-[5%] rtl:right-auto rtl:left-[5%] top-[15%] w-[350px] md:w-[450px] h-[280px] bg-slate-900/30 backdrop-blur-sm border border-slate-800/50 rounded-xl overflow-hidden z-0 hidden lg:flex flex-col opacity-30 pointer-events-none shadow-2xl">
         <div class="h-8 bg-slate-900/80 border-b border-slate-800/50 flex items-center px-4 gap-2">
             <div class="w-2.5 h-2.5 rounded-full bg-rose-500/40"></div>
             <div class="w-2.5 h-2.5 rounded-full bg-amber-500/40"></div>
             <div class="w-2.5 h-2.5 rounded-full bg-emerald-500/40"></div>
-            <span class="ml-2 text-[10px] font-mono text-slate-500">physio_core ~ bash</span>
+            <!-- تنظیم حاشیه برای فارسی و انگلیسی -->
+            <span class="ml-2 rtl:mr-2 rtl:ml-0 text-[10px] font-mono text-slate-500">physio_core ~ bash</span>
         </div>
+        <div class="p-5 flex-1 text-left" dir="ltr">
+            <span id="terminal-bg-text" class="text-physio-400/80 font-mono text-sm md:text-base whitespace-pre-wrap leading-relaxed"></span><span class="inline-block w-2 h-4 bg-physio-400/80 ml-1 animate-pulse align-middle"></span>
+        </div>
+    </div>
         <div class="p-5 flex-1 text-left" dir="ltr">
             <span id="terminal-bg-text" class="text-physio-400/80 font-mono text-sm md:text-base whitespace-pre-wrap leading-relaxed"></span><span class="inline-block w-2 h-4 bg-physio-400/80 ml-1 animate-pulse align-middle"></span>
         </div>

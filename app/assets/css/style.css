@@ -1409,7 +1409,8 @@ html[dir="rtl"] .pe-dot { left: auto; right: -65px; }
     }
     .pe-nav-cta:hover { background-color: #020617 !important; }
 } 
-/* ============ Reveal From Left & Right (Enhanced) ============ */
+
+/* ============ Reveal From Left & Right (Fixed LTR & RTL) ============ */
 .reveal-from-right {
     opacity: 0;
     transform: translateX(140px);
@@ -1422,13 +1423,23 @@ html[dir="rtl"] .pe-dot { left: auto; right: -65px; }
     transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
     will-change: opacity, transform;
 }
-.reveal-from-right.active, 
-.reveal-from-left.active {
-    opacity: 1;
-    transform: translateX(0);
+
+/* معکوس کردن جهت‌ها برای زبان فارسی (RTL) تا تقارن حفظ شود */
+html[dir="rtl"] .reveal-from-right { 
+    transform: translateX(-140px); 
 }
-html[dir="ltr"] .reveal-from-right { transform: translateX(100px); }
-html[dir="ltr"] .reveal-from-left { transform: translateX(-100px); }
+html[dir="rtl"] .reveal-from-left { 
+    transform: translateX(140px); 
+}
+
+/* استفاده از important برای غلبه بر اولویت انتخابگرهای بالا در هر دو زبان */
+.reveal-from-right.active, 
+.reveal-from-left.active,
+html[dir="rtl"] .reveal-from-right.active, 
+html[dir="rtl"] .reveal-from-left.active {
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+}
 
 /* ============ 2. Neon Glass Card (Moving Lights) ============ */
 .neon-glass-wrapper {
