@@ -38,23 +38,47 @@
         <!-- Team Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             <?php
-            $teamDelays = ['', 'reveal-delay-1', 'reveal-delay-2', 'reveal-delay-3'];
-            $teamLang   = lang();
-            foreach (TeamModel::all() as $ti => $member):
-                $delay = $teamDelays[$ti % 4];
-                $mName = $teamLang === 'fa' ? (string) $member['name_fa'] : (((string) $member['name_en'] !== '') ? (string) $member['name_en'] : (string) $member['name_fa']);
-                $mRole = $teamLang === 'fa' ? (string) $member['role_fa'] : (((string) $member['role_en'] !== '') ? (string) $member['role_en'] : (string) $member['role_fa']);
-                $mDesc = $teamLang === 'fa' ? (string) $member['desc_fa'] : (((string) $member['desc_en'] !== '') ? (string) $member['desc_en'] : (string) $member['desc_fa']);
+            $team = [
+                [
+                    'name' => 'team.m1.name',
+                    'role' => 'team.m1.role',
+                    'desc' => 'team.m1.desc',
+                    'img'  => 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=800&auto=format&fit=crop',
+                    'delay' => ''
+                ],
+                [
+                    'name' => 'team.m2.name',
+                    'role' => 'team.m2.role',
+                    'desc' => 'team.m2.desc',
+                    'img'  => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop',
+                    'delay' => 'reveal-delay-1'
+                ],
+                [
+                    'name' => 'team.m3.name',
+                    'role' => 'team.m3.role',
+                    'desc' => 'team.m3.desc',
+                    'img'  => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop',
+                    'delay' => 'reveal-delay-2'
+                ],
+                [
+                    'name' => 'team.m4.name',
+                    'role' => 'team.m4.role',
+                    'desc' => 'team.m4.desc',
+                    'img'  => 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=800&auto=format&fit=crop',
+                    'delay' => 'reveal-delay-3'
+                ],
+            ];
             ?>
-                <div class="group cursor-pointer reveal <?= e($delay) ?>">
+            <?php foreach ($team as $member): ?>
+                <div class="group cursor-pointer reveal <?= e($member['delay']) ?>">
                     <div class="relative overflow-hidden rounded-2xl aspect-[3/4] bg-slate-100 mb-6">
-                        <img src="<?= e((string) $member['image']) ?>" alt="<?= e($mName) ?>" class="w-full h-full object-cover filter grayscale opacity-90 transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105 group-hover:opacity-100" loading="lazy">
+                        <img src="<?= e($member['img']) ?>" alt="<?= e(t($member['name'])) ?>" class="w-full h-full object-cover filter grayscale opacity-90 transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105 group-hover:opacity-100" loading="lazy">
                         <div class="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                     </div>
                     <div class="transform transition-transform duration-300 group-hover:-translate-y-1">
-                        <h3 class="text-xl font-bold text-physio-950 group-hover:text-physio-600 transition-colors"><?= e($mName) ?></h3>
-                        <p class="text-sm font-semibold text-physio-500 uppercase tracking-wider mt-1 mb-3"><?= e($mRole) ?></p>
-                        <p class="text-slate-600 text-sm leading-relaxed mb-4 line-clamp-2 text-justify"><?= e($mDesc) ?></p>
+                        <h3 class="text-xl font-bold text-physio-950 group-hover:text-physio-600 transition-colors"><?= e(t($member['name'])) ?></h3>
+                        <p class="text-sm font-semibold text-physio-500 uppercase tracking-wider mt-1 mb-3"><?= e(t($member['role'])) ?></p>
+                        <p class="text-slate-600 text-sm leading-relaxed mb-4 line-clamp-2 text-justify"><?= e(t($member['desc'])) ?></p>
                         <div class="flex items-center text-sm font-semibold text-slate-400 group-hover:text-physio-600 transition-colors">
                             <span><?= e(t('team.viewProfile')) ?></span>
                             <i data-lucide="arrow-right" class="w-4 h-4 ml-1 rtl:ml-0 rtl:mr-1 rtl:rotate-180 transform opacity-0 -translate-x-2 rtl:translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"></i>
