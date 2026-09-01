@@ -208,7 +208,7 @@
                 document.getElementById('err_name').style.display = 'none';
             }
             
-            if (!email.value.trim() || email.value.indexOf('@') === -1) {
+            if (!isEmail(email.value)) {
                 email.classList.add('error-field');
                 document.getElementById('err_email').style.display = 'block';
                 isValid = false;
@@ -346,12 +346,23 @@
         var methodChecked = document.querySelector('input[name="contactMethod"]:checked');
         var methodVal = methodChecked ? methodChecked.value : '';
         
-        var clientHtml = '<strong>' + name + '</strong>';
-        if (comp) clientHtml += ' (' + comp + ')';
-        clientHtml += '<br>' + email + '<br>' + phone;
-        clientHtml += '<br><span style="color: #0284c7; font-size: 0.75rem;">' + methodVal + '</span>';
+        // Built with DOM APIs (never innerHTML) so user input can not inject markup (XSS).
+        var revClient = document.getElementById('rev_client');
+        revClient.textContent = '';
+        var strong = document.createElement('strong');
+        strong.textContent = name;
+        revClient.appendChild(strong);
+        if (comp) revClient.appendChild(document.createTextNode(' (' + comp + ')'));
+        revClient.appendChild(document.createElement('br'));
+        revClient.appendChild(document.createTextNode(email));
+        revClient.appendChild(document.createElement('br'));
+        revClient.appendChild(document.createTextNode(phone));
+        revClient.appendChild(document.createElement('br'));
+        var methodSpan = document.createElement('span');
+        methodSpan.style.cssText = 'color: #0284c7; font-size: 0.75rem;';
+        methodSpan.textContent = methodVal;
+        revClient.appendChild(methodSpan);
         
-        document.getElementById('rev_client').innerHTML = clientHtml;
         document.getElementById('rev_desc').innerText = document.getElementById('inp_desc').value;
         
         var timeChecked = document.querySelector('input[name="timeline"]:checked');
@@ -360,6 +371,91 @@
         
         var notes = document.getElementById('inp_notes').value;
         document.getElementById('rev_notes').innerText = notes || '-';
+    }
+
+    /* ========================================
+       SUBMIT TO BACKEND (received-messages inbox)
+       ======================================== */
+    function gv(id) {
+        var el = document.getElementById(id);
+        return el ? el.value : '';
+    }
+
+    // Mirrors the server's FILTER_VALIDATE_EMAIL closely enough that anything
+    // the wizard accepts here will also be accepted on submit (no dead-end).
+    function isEmail(v) {
+        v = (v || '').trim();
+        return /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(v);
+    }
+
+    function submitInquiry() {
+        var fd = new FormData();
+        fd.append('csrf_token', gv('inp_csrf'));
+        // Honeypot: left empty by humans; bots fill it and get dropped server-side.
+        fd.append('website', gv('inp_website'));
+        fd.append('lang', LANG);
+        fd.append('kind', 'project');
+        fd.append('categories', selectedCategories.join(', '));
+        fd.append('name', gv('inp_name'));
+        fd.append('company', gv('inp_company'));
+        fd.append('email', gv('inp_email'));
+        fd.append('phone', gv('inp_phone'));
+
+        var methodChecked = document.querySelector('input[name="contactMethod"]:checked');
+        fd.append('contact_method', methodChecked ? methodChecked.value : '');
+        fd.append('contact_id', gv('inp_contact_id'));
+
+        var timeChecked = document.querySelector('input[name="timeline"]:checked');
+        fd.append('timeline', (timeChecked && timeChecked.nextElementSibling) ? timeChecked.nextElementSibling.innerText : '');
+        fd.append('body', gv('inp_desc'));
+        fd.append('notes', gv('inp_notes'));
+
+        var fileInput = document.getElementById('file_input');
+        if (fileInput && fileInput.files) {
+            for (var i = 0; i < fileInput.files.length; i++) {
+                fd.append('files[]', fileInput.files[i], fileInput.files[i].name);
+            }
+        }
+
+        var lang = (location.pathname.split('/')[1] === 'en') ? 'en' : 'fa';
+        // Resolve to true only when the server actually stored the request.
+        return fetch('/' + lang + '/inquiry', { method: 'POST', body: fd, headers: { 'X-CSRF-TOKEN': gv('inp_csrf') } })
+            .then(function (r) {
+                return r.json().then(function (j) {
+                    return { ok: !!(r.ok && j && j.ok === true), status: r.status, code: (j && j.code) || '' };
+                }).catch(function () { return { ok: false, status: r.status, code: '' }; });
+            })
+            .catch(function () { return { ok: false, status: 0, code: 'network' }; });
+    }
+
+    function showSubmitError(res) {
+        var holder = document.getElementById('form-container');
+        if (!holder) return;
+        var box = document.createElement('div');
+        box.className = 'bg-red-50 border border-red-200 text-red-600 rounded-2xl p-8 text-center';
+        var msg = document.createElement('p');
+        msg.className = 'font-bold text-lg leading-relaxed';
+        var fallback = (LANG === 'en')
+            ? 'Sending the request failed. Please try again, or contact us via Telegram.'
+            : 'ارسال درخواست با خطا مواجه شد. لطفاً دوباره تلاش کنید یا از طریق تلگرام تماس بگیرید.';
+        msg.textContent = DICT.submitError || fallback;
+        box.appendChild(msg);
+        // Diagnostic detail so any environment-specific failure is visible in a
+        // screenshot (status 0 = network/CORS, 500 = server/schema, 429 = rate).
+        if (res) {
+            var d = document.createElement('p');
+            d.dir = 'ltr';
+            d.style.cssText = 'direction:ltr;font-size:0.75rem;color:#94a3b8;margin-top:0.5rem;';
+            d.textContent = 'status=' + res.status + (res.code ? ' code=' + res.code : '');
+            box.appendChild(d);
+        }
+        var retry = document.createElement('button');
+        retry.type = 'button';
+        retry.className = 'mt-5 px-6 py-3 rounded-full bg-physio-900 text-white font-bold';
+        retry.textContent = DICT.next || 'OK';
+        retry.addEventListener('click', function () { location.reload(); });
+        box.appendChild(retry);
+        holder.appendChild(box);
     }
 
     /* ========================================
@@ -397,16 +493,22 @@
                 showStep(currentStep + 1);
             } else {
                 document.getElementById('form-navigation').style.display = 'none';
-                var steps = document.querySelectorAll('.form-step');
-                for (var j = 0; j < steps.length; j++) {
-                    steps[j].classList.remove('active');
-                    steps[j].style.display = 'none';
-                }
-                var success = document.getElementById('step-success');
-                if (success) {
-                    success.classList.add('active');
-                    success.style.display = 'block';
-                }
+                submitInquiry().then(function (res) {
+                    var steps = document.querySelectorAll('.form-step');
+                    for (var j = 0; j < steps.length; j++) {
+                        steps[j].classList.remove('active');
+                        steps[j].style.display = 'none';
+                    }
+                    if (res && res.ok) {
+                        var success = document.getElementById('step-success');
+                        if (success) {
+                            success.classList.add('active');
+                            success.style.display = 'block';
+                        }
+                    } else {
+                        showSubmitError(res);
+                    }
+                });
             }
         });
 
@@ -483,12 +585,49 @@
         if (dropzone && fileInput) {
             dropzone.addEventListener('click', function() { fileInput.click(); });
             fileInput.addEventListener('change', function() {
+                // Mirror the server-side attachment policy so a bad file is
+                // rejected here instead of failing the final submit.
+                var MAX_FILES = 3, MAX_BYTES = 2 * 1024 * 1024;
+                var ALLOWED = ['pdf', 'doc', 'docx', 'png', 'jpg', 'jpeg', 'zip'];
+                var problem = '';
+                if (this.files.length > MAX_FILES) {
+                    problem = (LANG === 'en') ? 'You can attach at most 3 files.' : 'حداکثر ۳ فایل می‌توانید پیوست کنید.';
+                } else {
+                    for (var c = 0; c < this.files.length; c++) {
+                        var ext = (this.files[c].name.split('.').pop() || '').toLowerCase();
+                        if (ALLOWED.indexOf(ext) === -1) {
+                            problem = (LANG === 'en') ? 'Allowed file types: pdf, doc, docx, png, jpg, zip.' : 'فرمت‌های مجاز: pdf، doc، docx، png، jpg، zip.';
+                            break;
+                        }
+                        if (this.files[c].size > MAX_BYTES) {
+                            problem = (LANG === 'en') ? 'Each file must be 2 MB or smaller.' : 'حجم هر فایل باید حداکثر ۲ مگابایت باشد.';
+                            break;
+                        }
+                    }
+                }
+                if (fileList) fileList.innerHTML = '';
+                if (problem) {
+                    this.value = '';
+                    if (fileList) {
+                        var warn = document.createElement('div');
+                        warn.style.cssText = 'padding: 0.75rem 1rem; background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; border-radius: 0.75rem; font-size: 0.875rem;';
+                        warn.textContent = problem;
+                        fileList.appendChild(warn);
+                    }
+                    return;
+                }
                 if (fileList) {
-                    fileList.innerHTML = '';
                     for (var f = 0; f < this.files.length; f++) {
                         var div = document.createElement('div');
                         div.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; background: #fff; border: 1px solid #e2e8f0; border-radius: 0.75rem; font-size: 0.875rem;';
-                        div.innerHTML = '<span>' + this.files[f].name + '</span><span style="color: #94a3b8; font-size: 0.75rem;">' + (this.files[f].size / 1024).toFixed(1) + ' KB</span>';
+                        // textContent (not innerHTML): a crafted file name must never become markup.
+                        var nameSpan = document.createElement('span');
+                        nameSpan.textContent = this.files[f].name;
+                        var sizeSpan = document.createElement('span');
+                        sizeSpan.style.cssText = 'color: #94a3b8; font-size: 0.75rem;';
+                        sizeSpan.textContent = (this.files[f].size / 1024).toFixed(1) + ' KB';
+                        div.appendChild(nameSpan);
+                        div.appendChild(sizeSpan);
                         fileList.appendChild(div);
                     }
                 }

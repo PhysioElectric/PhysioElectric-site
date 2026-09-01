@@ -1,4 +1,4 @@
-چ<?php
+<?php
 /**
  * Public layout footer + scripts.
  */

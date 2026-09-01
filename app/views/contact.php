@@ -345,6 +345,7 @@ var PE_CONTACT_DICT = {
     stepWord: '<?= e(t('contact.step')) ?>',
     review: '<?= e(t('contact.btn.review')) ?>',
     submit: '<?= e(t('contact.btn.submit')) ?>',
-    next: '<?= e(t('contact.btn.next')) ?>'
+    next: '<?= e(t('contact.btn.next')) ?>',
+    submitError: '<?= e(t('contact.err.submit')) ?>'
 };
 </script>
