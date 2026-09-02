@@ -1,0 +1,21 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main # اگر شاخه اصلی شما master است، این کلمه را به master تغییر دهید
+      
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute SSH commands on VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd ~/physioelectric_site/PhysioElectric-site
+            git pull
+            docker compose up -d --build
