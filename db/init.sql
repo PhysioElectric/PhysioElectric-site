@@ -15,16 +15,26 @@ USE `physioelectric`;
 
 -- -------------------------------------------------------------
 -- 1. Users (admin panel)
+-- Roles: super_admin (user mgmt + everything) / editor (content) /
+-- viewer (read-only). force_password_change defaults to 1 so any account
+-- created on a fresh database (create_admin.php, the panel) must rotate
+-- its password at the first login; the bootstrap admin from
+-- create_admin.php always gets role='super_admin'.
 -- -------------------------------------------------------------
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
-  `id`            INT UNSIGNED     NOT NULL AUTO_INCREMENT,
-  `name`          VARCHAR(120)     NOT NULL,
-  `email`         VARCHAR(190)     NOT NULL,
-  `password_hash` VARCHAR(255)     NOT NULL,
-  `is_active`     TINYINT(1)       NOT NULL DEFAULT 1,
-  `last_login_at` DATETIME         NULL DEFAULT NULL,
-  `created_at`    DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `id`                    INT UNSIGNED     NOT NULL AUTO_INCREMENT,
+  `name`                  VARCHAR(120)     NOT NULL,
+  `email`                 VARCHAR(190)     NOT NULL,
+  `password_hash`         VARCHAR(255)     NOT NULL,
+  `is_active`             TINYINT(1)       NOT NULL DEFAULT 1,
+  `role`                  ENUM('super_admin','editor','viewer') NOT NULL DEFAULT 'super_admin',
+  `force_password_change` TINYINT(1)       NOT NULL DEFAULT 1,
+  `created_by`            INT UNSIGNED     NULL DEFAULT NULL,
+  `totp_secret`           VARCHAR(128)     NULL DEFAULT NULL,
+  `totp_enabled`          TINYINT(1)       NOT NULL DEFAULT 0,
+  `last_login_at`         DATETIME         NULL DEFAULT NULL,
+  `created_at`            DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_users_email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -63,11 +63,13 @@ $adminActive = $adminActive ?? 'messages';
                         <td class="text-end">
                             <div class="flex items-center justify-end gap-2">
                                 <a href="/admin/messages/<?= (int) $m['id'] ?>" class="admin-btn admin-btn-ghost"><i data-lucide="eye" class="w-4 h-4"></i><?= e(t('admin.msg.view')) ?></a>
+                                <?php if (admin_can_edit()): ?>
                                 <form method="post" action="/admin/messages/delete" onsubmit="return confirm('<?= e(t('admin.msg.confirmDelete')) ?>');">
                                     <?= Csrf::field() ?>
                                     <input type="hidden" name="id" value="<?= (int) $m['id'] ?>">
                                     <button type="submit" class="admin-btn text-rose-500 hover:!bg-rose-500/10"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                                 </form>
+                                <?php endif; ?>
                             </div>
                         </td>
                     </tr>

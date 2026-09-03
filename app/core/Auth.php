@@ -12,6 +12,17 @@ declare(strict_types=1);
  *  - session id regenerated on login, CSRF token rotated with it
  *  - idle and absolute session lifetimes enforced server side
  *  - every attempt is written to the security audit log
+ *
+ * RBAC & second factor (added in CHANGES-SECURITY-2.md):
+ *  - the authoritative role lives in the database and is re-read on EVERY
+ *    request (Auth::check()), so a role change by a super admin applies to
+ *    open sessions immediately (no role cached in the session)
+ *  - Auth::requireRole() is the central 403 gate used by the router
+ *  - force_password_change is enforced server side on every admin request
+ *    (Auth::forcePasswordChange()), not only in the UI
+ *  - optional TOTP second factor: after a correct password the login is
+ *    paused into a short-lived challenge (Auth::beginTotpChallenge) and only
+ *    a valid 6-digit code starts the real authenticated session
  */
 final class Auth
 {
@@ -20,9 +31,25 @@ final class Auth
     private const SESSION_CREATED_AT = 'pe_sess_created';
     private const SESSION_LAST_SEEN  = 'pe_sess_seen';
 
+    /** Pending TOTP challenge (password already verified). */
+    private const SESSION_2FA_USER_ID    = 'pe_2fa_user_id';
+    private const SESSION_2FA_NAME       = 'pe_2fa_name';
+    private const SESSION_2FA_TS         = 'pe_2fa_ts';
+
+    private const TOTP_CHALLENGE_TTL = 600;   // 10 minutes to type the code
+
+    /** Roles that exist in the users.role ENUM. */
+    public const ROLES = ['super_admin', 'editor', 'viewer'];
+
     /** Lazily built, always-valid dummy hash for the unknown-user path. */
     private static ?string $dummyHash = null;
 
+    /** User row as (re)validated by check(); null until first check(). */
+    private static ?array $profile = null;
+
+    /**
+     * @return array{ok:bool, code:string, name?:string, user_id?:int, force_password_change?:bool}
+     */
     public static function attemptLogin(string $email, string $password): array
     {
         $email = trim($email);
@@ -40,7 +67,9 @@ final class Auth
         }
 
         $st = Database::pdo()->prepare(
-            'SELECT id, name, email, password_hash, is_active FROM users WHERE email = :email LIMIT 1'
+            'SELECT id, name, email, password_hash, is_active, role,
+                    force_password_change, totp_enabled, totp_secret
+             FROM users WHERE email = :email LIMIT 1'
         );
         $st->execute([':email' => mb_strtolower($email)]);
         $user = $st->fetch();
@@ -68,20 +97,48 @@ final class Auth
             ]);
         }
 
-        self::startAuthenticatedSession((int) $user['id'], (string) $user['name']);
+        $userId   = (int) $user['id'];
+        $userName = (string) $user['name'];
+        $forcePw  = (int) ($user['force_password_change'] ?? 0) === 1;
+        $totpOn   = (int) ($user['totp_enabled'] ?? 0) === 1;
+        $totpKey  = is_string($user['totp_secret'] ?? null) ? (string) $user['totp_secret'] : '';
+
+        // ---- Optional second factor -----------------------------------
+        if ($totpOn) {
+            if ($totpKey === '') {
+                // Enabled flag without a stored key is a broken account:
+                // silently skipping the second factor would be a downgrade.
+                Security::audit('login.totp_misconfigured', ['email' => $email, 'user_id' => $userId]);
+                RateLimiter::recordFailure(null, $email);
+                return ['ok' => false, 'code' => 'invalid'];
+            }
+            RateLimiter::recordSuccess(null, $email); // password stage passed
+            self::beginTotpChallenge($userId, $userName);
+            Security::audit('login.2fa_required', ['email' => $email, 'user_id' => $userId]);
+            return ['ok' => true, 'code' => 'needs_totp', 'name' => $userName];
+        }
+
+        self::startAuthenticatedSession($userId, $userName);
 
         RateLimiter::recordSuccess(null, $email);
         $upd = Database::pdo()->prepare('UPDATE users SET last_login_at = NOW() WHERE id = :id');
-        $upd->execute([':id' => (int) $user['id']]);
+        $upd->execute([':id' => $userId]);
 
-        Security::audit('login.success', ['email' => $email, 'user_id' => (int) $user['id']]);
+        Security::audit('login.success', ['email' => $email, 'user_id' => $userId]);
 
-        return ['ok' => true, 'code' => 'ok', 'name' => $user['name']];
+        return [
+            'ok' => true,
+            'code' => 'ok',
+            'name' => $userName,
+            'user_id' => $userId,
+            'force_password_change' => $forcePw,
+        ];
     }
 
     /** Regenerate the session, bind the user, rotate the CSRF token. */
     private static function startAuthenticatedSession(int $userId, string $name): void
     {
+        self::beginTotpChallengeReset(); // never leave a stale 2FA challenge around
         session_regenerate_id(true);
         $now = time();
         $_SESSION[self::SESSION_USER_ID]    = $userId;
@@ -93,7 +150,9 @@ final class Auth
 
     /**
      * Validated session check. Enforces the idle and absolute lifetimes and
-     * re-verifies that the account is still active in the database.
+     * re-verifies against the database on every request: the account must
+     * still exist and be active, and the authoritative role / forced-password
+     * flags are reloaded so changes apply to open sessions immediately.
      */
     public static function check(): bool
     {
@@ -123,13 +182,21 @@ final class Auth
         }
         $_SESSION[self::SESSION_LAST_SEEN] = $now;
 
-        $st = Database::pdo()->prepare('SELECT id, is_active FROM users WHERE id = :id LIMIT 1');
+        $st = Database::pdo()->prepare(
+            'SELECT id, name, email, is_active, role, force_password_change
+             FROM users WHERE id = :id LIMIT 1'
+        );
         $st->execute([':id' => (int) $id]);
         $row = $st->fetch();
         if (!is_array($row) || (int) $row['is_active'] !== 1) {
             self::clearIdentity();
             return false;
         }
+        // Keep the session display name in sync with the database.
+        if ((string) $row['name'] !== (string) ($_SESSION[self::SESSION_USER_NAME] ?? '')) {
+            $_SESSION[self::SESSION_USER_NAME] = (string) $row['name'];
+        }
+        self::$profile = $row;
         return true;
     }
 
@@ -145,9 +212,174 @@ final class Auth
         return is_string($name) && $name !== '' ? $name : 'Admin';
     }
 
+    // ------------------------------------------------------------------
+    //  Roles (authoritative copy re-read from the database by check())
+    // ------------------------------------------------------------------
+
+    /** Current role, or null when no validated profile is loaded. */
+    public static function role(): ?string
+    {
+        $role = self::$profile['role'] ?? null;
+        if (!is_string($role) || !in_array($role, self::ROLES, true)) {
+            return null;
+        }
+        return $role;
+    }
+
+    /** True when the current user has one of the given roles. */
+    public static function hasRole(string ...$allowed): bool
+    {
+        $role = self::role();
+        if ($role === null) {
+            return false;
+        }
+        return in_array($role, $allowed, true);
+    }
+
+    /**
+     * Central 403 gate: like requireLogin() but for roles. Audited as
+     * 'authz.denied' so blind role probing is visible in the logs. Only
+     * meaningful after a successful Auth::check() (requireLogin).
+     */
+    public static function requireRole(string ...$allowed): void
+    {
+        if (self::hasRole(...$allowed)) {
+            return;
+        }
+        Security::audit('authz.denied', [
+            'user_id' => self::userId(),
+            'role'    => self::role() ?? 'none',
+            'required'=> implode('|', $allowed),
+            'path'    => substr((string) ($_SERVER['REQUEST_URI'] ?? ''), 0, 200),
+        ]);
+        if (!headers_sent()) {
+            http_response_code(403);
+            header('Content-Type: text/plain; charset=utf-8');
+            header('Cache-Control: no-store');
+        }
+        exit('403 - Forbidden. Your role does not allow this action.');
+    }
+
+    /**
+     * True when the account must rotate its password before it can use any
+     * other admin route (enforced centrally by the router).
+     */
+    public static function forcePasswordChange(): bool
+    {
+        if (self::$profile === null && !self::check()) {
+            return false;
+        }
+        return (int) (self::$profile['force_password_change'] ?? 0) === 1;
+    }
+
+    // ------------------------------------------------------------------
+    //  TOTP second factor (challenge state lives in the session)
+    // ------------------------------------------------------------------
+
+    /** True while a password-verified 2FA challenge is pending. */
+    public static function totpChallengeActive(): bool
+    {
+        $uid = $_SESSION[self::SESSION_2FA_USER_ID] ?? null;
+        $ts  = (int) ($_SESSION[self::SESSION_2FA_TS] ?? 0);
+        if ((!is_int($uid) && !is_string($uid)) || $ts <= 0) {
+            return false;
+        }
+        if (time() - $ts > self::TOTP_CHALLENGE_TTL) {
+            self::beginTotpChallengeReset();
+            Security::audit('login.2fa_expired', ['user_id' => (int) $uid]);
+            return false;
+        }
+        return true;
+    }
+
+    /** Called after the password stage: regenerate + park the user id. */
+    private static function beginTotpChallenge(int $userId, string $name): void
+    {
+        session_regenerate_id(true);
+        $_SESSION[self::SESSION_2FA_USER_ID] = $userId;
+        $_SESSION[self::SESSION_2FA_NAME]    = $name;
+        $_SESSION[self::SESSION_2FA_TS]      = time();
+    }
+
+    private static function beginTotpChallengeReset(): void
+    {
+        unset(
+            $_SESSION[self::SESSION_2FA_USER_ID],
+            $_SESSION[self::SESSION_2FA_NAME],
+            $_SESSION[self::SESSION_2FA_TS]
+        );
+    }
+
+    /**
+     * Verify the submitted authenticator code and, on success, start the
+     * real authenticated session (session_regenerate_id + Csrf::rotate).
+     *
+     * @return array{ok:bool, code:string, name?:string, force_password_change?:bool}
+     */
+    public static function verifyTotpChallenge(string $code): array
+    {
+        if (!self::totpChallengeActive()) {
+            return ['ok' => false, 'code' => 'expired'];
+        }
+        $userId = (int) $_SESSION[self::SESSION_2FA_USER_ID];
+
+        // The 2FA code itself is brute-forceable: throttle it per account.
+        $bucket = '2fa:' . $userId;
+        if (RateLimiter::isLocked(null, $bucket)) {
+            Security::audit('login.2fa_locked', ['user_id' => $userId]);
+            return ['ok' => false, 'code' => 'locked'];
+        }
+
+        $st = Database::pdo()->prepare(
+            'SELECT id, name, email, is_active, role, force_password_change,
+                    totp_enabled, totp_secret
+             FROM users WHERE id = :id LIMIT 1'
+        );
+        $st->execute([':id' => $userId]);
+        $user = $st->fetch();
+        if (!is_array($user) || (int) $user['is_active'] !== 1
+            || (int) ($user['totp_enabled'] ?? 0) !== 1
+            || !is_string($user['totp_secret'] ?? null)
+            || (string) $user['totp_secret'] === '') {
+            // Account deactivated / 2FA turned off mid-challenge → abort.
+            self::beginTotpChallengeReset();
+            Security::audit('login.2fa_challenge_invalid', ['user_id' => $userId]);
+            return ['ok' => false, 'code' => 'expired'];
+        }
+
+        if (!Totp::verify((string) $user['totp_secret'], $code)) {
+            RateLimiter::recordFailure(null, $bucket);
+            Security::audit('login.2fa_failed', ['user_id' => $userId]);
+            return ['ok' => false, 'code' => 'invalid'];
+        }
+
+        self::beginTotpChallengeReset();
+        self::startAuthenticatedSession($userId, (string) $user['name']);
+
+        RateLimiter::recordSuccess(null, $bucket);
+        $upd = Database::pdo()->prepare('UPDATE users SET last_login_at = NOW() WHERE id = :id');
+        $upd->execute([':id' => $userId]);
+
+        Security::audit('login.success', [
+            'email'   => (string) ($user['email'] ?? ''),
+            'user_id' => $userId,
+            'via'     => 'totp',
+        ]);
+
+        return [
+            'ok' => true,
+            'code' => 'ok',
+            'name' => (string) $user['name'],
+            'force_password_change' => (int) ($user['force_password_change'] ?? 0) === 1,
+        ];
+    }
+
+    // ------------------------------------------------------------------
+
     /** Drop the identity but keep the (now anonymous) session alive. */
     private static function clearIdentity(): void
     {
+        self::$profile = null;
         unset(
             $_SESSION[self::SESSION_USER_ID],
             $_SESSION[self::SESSION_USER_NAME],
@@ -160,6 +392,7 @@ final class Auth
     public static function logout(): void
     {
         $userId = self::userId();
+        self::$profile = null;
         $_SESSION = [];
 
         if (ini_get('session.use_cookies')) {
@@ -217,6 +450,20 @@ final class Auth
             return '/admin/dashboard';
         }
         return $t;
+    }
+
+    /**
+     * Post-privilege-change session refresh: new session id + rotated CSRF
+     * token, identity preserved. Mirrors startAuthenticatedSession() for
+     * flows that change credentials mid-session (password rotation).
+     */
+    public static function refreshSession(): void
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            return;
+        }
+        session_regenerate_id(true);
+        Csrf::rotate();
     }
 
     public static function hashOptions(): string

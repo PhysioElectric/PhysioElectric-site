@@ -8,7 +8,9 @@ $adminActive = 'projects';
 ?>
 <div class="flex items-center justify-between mb-5">
     <p class="text-sm text-slate-500"><?= e(t('admin.perPage')) ?> <b><?= count($projects) ?></b> <?= e(t('admin.of')) ?> <?= e(t('admin.projects')) ?></p>
-    <a href="/admin/projects/create" class="admin-btn admin-btn-primary"><i data-lucide="plus" class="w-4 h-4"></i><?= e(t('admin.newProject')) ?></a>
+    <?php if (admin_can_edit()): ?>
+        <a href="/admin/projects/create" class="admin-btn admin-btn-primary"><i data-lucide="plus" class="w-4 h-4"></i><?= e(t('admin.newProject')) ?></a>
+    <?php endif; ?>
 </div>
 
 <div class="admin-card overflow-x-auto">
@@ -42,6 +44,7 @@ $adminActive = 'projects';
                         </td>
                         <td class="text-slate-400 text-xs whitespace-nowrap"><?= e(format_date((string) $p['created_at'])) ?></td>
                         <td class="text-end whitespace-nowrap">
+                            <?php if (admin_can_edit()): ?>
                             <a href="/admin/projects/<?= (int) $p['id'] ?>/edit" class="admin-btn admin-btn-ghost !py-1.5 !px-3 !text-xs me-2">
                                 <i data-lucide="pencil" class="w-3.5 h-3.5"></i><?= e(t('admin.edit')) ?>
                             </a>
@@ -52,6 +55,7 @@ $adminActive = 'projects';
                                     <i data-lucide="trash-2" class="w-3.5 h-3.5"></i><?= e(t('admin.delete')) ?>
                                 </button>
                             </form>
+                            <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>

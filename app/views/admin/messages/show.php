@@ -9,6 +9,7 @@ $atts        = MessageModel::attachments($message);
 ?>
 <div class="flex items-center justify-between mb-5">
     <a href="/admin/messages" class="admin-btn admin-btn-ghost"><i data-lucide="arrow-right" class="w-4 h-4 rtl:rotate-180"></i><?= e(t('admin.msg.title')) ?></a>
+    <?php if (admin_can_edit()): ?>
     <div class="flex items-center gap-2">
         <form method="post" action="/admin/messages/<?= (int) $message['id'] ?>/read">
             <?= Csrf::field() ?>
@@ -20,6 +21,7 @@ $atts        = MessageModel::attachments($message);
             <button type="submit" class="admin-btn text-rose-500 hover:!bg-rose-500/10"><i data-lucide="trash-2" class="w-4 h-4"></i><?= e(t('admin.delete')) ?></button>
         </form>
     </div>
+    <?php endif; ?>
 </div>
 
 <div class="admin-card p-6 space-y-5">

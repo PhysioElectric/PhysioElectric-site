@@ -114,6 +114,48 @@ $steps = [
                      KEY `idx_msg_ip_time` (`ip`, `created_at`)
                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci',
     ],
+    // ---------------------------------------------------------------
+    // Multi-admin / RBAC / 2FA columns (CHANGES-SECURITY-2.md).
+    // Existing rows are treated as trusted super_admins and are NOT
+    // forced to rotate their password; the DEFAULT applies to users
+    // created afterwards (create_admin.php and the admin panel).
+    // ---------------------------------------------------------------
+    [
+        'name' => 'users.role (RBAC enum)',
+        'test' => static fn() => $hasColumn('users', 'role'),
+        'sql'  => 'ALTER TABLE `users`
+                   ADD COLUMN `role` ENUM(\'super_admin\',\'editor\',\'viewer\')
+                       NOT NULL DEFAULT \'super_admin\' AFTER `is_active`',
+    ],
+    [
+        'name' => 'users.force_password_change (flag; cleared for pre-existing admins)',
+        'test' => static fn() => $hasColumn('users', 'force_password_change'),
+        'sql'  => 'ALTER TABLE `users`
+                   ADD COLUMN `force_password_change` TINYINT(1) NOT NULL DEFAULT 1 AFTER `role`',
+        // Runs exactly once, right after the column was added above:
+        // existing accounts keep working without a forced rotation, while
+        // every user created from now on starts with the flag = 1 default.
+        'post' => static function () use ($pdo): void {
+            $pdo->exec('UPDATE users SET force_password_change = 0');
+            echo "[migrate] cleared force_password_change for pre-existing users\n";
+        },
+    ],
+    [
+        'name' => 'users.created_by (admin who created the account)',
+        'test' => static fn() => $hasColumn('users', 'created_by'),
+        'sql'  => 'ALTER TABLE `users`
+                   ADD COLUMN `created_by` INT UNSIGNED NULL DEFAULT NULL
+                   AFTER `force_password_change`',
+    ],
+    [
+        'name' => 'users.totp_secret / totp_enabled (optional 2FA)',
+        'test' => static fn() => $hasColumn('users', 'totp_secret'),
+        'sql'  => 'ALTER TABLE `users`
+                   ADD COLUMN `totp_secret` VARCHAR(128) NULL DEFAULT NULL
+                   AFTER `created_by`,
+                   ADD COLUMN `totp_enabled` TINYINT(1) NOT NULL DEFAULT 0
+                   AFTER `totp_secret`',
+    ],
 ];
 
 $applied = 0;
@@ -123,6 +165,10 @@ foreach ($steps as $step) {
     }
     try {
         $pdo->exec($step['sql']);
+        // Optional one-shot follow-up (e.g. migrating existing rows).
+        if (isset($step['post']) && is_callable($step['post'])) {
+            $step['post']();
+        }
         $applied++;
         echo "[migrate] applied: {$step['name']}\n";
     } catch (Throwable $e) {

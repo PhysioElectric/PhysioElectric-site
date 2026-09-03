@@ -34,6 +34,9 @@ require BASE_PATH . '/core/Database.php';
 require BASE_PATH . '/core/Csrf.php';
 require BASE_PATH . '/core/RateLimiter.php';
 require BASE_PATH . '/core/Auth.php';
+require BASE_PATH . '/core/Totp.php';
+require BASE_PATH . '/core/Captcha.php';
+require BASE_PATH . '/core/PasswordPolicy.php';
 require BASE_PATH . '/core/HtmlSanitizer.php';
 require BASE_PATH . '/core/functions.php';
 require BASE_PATH . '/models/CategoryModel.php';
@@ -41,6 +44,7 @@ require BASE_PATH . '/models/ProjectModel.php';
 require BASE_PATH . '/models/PostModel.php';
 require BASE_PATH . '/models/TeamModel.php';
 require BASE_PATH . '/models/MessageModel.php';
+require BASE_PATH . '/models/UserModel.php';
 require BASE_PATH . '/controllers/HomeController.php';
 require BASE_PATH . '/controllers/AboutController.php';
 require BASE_PATH . '/controllers/ContactController.php';
@@ -54,6 +58,8 @@ require BASE_PATH . '/controllers/admin/ProjectController.php';
 require BASE_PATH . '/controllers/admin/UploadController.php';
 require BASE_PATH . '/controllers/admin/TeamController.php';
 require BASE_PATH . '/controllers/admin/MessageController.php';
+require BASE_PATH . '/controllers/admin/AccountController.php';
+require BASE_PATH . '/controllers/admin/AdminUserController.php';
 
 // ---------------- dev server static passthrough ----------------
 // (Apache handles static files via .htaccess; this is for `php -S` dev mode)
@@ -204,6 +210,17 @@ if ($isAdmin) {
         exit;
     }
 
+    // Second step of a 2FA login (password already verified). Only reachable
+    // while a challenge is parked in the session.
+    if ($adminSub === 'login/2fa') {
+        if ($method === 'POST') {
+            Csrf::protect();
+            Admin\AuthController::twoFaPost();
+        }
+        Admin\AuthController::twoFaForm();
+        exit;
+    }
+
     if ($adminSub === 'logout') {
         if ($method !== 'POST') {
             redirect('/admin/login');
@@ -218,6 +235,35 @@ if ($isAdmin) {
 
     if ($method === 'POST') {
         Csrf::protect();
+    }
+
+    // ---- Forced password change (first login / admin-created users) ----
+    // While users.force_password_change = 1 the ONLY reachable admin page is
+    // /admin/forced-password; everything else is bounced back to it.
+    if (Auth::forcePasswordChange()) {
+        if ($adminSub !== 'forced-password') {
+            redirect('/admin/forced-password');
+        }
+    } elseif ($adminSub === 'forced-password') {
+        redirect('/admin/dashboard');
+    }
+
+    // ---- Central RBAC gates -------------------------------------------
+    //   * /admin/users/*             → super_admin only
+    //   * every content mutation      → editor or super_admin
+    //   * editing surfaces (create/edit/delete/upload/media forms) are
+    //     refused for viewers even on GET
+    //   * "account" and "forced-password" stay open to EVERY role — every
+    //     admin (incl. viewers) must be able to rotate their own password.
+    if (str_starts_with($adminSub, 'users')) {
+        Auth::requireRole('super_admin');
+    } elseif ($method === 'POST'
+        && !str_starts_with($adminSub, 'account')
+        && $adminSub !== 'forced-password') {
+        Auth::requireRole('editor', 'super_admin');
+    } elseif (!Auth::hasRole('editor', 'super_admin')
+        && preg_match('#(?:^|/)(create|edit|delete|upload|media)(?:/|$)#', $adminSub) === 1) {
+        Auth::requireRole('editor', 'super_admin');
     }
 
     if ($adminSub === '' || $adminSub === 'dashboard') {
@@ -365,6 +411,72 @@ if ($isAdmin) {
     }
     if ($adminSub === 'messages/delete' && $method === 'POST') {
         Admin\MessageController::delete();
+        exit;
+    }
+
+    // ---- My account (own password / 2FA) ----
+    if ($adminSub === 'account') {
+        if ($method !== 'GET') {
+            method_not_allowed('GET');
+        }
+        Admin\AccountController::index();
+        exit;
+    }
+    if ($adminSub === 'account/password' && $method === 'POST') {
+        Admin\AccountController::changePasswordPost();
+        exit;
+    }
+    if ($adminSub === 'forced-password') {
+        if ($method === 'POST') {
+            Admin\AccountController::forcedPasswordPost();
+        }
+        Admin\AccountController::forcedPasswordForm();
+        exit;
+    }
+    if ($adminSub === 'account/2fa/setup') {
+        if ($method === 'POST') {
+            Admin\AccountController::twofaSetupPost();
+        }
+        Admin\AccountController::twofaSetupForm();
+        exit;
+    }
+    if ($adminSub === 'account/2fa/disable' && $method === 'POST') {
+        Admin\AccountController::twofaDisablePost();
+        exit;
+    }
+
+    // ---- Admin-user management (RBAC, super_admin only) ----
+    if ($adminSub === 'users') {
+        if ($method !== 'GET') {
+            method_not_allowed('GET');
+        }
+        Admin\AdminUserController::index();
+        exit;
+    }
+    if ($adminSub === 'users/create') {
+        if ($method === 'POST') {
+            Admin\AdminUserController::store();
+        }
+        Admin\AdminUserController::createForm();
+        exit;
+    }
+    if (preg_match('#^users/(\d+)/edit$#', $adminSub, $m)) {
+        if ($method !== 'GET') {
+            method_not_allowed('GET');
+        }
+        Admin\AdminUserController::editForm((int) $m[1]);
+        exit;
+    }
+    if (preg_match('#^users/(\d+)$#', $adminSub, $m) && $method === 'POST') {
+        Admin\AdminUserController::update((int) $m[1]);
+        exit;
+    }
+    if ($adminSub === 'users/toggle' && $method === 'POST') {
+        Admin\AdminUserController::toggleActive();
+        exit;
+    }
+    if ($adminSub === 'users/delete' && $method === 'POST') {
+        Admin\AdminUserController::delete();
         exit;
     }
 

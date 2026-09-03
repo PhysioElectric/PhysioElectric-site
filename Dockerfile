@@ -14,13 +14,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libwebp-dev \
         libonig-dev \
         libxml2-dev \
+        libcurl4-openssl-dev \
         unzip \
         openssl \
         curl \
     && rm -rf /var/lib/apt/lists/*
 
 # ---- PHP extensions --------------------------------------------------
-# gd with webp so uploads can be re-encoded (strips EXIF + polyglot bytes).
+# gd with webp so uploads can be re-encoded (strips EXIF + polyglot bytes);
+# curl backs the optional server-side CAPTCHA (Turnstile) verification.
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-configure pdo_mysql --with-pdo-mysql \
     && docker-php-ext-install -j"$(nproc)" \
@@ -29,6 +31,7 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
         mbstring \
         intl \
         zip \
+        curl \
         dom \
         xml \
         opcache

@@ -102,6 +102,13 @@ services:
       CSP_ENABLED: ${CSP_ENABLED:-true}
       HSTS_MAX_AGE: ${HSTS_MAX_AGE:-31536000}
       SECURITY_LOG_ENABLED: ${SECURITY_LOG_ENABLED:-true}
+
+      # Optional CAPTCHA (Cloudflare Turnstile) on the contact form.
+      # All three must come from .env / the environment; nothing is
+      # hardcoded here. Empty → CAPTCHA disabled (default).
+      CAPTCHA_PROVIDER: ${CAPTCHA_PROVIDER:-}
+      CAPTCHA_SITE_KEY: ${CAPTCHA_SITE_KEY:-}
+      CAPTCHA_SECRET_KEY: ${CAPTCHA_SECRET_KEY:-}
     depends_on:
       init:
         condition: service_completed_successfully

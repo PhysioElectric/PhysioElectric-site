@@ -13,7 +13,9 @@ $adminActive = $adminActive ?? 'team';
 <?php endif; ?>
 <div class="flex items-center justify-between mb-5">
     <p class="text-sm text-slate-500"><?= e(t('admin.perPage')) ?> <b><?= count($members) ?></b> <?= e(t('admin.team.members')) ?></p>
-    <a href="/admin/team/create" class="admin-btn admin-btn-primary"><i data-lucide="user-plus" class="w-4 h-4"></i><?= e(t('admin.team.new')) ?></a>
+    <?php if (admin_can_edit()): ?>
+        <a href="/admin/team/create" class="admin-btn admin-btn-primary"><i data-lucide="user-plus" class="w-4 h-4"></i><?= e(t('admin.team.new')) ?></a>
+    <?php endif; ?>
 </div>
 
 <div class="admin-card overflow-x-auto">
@@ -47,6 +49,7 @@ $adminActive = $adminActive ?? 'team';
                         <td class="text-slate-500 text-sm"><?= e((string) $m['role_fa']) ?></td>
                         <td class="text-slate-500"><?= (int) $m['sort_order'] ?></td>
                         <td class="text-end">
+                            <?php if (admin_can_edit()): ?>
                             <div class="flex items-center justify-end gap-2">
                                 <a href="/admin/team/<?= (int) $m['id'] ?>/edit" class="admin-btn admin-btn-ghost"><i data-lucide="pencil" class="w-4 h-4"></i><?= e(t('admin.edit')) ?></a>
                                 <form method="post" action="/admin/team/delete" onsubmit="return confirm('<?= e(t('admin.team.confirmDelete')) ?>');">
@@ -55,6 +58,7 @@ $adminActive = $adminActive ?? 'team';
                                     <button type="submit" class="admin-btn text-rose-500 hover:!bg-rose-500/10"><i data-lucide="trash-2" class="w-4 h-4"></i><?= e(t('admin.delete')) ?></button>
                                 </form>
                             </div>
+                            <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>

@@ -3,6 +3,9 @@
     
     var LANG = window.PE_CONTACT_LANG || 'fa';
     var DICT = window.PE_CONTACT_DICT || {};
+    // Optional CAPTCHA (Cloudflare Turnstile) — injected by contact.php only
+    // when the server-side CAPTCHA_* config is enabled.
+    var captchaEnabled = (window.PE_CONTACT_CAPTCHA === true || window.PE_CONTACT_CAPTCHA === '1' || window.PE_CONTACT_CAPTCHA === 1);
     var stepsCount = 6;
     var currentStep = 0;
     var selectedCategories = [];
@@ -388,11 +391,29 @@
         return /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(v);
     }
 
+    // Turnstile writes the solved token into a hidden input named
+    // cf-turnstile-response inside the widget container.
+    function getCaptchaToken() {
+        var inp = document.querySelector('input[name="cf-turnstile-response"]');
+        return inp ? (inp.value || '') : '';
+    }
+
     function submitInquiry() {
         var fd = new FormData();
         fd.append('csrf_token', gv('inp_csrf'));
         // Honeypot: left empty by humans; bots fill it and get dropped server-side.
         fd.append('website', gv('inp_website'));
+
+        // Optional CAPTCHA: the server refuses submissions without a solved
+        // token, so never fire the request when the widget is unsolved.
+        if (captchaEnabled) {
+            var capToken = getCaptchaToken();
+            if (!capToken) {
+                return Promise.resolve({ ok: false, status: 0, code: 'captcha' });
+            }
+            fd.append('cf-turnstile-response', capToken);
+        }
+
         fd.append('lang', LANG);
         fd.append('kind', 'project');
         fd.append('categories', selectedCategories.join(', '));
@@ -438,7 +459,14 @@
         var fallback = (LANG === 'en')
             ? 'Sending the request failed. Please try again, or contact us via Telegram.'
             : 'ارسال درخواست با خطا مواجه شد. لطفاً دوباره تلاش کنید یا از طریق تلگرام تماس بگیرید.';
-        msg.textContent = DICT.submitError || fallback;
+        if (res && res.code === 'captcha') {
+            var capFallback = (LANG === 'en')
+                ? 'Please complete the security check ("I am not a robot") and try again.'
+                : 'لطفاً تیک «من ربات نیستم» را بزنید و دوباره تلاش کنید.';
+            msg.textContent = DICT.captcha || capFallback;
+        } else {
+            msg.textContent = DICT.submitError || fallback;
+        }
         box.appendChild(msg);
         // Diagnostic detail so any environment-specific failure is visible in a
         // screenshot (status 0 = network/CORS, 500 = server/schema, 429 = rate).

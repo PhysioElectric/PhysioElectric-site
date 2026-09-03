@@ -177,6 +177,16 @@ function view(string $template, array $data = []): void
     require BASE_PATH . '/views/layouts/footer.php';
 }
 
+/**
+ * True when the signed-in admin may create/edit/delete CONTENT (editor or
+ * super_admin). Viewers are read-only; the router enforces the same rule
+ * server side — this only hides the affordances in the UI.
+ */
+function admin_can_edit(): bool
+{
+    return Auth::hasRole('editor', 'super_admin');
+}
+
 /** Render an admin view inside the admin layout. */
 function admin_view(string $template, array $data = []): void
 {

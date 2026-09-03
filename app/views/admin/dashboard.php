@@ -32,8 +32,10 @@ $cards = [
 <div class="admin-card mt-6 p-5">
     <h2 class="text-sm font-bold text-slate-700 mb-4"><?= e(t('admin.quick')) ?></h2>
     <div class="flex flex-wrap gap-3">
-        <a href="/admin/posts/create" class="admin-btn admin-btn-primary"><i data-lucide="plus" class="w-4 h-4"></i><?= e(t('admin.newPost')) ?></a>
-        <a href="/admin/projects/create" class="admin-btn admin-btn-primary"><i data-lucide="plus" class="w-4 h-4"></i><?= e(t('admin.newProject')) ?></a>
+        <?php if (admin_can_edit()): ?>
+            <a href="/admin/posts/create" class="admin-btn admin-btn-primary"><i data-lucide="plus" class="w-4 h-4"></i><?= e(t('admin.newPost')) ?></a>
+            <a href="/admin/projects/create" class="admin-btn admin-btn-primary"><i data-lucide="plus" class="w-4 h-4"></i><?= e(t('admin.newProject')) ?></a>
+        <?php endif; ?>
         <a href="/admin/team" class="admin-btn admin-btn-ghost"><i data-lucide="users" class="w-4 h-4"></i><?= e(t('admin.team.title')) ?></a>
         <a href="/admin/messages" class="admin-btn admin-btn-ghost"><i data-lucide="inbox" class="w-4 h-4"></i><?= e(t('admin.msg.title')) ?></a>
         <a href="/" class="admin-btn admin-btn-ghost"><i data-lucide="external-link" class="w-4 h-4"></i><?= e(t('admin.viewSite')) ?></a>

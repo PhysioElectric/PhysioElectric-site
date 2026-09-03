@@ -24,6 +24,7 @@ final class Config
         'MAX_UPLOAD_BYTES', 'MAX_IMAGE_EDGE', 'MAX_UPLOADS',
         'CSP_ENABLED', 'CSP_ALLOW_UNSAFE_INLINE', 'HSTS_MAX_AGE',
         'SECURITY_LOG_ENABLED',
+        'CAPTCHA_PROVIDER', 'CAPTCHA_SITE_KEY', 'CAPTCHA_SECRET_KEY',
     ];
 
     /** @var array<string,string>|null */

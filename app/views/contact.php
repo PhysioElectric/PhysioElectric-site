@@ -275,6 +275,12 @@ $lang = lang();
                     <span class="text-sm text-slate-600"><?= e(t('contact.rev.consent')) ?></span>
                 </label>
                 <div class="error-message" id="err_consent" style="display: none;"><?= e(t('contact.err.consent')) ?></div>
+
+                <?php if (Captcha::enabled()): ?>
+                    <!-- Optional CAPTCHA (Cloudflare Turnstile). The widget is
+                         rendered here, server side verified on submit. -->
+                    <div id="pe-captcha" class="mt-2"></div>
+                <?php endif; ?>
             </div>
 
             <!-- SUCCESS -->
@@ -332,6 +338,7 @@ $lang = lang();
 <!-- Pass data to JS -->
 <script nonce="<?= e(\Security::nonce()) ?>">
 var PE_CONTACT_LANG = '<?= e($lang) ?>';
+var PE_CONTACT_CAPTCHA = <?= Captcha::enabled() ? 'true' : 'false' ?>;
 var PE_CONTACT_DICT = {
     bpLabels: [
         '<?= e(t('contact.bp.1')) ?>',
@@ -346,6 +353,28 @@ var PE_CONTACT_DICT = {
     review: '<?= e(t('contact.btn.review')) ?>',
     submit: '<?= e(t('contact.btn.submit')) ?>',
     next: '<?= e(t('contact.btn.next')) ?>',
-    submitError: '<?= e(t('contact.err.submit')) ?>'
+    submitError: '<?= e(t('contact.err.submit')) ?>',
+    captcha: '<?= e(t('contact.err.captcha')) ?>'
 };
 </script>
+
+<?php if (Captcha::enabled()): ?>
+<!-- Cloudflare Turnstile: explicit render into #pe-captcha (see CSP —
+     challenges.cloudflare.com is added to script-src/connect-src/frame-src
+     only while the CAPTCHA is enabled). -->
+<script nonce="<?= e(\Security::nonce()) ?>">
+window.peTurnstileOnLoad = function () {
+    var el = document.getElementById('pe-captcha');
+    if (el && window.turnstile && typeof window.turnstile.render === 'function') {
+        window.turnstile.render(el, {
+            sitekey: '<?= e(\Captcha::siteKey()) ?>',
+            theme: 'light',
+            size: 'normal'
+        });
+    }
+};
+</script>
+<script nonce="<?= e(\Security::nonce()) ?>"
+        src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=peTurnstileOnLoad"
+        async defer></script>
+<?php endif; ?>

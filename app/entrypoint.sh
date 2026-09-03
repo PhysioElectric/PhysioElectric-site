@@ -46,14 +46,26 @@ if [ -z "${ADMIN_PASSWORD:-}" ]; then
     exit 1
 fi
 
-# create_admin.php enforces a 12-character minimum. Catching it here with a
-# pointer at the cause beats a bare refusal from the PHP script.
-if [ "${#ADMIN_PASSWORD}" -lt 12 ]; then
-    echo "[entrypoint] ERROR: ADMIN_PASSWORD is ${#ADMIN_PASSWORD} character(s); at least 12 are required."
+# create_admin.php validates every ADMIN_PASSWORD against the shared
+# PasswordPolicy (app/core/PasswordPolicy.php): minimum length — 16 in
+# production, 12 in development — plus the offline common/leaked-password
+# list, the character-class rule for passwords under 20 characters, and the
+# email/name-substring guard. Only the cheapest check (length) is mirrored
+# here so a misconfigured .env fails fast with a pointer at the cause; the
+# PHP policy remains the single source of truth and refuses anything else
+# with the exact reason.
+ADMIN_PASSWORD_MIN=16
+if [ "$APP_ENV" = "development" ]; then
+    ADMIN_PASSWORD_MIN=12
+fi
+if [ "${#ADMIN_PASSWORD}" -lt "$ADMIN_PASSWORD_MIN" ]; then
+    echo "[entrypoint] ERROR: ADMIN_PASSWORD is ${#ADMIN_PASSWORD} character(s); at least $ADMIN_PASSWORD_MIN are required in APP_ENV=${APP_ENV}."
     echo "[entrypoint]        A non-empty value this short can only come from the environment"
     echo "[entrypoint]        (.env or docker-compose), not from the generated secret."
     echo "[entrypoint]        Fix it in .env (ADMIN_PASSWORD=...), or delete that line entirely"
     echo "[entrypoint]        so the generated 32-character secret is used instead."
+    echo "[entrypoint]        Note: the password must also not be a known leaked/common"
+    echo "[entrypoint]        password and must not embed the admin e-mail or name."
     exit 1
 fi
 
@@ -122,6 +134,8 @@ if [ "$GENERATED_ADMIN" -eq 1 ]; then
     echo "[entrypoint] This password was generated once and lives in the"
     echo "[entrypoint] 'secrets' volume. Set ADMIN_PASSWORD in .env to use"
     echo "[entrypoint] your own, or 'docker compose down -v' to regenerate."
+    echo "[entrypoint] The admin must rotate this password at first login"
+    echo "[entrypoint] (the panel forces it before anything else opens)."
     echo ""
 fi
 

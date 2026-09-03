@@ -50,6 +50,21 @@ final class Security
     }
 
     /**
+     * Extra origins required when the optional Cloudflare Turnstile widget
+     * is active on the contact form. Empty when CAPTCHA is off, so the
+     * default policy keeps its strict "no external connections" posture.
+     *
+     * @return string[]
+     */
+    private static function captchaOrigins(): array
+    {
+        if (class_exists('Captcha') && Captcha::enabled()) {
+            return ['https://challenges.cloudflare.com'];
+        }
+        return [];
+    }
+
+    /**
      * Content-Security-Policy.
      *
      *  - scripts: same origin only + this request's nonce. The two static
@@ -76,6 +91,10 @@ final class Security
                 }
                 $script[] = "'unsafe-hashes'";
             }
+            // Optional CAPTCHA widget (Turnstile) needs its script origin.
+            foreach (self::captchaOrigins() as $origin) {
+                $script[] = $origin;
+            }
             $directives['script-src'] = $script;
         }
 
@@ -84,12 +103,19 @@ final class Security
         // photos uploaded via the admin panel are served from 'self'.
         $directives['img-src']       = ["'self'", 'data:', 'https://images.unsplash.com'];
         $directives['font-src']      = ["'self'"];
-        $directives['connect-src']   = ["'self'"];
+        $connect = ["'self'"];
+        foreach (self::captchaOrigins() as $origin) {
+            $connect[] = $origin;
+        }
+        $directives['connect-src']   = $connect;
         $directives['media-src']     = ["'self'"];
         $directives['object-src']    = ["'none'"];
         $directives['base-uri']      = ["'self'"];
         $directives['form-action']   = ["'self'"];
-        $directives['frame-src']     = ["'none'"];
+        // Turnstile renders its widget in an iframe hosted on its own origin;
+        // with CAPTCHA off the frame policy stays fully closed ('none').
+        $frame = self::captchaOrigins();
+        $directives['frame-src']     = $frame === [] ? ["'none'"] : $frame;
         $directives['frame-ancestors'] = ["'self'"];
         $directives['manifest-src']  = ["'self'"];
         $directives['worker-src']    = ["'self'", 'blob:'];

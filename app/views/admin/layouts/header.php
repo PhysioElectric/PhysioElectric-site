@@ -70,9 +70,19 @@ tailwind.config = {
                     <span class="ms-auto inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-physio-500 text-white text-[11px] font-bold"><?= (int) $unreadMessages ?></span>
                 <?php endif; ?>
             </a>
+            <?php if (Auth::hasRole('super_admin')): ?>
+                <a href="/admin/users" class="admin-navlink <?= $adminActive === 'users' ? 'active' : '' ?>">
+                    <i data-lucide="shield" class="w-5 h-5"></i>
+                    <?= e(t('admin.users')) ?>
+                </a>
+            <?php endif; ?>
         </nav>
 
         <div class="px-3 py-4 border-t border-slate-800/70 space-y-1">
+            <a href="/admin/account" class="admin-navlink <?= $adminActive === 'account' ? 'active' : '' ?>">
+                <i data-lucide="user-circle" class="w-5 h-5"></i>
+                <?= e(t('admin.account')) ?>
+            </a>
             <a href="/" class="admin-navlink">
                 <i data-lucide="external-link" class="w-5 h-5"></i>
                 <?= e(t('admin.viewSite')) ?>
