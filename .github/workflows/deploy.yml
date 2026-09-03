@@ -15,7 +15,7 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-script: |
+          script: |
             cd ~/physioelectric_site/PhysioElectric-site
             git fetch --all
             git reset --hard origin/main
