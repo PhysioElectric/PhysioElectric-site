@@ -1,0 +1,11 @@
+services:
+  web:
+    build: . 
+    container_name: physio_web
+    restart: always
+    networks:
+      - web_proxy
+
+networks:
+  web_proxy:
+    external: true
