@@ -36,7 +36,7 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
 
 # ---- Apache: routing + headers, minus the info-leaking modules --------
 RUN a2enmod rewrite headers expires \
-    && a2dismod status autoindex info 2>/dev/null || true
+    && ( a2dismod status autoindex info 2>/dev/null || true )
 
 RUN { \
       echo "ServerTokens Prod"; \
