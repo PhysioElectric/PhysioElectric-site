@@ -124,14 +124,23 @@ services:
     environment:
       MYSQL_DATABASE: physioelectric
       MYSQL_USER: pe_user
+      # اولویت دادن به فایل .env در صورت مقداردهی
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-}
+      MYSQL_PASSWORD: ${DB_PASS:-}
     depends_on:
       init:
         condition: service_completed_successfully
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
-        export MYSQL_ROOT_PASSWORD="$$(cat /run/secrets/db_root_pass)"
-        export MYSQL_PASSWORD="$$(cat /run/secrets/db_pass)"
+        # اگر در .env پسورد ست نشده باشد، از secrets مقدار می‌گیرد
+        if [ -z "$$MYSQL_ROOT_PASSWORD" ]; then
+          export MYSQL_ROOT_PASSWORD="$$(cat /run/secrets/db_root_pass)"
+        fi
+        if [ -z "$$MYSQL_PASSWORD" ]; then
+          export MYSQL_PASSWORD="$$(cat /run/secrets/db_pass)"
+        fi
+        
         exec docker-entrypoint.sh mysqld \
           --character-set-server=utf8mb4 \
           --collation-server=utf8mb4_unicode_ci \
@@ -165,7 +174,7 @@ services:
         - "CMD"
         - "sh"
         - "-c"
-        - "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$(cat /run/secrets/db_root_pass)\" >/dev/null 2>&1"
+        - "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$(cat /run/secrets_root_pass_fallback_check 2>/dev/null || echo $${MYSQL_ROOT_PASSWORD})\" >/dev/null 2>&1"
       interval: 5s
       timeout: 5s
       retries: 30
