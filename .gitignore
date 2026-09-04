@@ -1,0 +1,40 @@
+# متغیرهای محیطی و کلیدهای امنیتی (هرگز نباید کامیت شوند)
+.env
+.env.*
+*.pem
+*.key
+
+# فایل‌های دیتابیس لوکال (داده‌ها باید فقط روی سرور و درون Volume ساخته شوند)
+db-data/
+mysql-data/
+*.sqlite
+*.sql.gz
+
+# فایل‌های آپلودی کاربران (جلوگیری از آپلود عکس‌های تست روی گیت‌هاب)
+# فایل index.html حفظ می‌شود تا ساختار پوشه در سرور از بین نرود
+app/uploads/*
+!app/uploads/index.html
+!app/uploads/.gitkeep
+uploads/*
+!uploads/index.html
+!uploads/.gitkeep
+
+# فایل‌های لاگ و کش
+*.log
+.phpunit.cache
+app/logs/
+
+# فایل‌های سیستم‌عامل و ادیتورها (جلوگیری از شلوغی کدهای پروژه)
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# پوشه وابستگی‌ها (در صورت اضافه شدن پکیج‌منیجرها در آینده)
+vendor/
+node_modules/
