@@ -21,8 +21,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # ---- PHP extensions --------------------------------------------------
-# gd with webp so uploads can be re-encoded (strips EXIF + polyglot bytes);
-# curl backs the optional server-side CAPTCHA (Turnstile) verification.
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-configure pdo_mysql --with-pdo-mysql \
     && docker-php-ext-install -j"$(nproc)" \
@@ -57,8 +55,7 @@ RUN { \
     } > /etc/apache2/conf-available/pe-hardening.conf \
     && a2enconf pe-hardening
 
-# OPcache: production defaults. entrypoint.sh relaxes timestamp validation
-# when APP_ENV=development so the bind-mounted source hot-reloads.
+# OPcache: production defaults
 RUN { \
       echo "opcache.enable=1"; \
       echo "opcache.memory_consumption=128"; \
@@ -98,10 +95,6 @@ RUN chown -R www-data:www-data /var/www/html/uploads \
     && chmod 0755 /var/www/html/entrypoint.sh \
     && chown -R www-data:www-data /var/lock/apache2 /var/run/apache2 /var/log/apache2
 
-# Run the web server unprivileged on a high port; the port mapping lives in
-# docker-compose.yml. This lets the container drop all capabilities.
-# The greps turn a silent mis-substitution into a loud build failure, and
-# `apache2ctl configtest` validates the whole config (including our conf.d).
 RUN sed -ri 's/^[[:space:]]*Listen 80[[:space:]]*$/Listen 8080/' /etc/apache2/ports.conf \
     && sed -ri 's|<VirtualHost \*:80>|<VirtualHost *:8080>|' /etc/apache2/sites-available/000-default.conf \
     && grep -qE '^Listen 8080$' /etc/apache2/ports.conf \

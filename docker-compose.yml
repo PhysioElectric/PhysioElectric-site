@@ -1,24 +1,8 @@
 # =============================================================
 #  PhysioElectric - Docker Compose (hardened, zero-config)
-#
-#  Start it:      docker compose up -d --build
-#  Site:          http://localhost:8080   (redirects to /fa)
-#  Admin:         http://localhost:8080/admin
-#  Admin login:   docker compose logs app | grep -i "admin"
-#
-#  No .env needed. Strong random secrets are generated once by the
-#  `init` service and stored in the `secrets` volume (never in the repo).
-#  To set them yourself instead, create a .env - any value you define
-#  there overrides the generated one (see .env.example).
-#
-#  To regenerate the secrets:  docker compose down -v
 # =============================================================
 
 services:
-  # ---------------------------------------------------------------
-  # One-shot bootstrap: generates secrets and prepares the uploads
-  # volume. Runs as root in its own throwaway container so it can
-  # chown; the app itself never needs root.
   # ---------------------------------------------------------------
   init:
     image: alpine:3.20
@@ -33,7 +17,6 @@ services:
         set -e
         umask 077
 
-        # --- 1) one-time random secrets (only if not already present) ---
         cd /run/secrets
         for f in db_root_pass db_pass admin_pass; do
           if [ ! -s "$$f" ]; then
@@ -42,21 +25,16 @@ services:
             echo "[init] generated a random $$f"
           fi
         done
-        # The app container runs as www-data (uid 33), so it must own these
-        # files to read them. The db entrypoint reads them as root, which
-        # bypasses the mode, so 0400 stays safe for both.
+        
         chown 33:33 db_root_pass db_pass admin_pass 2>/dev/null || true
         chmod 0400 db_root_pass db_pass admin_pass
-        ls -l /run/secrets
-
-        # --- 2) seed the uploads volume without clobbering uploads ---
+        
         for f in /seed/* /seed/.[!.]*; do
           [ -e "$$f" ] || continue
           b=$$(basename "$$f")
           [ -e "/uploads/$$b" ] || cp -a "$$f" "/uploads/$$b"
         done
 
-        # --- 3) ownership: www-data is uid/gid 33 in the php image ---
         chown -R 33:33 /uploads
         chmod 0770 /uploads
         find /uploads -type f -exec chmod 0640 {} \; 2>/dev/null || true
@@ -64,32 +42,28 @@ services:
 
   # ---------------------------------------------------------------
   app:
+    container_name: physio_web
     build:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
     init: true
     ports:
-      # The container listens on 8080 (unprivileged); map it to any host port.
       - "${APP_PORT:-8080}:8080"
     environment:
       APP_ENV: ${APP_ENV:-production}
       APP_TIMEZONE: ${APP_TIMEZONE:-Asia/Tehran}
       SITE_BASE_URL: ${SITE_BASE_URL:-http://localhost:8080}
-      # Comma-separated list of hosts this app is allowed to generate URLs
-      # for. Anything else is refused (host-header injection guard).
-      TRUSTED_HOSTS: ${TRUSTED_HOSTS:-localhost}
+      TRUSTED_HOSTS: ${TRUSTED_HOSTS:-localhost,physioelectric.ir,www.physioelectric.ir}
 
       DB_HOST: db
       DB_PORT: "3306"
       DB_NAME: physioelectric
       DB_USER: pe_user
-      # Empty by default: entrypoint.sh falls back to /run/secrets/db_pass.
       DB_PASS: ${DB_PASS:-}
 
       ADMIN_NAME: ${ADMIN_NAME:-Admin}
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@physioelectric.com}
-      # Empty by default: falls back to /run/secrets/admin_pass.
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
 
       SESSION_IDLE_MINUTES: ${SESSION_IDLE_MINUTES:-30}
@@ -103,9 +77,6 @@ services:
       HSTS_MAX_AGE: ${HSTS_MAX_AGE:-31536000}
       SECURITY_LOG_ENABLED: ${SECURITY_LOG_ENABLED:-true}
 
-      # Optional CAPTCHA (Cloudflare Turnstile) on the contact form.
-      # All three must come from .env / the environment; nothing is
-      # hardcoded here. Empty → CAPTCHA disabled (default).
       CAPTCHA_PROVIDER: ${CAPTCHA_PROVIDER:-}
       CAPTCHA_SITE_KEY: ${CAPTCHA_SITE_KEY:-}
       CAPTCHA_SECRET_KEY: ${CAPTCHA_SECRET_KEY:-}
@@ -114,8 +85,6 @@ services:
         condition: service_completed_successfully
       db:
         condition: service_healthy
-    # Source code is mounted read-only; only the upload dir is writable and
-    # it lives in its own volume, so a web compromise cannot rewrite the app.
     volumes:
       - ./app:/var/www/html:ro
       - uploads:/var/www/html/uploads
@@ -145,6 +114,9 @@ services:
       timeout: 5s
       retries: 3
       start_period: 20s
+    networks:
+      - default
+      - web_proxy
 
   db:
     image: mysql:8.4
@@ -155,8 +127,6 @@ services:
     depends_on:
       init:
         condition: service_completed_successfully
-    # The passwords are read from the secrets volume at start-up instead of
-    # being baked into the compose file or the repo.
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
@@ -173,22 +143,16 @@ services:
       - db-data:/var/lib/mysql
       - secrets:/run/secrets:ro
       - ./db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
-    # Never published to the host. To inspect it, use:
-    #   docker compose exec db sh -c 'mysql -upe_user -p"$(cat /run/secrets/db_pass)" physioelectric'
     expose:
       - "3306"
-    # The official MySQL entrypoint has to chown the datadir and then drop
-    # privileges to the `mysql` user (via gosu). Both need capabilities, so
-    # ALL cannot be dropped here - doing so kills the container on startup.
-    # These five are the minimum; nothing else is granted.
     cap_drop:
       - ALL
     cap_add:
-      - CHOWN           # chown -R mysql:mysql /var/lib/mysql
-      - DAC_OVERRIDE    # write into the datadir during init
-      - FOWNER          # chmod the datadir / socket files
-      - SETGID          # gosu: drop to the mysql group
-      - SETUID          # gosu: drop to the mysql user
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
     security_opt:
       - no-new-privileges:true
     logging:
@@ -206,9 +170,15 @@ services:
       timeout: 5s
       retries: 30
       start_period: 20s
+    networks:
+      - default
 
 volumes:
   db-data:
   uploads:
   secrets:
 
+networks:
+  default:
+  web_proxy:
+    external: true
