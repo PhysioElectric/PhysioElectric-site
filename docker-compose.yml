@@ -1,11 +1,184 @@
+# =============================================================
+#  PhysioElectric - Docker Compose (hardened, zero-config)
+# =============================================================
+
 services:
-  web:
-    build: . 
+  # ---------------------------------------------------------------
+  init:
+    image: alpine:3.20
+    restart: "no"
+    volumes:
+      - secrets:/run/secrets
+      - uploads:/uploads
+      - ./app/uploads:/seed:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        umask 077
+
+        cd /run/secrets
+        for f in db_root_pass db_pass admin_pass; do
+          if [ ! -s "$$f" ]; then
+            tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32 > "$$f.tmp"
+            mv "$$f.tmp" "$$f"
+            echo "[init] generated a random $$f"
+          fi
+        done
+        
+        chown 33:33 db_root_pass db_pass admin_pass 2>/dev/null || true
+        chmod 0400 db_root_pass db_pass admin_pass
+        
+        for f in /seed/* /seed/.[!.]*; do
+          [ -e "$$f" ] || continue
+          b=$$(basename "$$f")
+          [ -e "/uploads/$$b" ] || cp -a "$$f" "/uploads/$$b"
+        done
+
+        chown -R 33:33 /uploads
+        chmod 0770 /uploads
+        find /uploads -type f -exec chmod 0640 {} \; 2>/dev/null || true
+        echo "[init] ready"
+
+  # ---------------------------------------------------------------
+  app:
     container_name: physio_web
-    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    init: true
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      APP_TIMEZONE: ${APP_TIMEZONE:-Asia/Tehran}
+      SITE_BASE_URL: ${SITE_BASE_URL:-http://localhost:8080}
+      TRUSTED_HOSTS: ${TRUSTED_HOSTS:-localhost,physioelectric.ir,www.physioelectric.ir}
+
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_NAME: physioelectric
+      DB_USER: pe_user
+      DB_PASS: ${DB_PASS:-}
+
+      ADMIN_NAME: ${ADMIN_NAME:-Admin}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@physioelectric.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+
+      SESSION_IDLE_MINUTES: ${SESSION_IDLE_MINUTES:-30}
+      SESSION_ABSOLUTE_MINUTES: ${SESSION_ABSOLUTE_MINUTES:-480}
+      LOGIN_MAX_ATTEMPTS: ${LOGIN_MAX_ATTEMPTS:-5}
+      LOGIN_WINDOW_MINUTES: ${LOGIN_WINDOW_MINUTES:-15}
+      MAX_UPLOAD_BYTES: ${MAX_UPLOAD_BYTES:-2097152}
+      MAX_IMAGE_EDGE: ${MAX_IMAGE_EDGE:-6000}
+      MAX_UPLOADS: ${MAX_UPLOADS:-2000}
+      CSP_ENABLED: ${CSP_ENABLED:-true}
+      HSTS_MAX_AGE: ${HSTS_MAX_AGE:-31536000}
+      SECURITY_LOG_ENABLED: ${SECURITY_LOG_ENABLED:-true}
+
+      CAPTCHA_PROVIDER: ${CAPTCHA_PROVIDER:-}
+      CAPTCHA_SITE_KEY: ${CAPTCHA_SITE_KEY:-}
+      CAPTCHA_SECRET_KEY: ${CAPTCHA_SECRET_KEY:-}
+    depends_on:
+      init:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+    volumes:
+      - ./app:/var/www/html:ro
+      - uploads:/var/www/html/uploads
+      - secrets:/run/secrets:ro
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+      - /var/lock/apache2:size=8m,mode=777
+      - /var/run/apache2:size=8m,mode=777
+      - /var/log/apache2:size=32m,mode=777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    ulimits:
+      nofile:
+        soft: 1024
+        hard: 2048
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
     networks:
+      - default
       - web_proxy
 
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: physioelectric
+      MYSQL_USER: pe_user
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        export MYSQL_ROOT_PASSWORD="$$(cat /run/secrets/db_root_pass)"
+        export MYSQL_PASSWORD="$$(cat /run/secrets/db_pass)"
+        exec docker-entrypoint.sh mysqld \
+          --character-set-server=utf8mb4 \
+          --collation-server=utf8mb4_unicode_ci \
+          --default-time-zone=+03:30 \
+          --bind-address=0.0.0.0 \
+          --max-connections=100 \
+          --local-infile=0
+    volumes:
+      - db-data:/var/lib/mysql
+      - secrets:/run/secrets:ro
+      - ./db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    expose:
+      - "3306"
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test:
+        - "CMD"
+        - "sh"
+        - "-c"
+        - "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$(cat /run/secrets/db_root_pass)\" >/dev/null 2>&1"
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+    networks:
+      - default
+
+volumes:
+  db-data:
+  uploads:
+  secrets:
+
 networks:
+  default:
   web_proxy:
     external: true

@@ -1,0 +1,14 @@
+# =============================================================
+#  hadolint configuration for the PhysioElectric Dockerfile
+#
+#  Ignored rules are deliberate project decisions, justified here
+#  so the CI gate stays honest:
+# =============================================================
+ignored:
+  # DL3008 (pin apt package versions): the base image php:8.3-apache is
+  # rebuilt and security-patched on the official PHP release cadence, and
+  # production deploys exactly that tag. Pinning distro package versions
+  # would pin them against a moving base, adding false certainty without
+  # real immutability. Actual vulnerability tracking happens via the trivy
+  # image scan in .github/workflows/security.yml (HIGH/CRITICAL gate).
+  - DL3008
