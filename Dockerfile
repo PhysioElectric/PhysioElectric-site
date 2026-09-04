@@ -60,7 +60,7 @@ RUN { \
       echo "opcache.enable=1"; \
       echo "opcache.memory_consumption=128"; \
       echo "opcache.max_accelerated_files=20000"; \
-      echo "opcache.validate_timestamps=0"; \
+      echo "opcache.validate_timestamps=1"; \
       echo "opcache.interned_strings_buffer=16"; \
       echo "opcache.jit_buffer_size=0"; \
     } > /usr/local/etc/php/conf.d/opcache-custom.ini
