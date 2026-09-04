@@ -3,7 +3,7 @@ name: Deploy to VPS
 on:
   push:
     branches:
-      - main # اگر شاخه اصلی شما master است، این کلمه را به master تغییر دهید
+      - main
       
 jobs:
   deploy:
@@ -19,4 +19,5 @@ jobs:
             cd ~/physioelectric_site/PhysioElectric-site
             git fetch --all
             git reset --hard origin/main
+            docker rm -f physio_web || true
             docker-compose up -d --build
