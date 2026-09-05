@@ -83,26 +83,22 @@ fill_from_dotenv SITE_BASE_URL
 fill_from_dotenv TRUSTED_HOSTS
 fill_from_dotenv ADMIN_PASSWORD_RESET
 
-GENERATED_ADMIN=0
 if [ -z "${DB_PASS:-}" ]; then
     DB_PASS="$(read_secret db_pass)"
     export DB_PASS
 fi
-if [ -z "${ADMIN_PASSWORD:-}" ]; then
-    ADMIN_PASSWORD="$(read_secret admin_pass)"
-    export ADMIN_PASSWORD
-    [ -n "$ADMIN_PASSWORD" ] && GENERATED_ADMIN=1
-fi
-export ADMIN_PASSWORD_GENERATED="$GENERATED_ADMIN"
-
 if [ -z "${DB_PASS:-}" ]; then
     echo "[entrypoint] ERROR: no DB_PASS and no ${SECRETS_DIR}/db_pass."
     exit 1
 fi
+
+# Admin password is NEVER generated. It must come from .env (compose env_file
+# / interpolation, or app/.env via fill_from_dotenv above). Missing → crash.
 if [ -z "${ADMIN_PASSWORD:-}" ]; then
-    echo "[entrypoint] ERROR: no ADMIN_PASSWORD and no ${SECRETS_DIR}/admin_pass."
+    echo "[entrypoint] ERROR: ADMIN_PASSWORD is not set! Please check your .env file."
     exit 1
 fi
+export ADMIN_PASSWORD_GENERATED="0"
 
 # create_admin.php validates every ADMIN_PASSWORD against the shared
 # PasswordPolicy (app/core/PasswordPolicy.php): minimum length — 16 in
@@ -118,10 +114,7 @@ if [ "$APP_ENV" = "development" ]; then
 fi
 if [ "${#ADMIN_PASSWORD}" -lt "$ADMIN_PASSWORD_MIN" ]; then
     echo "[entrypoint] ERROR: ADMIN_PASSWORD is ${#ADMIN_PASSWORD} character(s); at least $ADMIN_PASSWORD_MIN are required in APP_ENV=${APP_ENV}."
-    echo "[entrypoint]        A non-empty value this short can only come from the environment"
-    echo "[entrypoint]        (.env or docker-compose), not from the generated secret."
-    echo "[entrypoint]        Fix it in .env (ADMIN_PASSWORD=...), or delete that line entirely"
-    echo "[entrypoint]        so the generated 32-character secret is used instead."
+    echo "[entrypoint]        Set a stronger ADMIN_PASSWORD in .env (openssl rand -base64 24)."
     echo "[entrypoint]        Note: the password must also not be a known leaked/common"
     echo "[entrypoint]        password and must not embed the admin e-mail or name."
     exit 1
@@ -180,21 +173,6 @@ else
         echo "display_errors=Off"
         echo "opcache.validate_timestamps=0"
     } > /tmp/php-ini/zz-env.ini 2>/dev/null || true
-fi
-
-if [ "$GENERATED_ADMIN" -eq 1 ]; then
-    echo ""
-    echo "[entrypoint] ============================================"
-    echo "[entrypoint]  Admin panel : ${SITE_BASE_URL:-http://localhost:8080}/admin"
-    echo "[entrypoint]  Email       : ${ADMIN_EMAIL:-admin@physioelectric.com}"
-    echo "[entrypoint]  Password    : ${ADMIN_PASSWORD}"
-    echo "[entrypoint] ============================================"
-    echo "[entrypoint] This password was generated once and lives in the"
-    echo "[entrypoint] 'secrets' volume. Set ADMIN_PASSWORD in .env to use"
-    echo "[entrypoint] your own, or 'docker compose down -v' to regenerate."
-    echo "[entrypoint] The admin must rotate this password at first login"
-    echo "[entrypoint] (the panel forces it before anything else opens)."
-    echo ""
 fi
 
 echo "[entrypoint] env=${APP_ENV} starting Apache..."
