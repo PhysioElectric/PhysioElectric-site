@@ -191,12 +191,13 @@ function admin_can_edit(): bool
 function admin_view(string $template, array $data = []): void
 {
     extract($data, EXTR_SKIP);
-    // 'login' ships its own full layout.
-    if ($template !== 'login') {
+    // login + login2fa ship their own full layout (no sidebar).
+    $standalone = ($template === 'login' || $template === 'login2fa');
+    if (!$standalone) {
         require BASE_PATH . '/views/admin/layouts/header.php';
     }
     require BASE_PATH . '/views/admin/' . $template . '.php';
-    if ($template !== 'login') {
+    if (!$standalone) {
         require BASE_PATH . '/views/admin/layouts/footer.php';
     }
 }

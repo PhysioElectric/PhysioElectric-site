@@ -123,6 +123,16 @@ set_exception_handler(static function (Throwable $e): void {
 
 // ---------------- session hardening ----------------------------
 session_name('PESESS');
+// Read-only containers and some hosts have a non-writable default save
+// path; without a working store the CSRF cookie never persists and login
+// always comes back as 419.
+$savePath = (string) ini_get('session.save_path');
+if ($savePath === '' || !is_dir($savePath) || !is_writable($savePath)) {
+    $tmp = sys_get_temp_dir();
+    if (is_dir($tmp) && is_writable($tmp)) {
+        session_save_path($tmp);
+    }
+}
 session_set_cookie_params([
     'lifetime' => 0,
     'path'     => '/',
