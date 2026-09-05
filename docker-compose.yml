@@ -4,14 +4,12 @@
 #  Start it:      docker compose up -d --build
 #  Site:          http://localhost:8080   (redirects to /fa)
 #  Admin:         http://localhost:8080/admin
-#  Admin login:   docker compose logs app | grep -i "admin"
 #
-#  No .env needed. Strong random secrets are generated once by the
-#  `init` service and stored in the `secrets` volume (never in the repo).
-#  To set them yourself instead, create a .env - any value you define
-#  there overrides the generated one (see .env.example).
+#  A `.env` file is REQUIRED for ADMIN_PASSWORD (copy .env.example).
+#  DB passwords are still generated once by `init` into the `secrets`
+#  volume. The admin password is never generated — missing .env = crash.
 #
-#  To regenerate the secrets:  docker compose down -v
+#  To regenerate DB secrets:  docker compose down -v
 # =============================================================
 
 services:
@@ -35,7 +33,7 @@ services:
 
         # --- 1) one-time random secrets (only if not already present) ---
         cd /run/secrets
-        for f in db_root_pass db_pass admin_pass; do
+        for f in db_root_pass db_pass; do
           if [ ! -s "$$f" ]; then
             tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32 > "$$f.tmp"
             mv "$$f.tmp" "$$f"
@@ -45,8 +43,8 @@ services:
         # The app container runs as www-data (uid 33), so it must own these
         # files to read them. The db entrypoint reads them as root, which
         # bypasses the mode, so 0400 stays safe for both.
-        chown 33:33 db_root_pass db_pass admin_pass 2>/dev/null || true
-        chmod 0400 db_root_pass db_pass admin_pass
+        chown 33:33 db_root_pass db_pass 2>/dev/null || true
+        chmod 0400 db_root_pass db_pass
         ls -l /run/secrets
 
         # --- 2) seed the uploads volume without clobbering uploads ---
@@ -69,6 +67,8 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     init: true
+    env_file:
+      - .env
     ports:
       # The container listens on 8080 (unprivileged); map it to any host port.
       - "${APP_PORT:-8080}:8080"
@@ -89,8 +89,8 @@ services:
 
       ADMIN_NAME: ${ADMIN_NAME:-Admin}
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@physioelectric.com}
-      # Empty by default: falls back to /run/secrets/admin_pass.
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      # Required in .env. Never generated.
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env}
       # Set to 1 in .env to rewrite the bootstrap admin hash from ADMIN_PASSWORD
       # (recovery when the panel is unreachable after a forgotten rotation).
       ADMIN_PASSWORD_RESET: ${ADMIN_PASSWORD_RESET:-}
