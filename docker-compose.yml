@@ -1,5 +1,15 @@
 # =============================================================
 #  PhysioElectric - Docker Compose (hardened, zero-config)
+#
+#  Start it:      docker compose up -d --build
+#  Site:          http://localhost:8080   (redirects to /fa)
+#  Admin:         http://localhost:8080/admin
+#
+#  A `.env` file is REQUIRED for ADMIN_PASSWORD (copy .env.example).
+#  DB passwords are still generated once by `init` into the `secrets`
+#  volume. The admin password is never generated — missing .env = crash.
+#
+#  To regenerate DB secrets:  docker compose down -v
 # =============================================================
 
 services:
@@ -18,17 +28,21 @@ services:
         umask 077
 
         cd /run/secrets
-        for f in db_root_pass db_pass admin_pass; do
+        for f in db_root_pass db_pass; do
           if [ ! -s "$$f" ]; then
             tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32 > "$$f.tmp"
             mv "$$f.tmp" "$$f"
             echo "[init] generated a random $$f"
           fi
         done
-        
-        chown 33:33 db_root_pass db_pass admin_pass 2>/dev/null || true
-        chmod 0400 db_root_pass db_pass admin_pass
-        
+        # The app container runs as www-data (uid 33), so it must own these
+        # files to read them. The db entrypoint reads them as root, which
+        # bypasses the mode, so 0400 stays safe for both.
+        chown 33:33 db_root_pass db_pass 2>/dev/null || true
+        chmod 0400 db_root_pass db_pass
+        ls -l /run/secrets
+
+        # --- 2) seed the uploads volume without clobbering uploads ---
         for f in /seed/* /seed/.[!.]*; do
           [ -e "$$f" ] || continue
           b=$$(basename "$$f")
@@ -48,6 +62,8 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     init: true
+    env_file:
+      - .env
     ports:
       - "${APP_PORT:-8080}:8080"
     environment:
@@ -64,7 +80,8 @@ services:
 
       ADMIN_NAME: ${ADMIN_NAME:-Admin}
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@physioelectric.com}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      # Required in .env. Never generated.
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env}
       # Set to 1 in .env to rewrite the bootstrap admin hash from ADMIN_PASSWORD
       # (recovery when the panel is unreachable after a forgotten rotation).
       ADMIN_PASSWORD_RESET: ${ADMIN_PASSWORD_RESET:-}
