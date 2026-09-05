@@ -76,6 +76,7 @@ RUN { \
       echo "session.use_only_cookies=1"; \
       echo "session.cookie_httponly=1"; \
       echo "session.cookie_samesite=Lax"; \
+      echo "session.save_path=/tmp"; \
       echo "upload_max_filesize=4M"; \
       echo "post_max_size=8M"; \
       echo "max_file_uploads=5"; \

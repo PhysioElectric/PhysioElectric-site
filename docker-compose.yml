@@ -65,6 +65,9 @@ services:
       ADMIN_NAME: ${ADMIN_NAME:-Admin}
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@physioelectric.com}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      # Set to 1 in .env to rewrite the bootstrap admin hash from ADMIN_PASSWORD
+      # (recovery when the panel is unreachable after a forgotten rotation).
+      ADMIN_PASSWORD_RESET: ${ADMIN_PASSWORD_RESET:-}
 
       SESSION_IDLE_MINUTES: ${SESSION_IDLE_MINUTES:-30}
       SESSION_ABSOLUTE_MINUTES: ${SESSION_ABSOLUTE_MINUTES:-480}
