@@ -42,6 +42,17 @@ final class RateLimiter
         return Security::clientIp();
     }
 
+    /**
+     * Rate-limit bucket IP. An unusable REMOTE_ADDR used to fail closed for
+     * *every* login (the whole panel locked) on hosts that hide the client
+     * address. Unknown sources share the 0.0.0.0 bucket instead.
+     */
+    private static function effectiveIp(?string $ip): string
+    {
+        $ip ??= self::clientIp();
+        return Security::isValidIp($ip) ? $ip : '0.0.0.0';
+    }
+
     /** True when the backing table can be read/written. Cached per request. */
     public static function usable(): bool
     {
@@ -74,22 +85,18 @@ final class RateLimiter
      */
     private static function failures(?string $ip = null, ?string $identifier = null): int
     {
-        $ip ??= self::clientIp();
-        if (!Security::isValidIp($ip)) {
-            // An unusable source address must not become an unlimited bypass.
-            return self::maxAttempts();
-        }
+        $ip = self::effectiveIp($ip);
 
-        // NOTE: `identifier = :ident` with :ident = NULL simply never matches,
-        // which is exactly what we want. (A named placeholder cannot be used
-        // twice under native prepared statements.)
+        // INTERVAL count is interpolated (int-cast) so native prepares on
+        // MariaDB/MySQL never reject `:window` as an identifier. A failed
+        // query here used to fail closed and lock the whole admin panel.
+        $window = self::windowMinutes();
         $sql = 'SELECT COUNT(*) FROM login_attempts
                 WHERE success = 0
-                  AND attempted_at >= (NOW() - INTERVAL :window MINUTE)
+                  AND attempted_at >= (NOW() - INTERVAL ' . $window . ' MINUTE)
                   AND (ip = INET6_ATON(:ip) OR identifier = :ident)';
         try {
             $st = Database::pdo()->prepare($sql);
-            $st->bindValue(':window', self::windowMinutes(), PDO::PARAM_INT);
             $st->bindValue(':ip', $ip, PDO::PARAM_STR);
             $st->bindValue(':ident', self::normalizeIdentifier($identifier), PDO::PARAM_STR);
             $st->execute();
@@ -108,21 +115,18 @@ final class RateLimiter
         if (!self::usable() || !self::isLocked($ip, $identifier)) {
             return self::usable() ? 0 : self::windowMinutes() * 60;
         }
-        $ip ??= self::clientIp();
-        if (!Security::isValidIp($ip)) {
-            return self::windowMinutes() * 60;
-        }
+        $ip = self::effectiveIp($ip);
 
         // Oldest attempt still inside the window, measured by the database
         // clock — immune to PHP/MySQL timezone drift.
+        $window = self::windowMinutes();
         $sql = 'SELECT TIMESTAMPDIFF(SECOND, MIN(attempted_at), NOW()) AS age
                 FROM login_attempts
                 WHERE success = 0
-                  AND attempted_at >= (NOW() - INTERVAL :window MINUTE)
+                  AND attempted_at >= (NOW() - INTERVAL ' . $window . ' MINUTE)
                   AND (ip = INET6_ATON(:ip) OR identifier = :ident)';
         try {
             $st = Database::pdo()->prepare($sql);
-            $st->bindValue(':window', self::windowMinutes(), PDO::PARAM_INT);
             $st->bindValue(':ip', $ip, PDO::PARAM_STR);
             $st->bindValue(':ident', self::normalizeIdentifier($identifier), PDO::PARAM_STR);
             $st->execute();
@@ -140,10 +144,10 @@ final class RateLimiter
 
     public static function recordFailure(?string $ip = null, ?string $identifier = null): void
     {
-        $ip ??= self::clientIp();
-        if (!self::usable() || !Security::isValidIp($ip)) {
+        if (!self::usable()) {
             return;
         }
+        $ip = self::effectiveIp($ip);
         try {
             $st = Database::pdo()->prepare(
                 'INSERT INTO login_attempts (ip, identifier, success)
@@ -161,10 +165,10 @@ final class RateLimiter
 
     public static function recordSuccess(?string $ip = null, ?string $identifier = null): void
     {
-        $ip ??= self::clientIp();
-        if (!self::usable() || !Security::isValidIp($ip)) {
+        if (!self::usable()) {
             return;
         }
+        $ip = self::effectiveIp($ip);
         try {
             $pdo = Database::pdo();
             $st = $pdo->prepare(
