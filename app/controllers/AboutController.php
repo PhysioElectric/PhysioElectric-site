@@ -11,6 +11,8 @@ final class AboutController
             'description' => t('about.subtitle'),
             'url'         => url($lang, 'about'),
         ];
-        view('about', ['seo' => $seo]);
+        // Team members managed from the admin panel. Falls back to the
+        // translated defaults when the DB is empty / not migrated yet.
+        view('about', ['seo' => $seo, 'members' => \TeamModel::all()]);
     }
 }
