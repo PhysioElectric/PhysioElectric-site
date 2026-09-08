@@ -18,3 +18,8 @@ app/uploads/*
 # Python test caches
 tests/__pycache__/
 __pycache__/
+
+.env
+.env.local
+*.env
+secrets/
