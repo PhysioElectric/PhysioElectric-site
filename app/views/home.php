@@ -382,7 +382,10 @@ $heroBadge = setting(lang() === 'fa' ? 'hero_badge_fa' : 'hero_badge_en', t('her
                         
                         <!-- Inner Screen -->
                         <div class="w-[92px] h-[92px] bg-[#020617] rounded-[18px] flex items-center justify-center border border-slate-800 shadow-inner">
-                            <span class="font-bold text-white text-4xl tracking-tighter drop-shadow-[0_0_10px_rgba(255,255,255,0.6)]">PE</span>
+                            <img src="/assets/images/brand/logo-disc.png"
+                                 alt="<?= e(setting('site_name', 'PhysioElectric')) ?>"
+                                 class="w-20 h-20 object-contain"
+                                 width="80" height="80">
                         </div>
                     </div>
                     

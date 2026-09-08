@@ -43,7 +43,7 @@ final class BlogController
             'publisher'    => [
                 '@type' => 'Organization',
                 'name'  => $site,
-                'logo'  => ['@type' => 'ImageObject', 'url' => Config::baseUrl() . '/assets/images/logo.svg'],
+                'logo'  => ['@type' => 'ImageObject', 'url' => Config::baseUrl() . '/assets/images/brand/logo-disc.png'],
             ],
         ];
 

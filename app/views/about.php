@@ -1,7 +1,60 @@
 <?php
 /**
- * About page - Merged version with team, purpose, motivation, and domains.
+ * About page - Standalone & Bulletproof version
  */
+$currentLang = lang();
+
+// داده‌های ۴ عضو به صورت مستقیم داخل ویو (بدون وابستگی به فایل خارجی)
+$membersData = [
+    [
+        'num' => '01',
+        'slug' => 'mehrab-mahmoudi',
+        'avatar_type' => 'ai_security',
+        'name_fa' => 'محمد محراب محمودی',
+        'name_en' => 'Mohammad Mehrab Mahmoudi',
+        'role_fa' => 'مدیر ارشد تیم، معمار امنیت و سیستم‌های هوش مصنوعی',
+        'role_en' => 'Team Lead & Systems Architect / Security & AI',
+        'desc_fa' => 'راهبری معماری سیستم‌های توزیع‌شده، انتخاب زیرساخت‌های اجرایی، ارزیابی امنیت شبکه و نظارت بر توسعه سیستم‌های هوش مصنوعی و اتوماسیون سازمانی.',
+        'desc_en' => 'Leading distributed systems architecture, tech-stack orchestration, deployment infrastructure security, and the development of intelligent AI automation workflows.',
+        'tags' => ['AI Systems', 'DevSecOps', 'Cloud Architecture'],
+    ],
+    [
+        'num' => '02',
+        'slug' => 'mohammadreza-afraz',
+        'avatar_type' => 'vision_multiphysics',
+        'name_fa' => 'محمدرضا افراز',
+        'name_en' => 'Mohammad Reza Afraz',
+        'role_fa' => 'مدیر فرانت‌اند و شبیه‌سازی / بینایی ماشین و پردازش تصویر',
+        'role_en' => 'Lead Front-End & Simulation / Computer Vision',
+        'desc_fa' => 'توسعه فرانت‌اند تعاملی و اتصال APIها، پردازش تصویر بلادرنگ با OpenCV، الگوریتم‌های هوش مصنوعی و شبیه‌سازی‌های پیشرفته در متلب و کامسول.',
+        'desc_en' => 'Front-end system orchestration, real-time computer vision with OpenCV, machine learning models, and high-precision multiphysics modeling in MATLAB & COMSOL.',
+        'tags' => ['Computer Vision', 'COMSOL', 'MATLAB'],
+    ],
+    [
+        'num' => '03',
+        'slug' => 'parsa-ahadi',
+        'avatar_type' => 'backend_iot',
+        'name_fa' => 'پارسا احدی',
+        'name_en' => 'Parsa Ahadi',
+        'role_fa' => 'مهندس ارشد بک‌اند، اینترنت اشیا (IoT) و امنیت API',
+        'role_en' => 'Back-End & IoT Systems Engineer',
+        'desc_fa' => 'طراحی سیستم‌های سرور مقیاس‌پذیر، معماری میکروسرویس، پیاده‌سازی پروتکل‌های مخابراتی سخت‌افزار (IoT) و استانداردهای سخت‌گیرانه امنیت داده.',
+        'desc_en' => 'Engineering scalable server architectures, microservice backends, embedded hardware network protocols, and robust API cryptographic defenses.',
+        'tags' => ['Backend APIs', 'Embedded IoT', 'Security'],
+    ],
+    [
+        'num' => '04',
+        'slug' => 'amirreza-hashemi',
+        'avatar_type' => 'data_architecture',
+        'name_fa' => 'سید امیررضا هاشمی',
+        'name_en' => 'Seyed Amirreza Hashemi',
+        'role_fa' => 'معمار پایگاه داده و تحلیل‌گر داده‌های ساختاریافته',
+        'role_en' => 'Database Architect & Data Strategist',
+        'desc_fa' => 'مدل‌سازی اسکیماهای رابطه‌ای و غیررابطه‌ای، بهینه‌سازی کوئری‌های پیچیده، پایداری تراکنش‌ها و معماری خطوط پردازش داده در مقیاس بالا.',
+        'desc_en' => 'Architecting relational and distributed database schemata, query execution optimization, ACID transaction guarantees, and high-volume data pipeline engineering.',
+        'tags' => ['Database Architecture', 'Query Tuning', 'PostgreSQL'],
+    ]
+];
 ?>
 
 <!-- ============ ABOUT HERO ============ -->
@@ -27,66 +80,110 @@
     </div>
 </section>
 
-<!-- ============ TEAM SECTION ============ -->
-<section class="py-24 bg-white relative z-20">
+<!-- ============ TEAM SECTION (CLEAN TECH MINIMAL) ============ -->
+<section class="py-24 bg-white relative z-20 border-t border-slate-100">
     <div class="max-w-7xl mx-auto px-6 lg:px-8">
-        <div class="mb-16 md:mb-24 reveal">
-            <h2 class="text-3xl md:text-5xl font-bold tracking-tight text-physio-950"><?= e(t('team.title')) ?></h2>
-            <p class="mt-4 text-lg text-slate-500 max-w-2xl text-justify"><?= e(t('team.subtitle')) ?></p>
+        
+        <!-- Section Header -->
+        <div class="max-w-3xl mb-16 reveal text-start">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 border border-slate-200 mb-4">
+                <span class="w-2 h-2 rounded-full bg-physio-500"></span>
+                <span class="text-xs font-semibold text-slate-700 font-mono">Core Team</span>
+            </div>
+            <h2 class="text-3xl md:text-4xl font-bold tracking-tight text-slate-900">
+                <?= e(t('team.title')) ?>
+            </h2>
+            <p class="mt-3 text-base md:text-lg text-slate-600 leading-relaxed text-justify">
+                <?= e(t('team.subtitle')) ?>
+            </p>
         </div>
 
         <!-- Team Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <?php
-            $team = [
-                [
-                    'name' => 'team.m1.name',
-                    'role' => 'team.m1.role',
-                    'desc' => 'team.m1.desc',
-                    'img'  => 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=800&auto=format&fit=crop',
-                    'delay' => ''
-                ],
-                [
-                    'name' => 'team.m2.name',
-                    'role' => 'team.m2.role',
-                    'desc' => 'team.m2.desc',
-                    'img'  => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop',
-                    'delay' => 'reveal-delay-1'
-                ],
-                [
-                    'name' => 'team.m3.name',
-                    'role' => 'team.m3.role',
-                    'desc' => 'team.m3.desc',
-                    'img'  => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop',
-                    'delay' => 'reveal-delay-2'
-                ],
-                [
-                    'name' => 'team.m4.name',
-                    'role' => 'team.m4.role',
-                    'desc' => 'team.m4.desc',
-                    'img'  => 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=800&auto=format&fit=crop',
-                    'delay' => 'reveal-delay-3'
-                ],
-            ];
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+            <?php foreach ($membersData as $member): 
+                $name = $currentLang === 'fa' ? $member['name_fa'] : $member['name_en'];
+                $role = $currentLang === 'fa' ? $member['role_fa'] : $member['role_en'];
+                $desc = $currentLang === 'fa' ? $member['desc_fa'] : $member['desc_en'];
+                $profileUrl = url($currentLang, 'team/' . $member['slug']);
             ?>
-            <?php foreach ($team as $member): ?>
-                <div class="group cursor-pointer reveal <?= e($member['delay']) ?>">
-                    <div class="relative overflow-hidden rounded-2xl aspect-[3/4] bg-slate-100 mb-6">
-                        <img src="<?= e($member['img']) ?>" alt="<?= e(t($member['name'])) ?>" class="w-full h-full object-cover filter grayscale opacity-90 transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105 group-hover:opacity-100" loading="lazy">
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    </div>
-                    <div class="transform transition-transform duration-300 group-hover:-translate-y-1">
-                        <h3 class="text-xl font-bold text-physio-950 group-hover:text-physio-600 transition-colors"><?= e(t($member['name'])) ?></h3>
-                        <p class="text-sm font-semibold text-physio-500 uppercase tracking-wider mt-1 mb-3"><?= e(t($member['role'])) ?></p>
-                        <p class="text-slate-600 text-sm leading-relaxed mb-4 line-clamp-2 text-justify"><?= e(t($member['desc'])) ?></p>
-                        <div class="flex items-center text-sm font-semibold text-slate-400 group-hover:text-physio-600 transition-colors">
-                            <span><?= e(t('team.viewProfile')) ?></span>
-                            <i data-lucide="arrow-right" class="w-4 h-4 ml-1 rtl:ml-0 rtl:mr-1 rtl:rotate-180 transform opacity-0 -translate-x-2 rtl:translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"></i>
+                <!-- Member Card -->
+                <div class="pe-card group bg-white rounded-2xl p-6 border border-slate-200 hover:border-physio-500 shadow-sm flex flex-col justify-between transition-all duration-300">
+                    
+                    <div>
+                        <!-- Top Header: Avatar + Number Badge -->
+                        <div class="flex items-center justify-between mb-5">
+                            <!-- Geometric Abstract Avatar -->
+                            <div class="w-14 h-14 rounded-xl bg-sky-50 border border-sky-100 flex items-center justify-center text-physio-600 group-hover:bg-physio-500 group-hover:text-white transition-colors duration-300">
+                                <?php if ($member['avatar_type'] === 'ai_security'): ?>
+                                    <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                        <path d="M12 8v4"/>
+                                        <path d="M12 16h.01"/>
+                                    </svg>
+                                <?php elseif ($member['avatar_type'] === 'vision_multiphysics'): ?>
+                                    <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="3"/>
+                                        <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
+                                        <path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+                                        <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
+                                        <path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+                                    </svg>
+                                <?php elseif ($member['avatar_type'] === 'backend_iot'): ?>
+                                    <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="4" y="4" width="16" height="16" rx="2"/>
+                                        <rect x="9" y="9" width="6" height="6"/>
+                                        <path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/>
+                                    </svg>
+                                <?php else: ?>
+                                    <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                                        <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+                                        <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                                    </svg>
+                                <?php endif; ?>
+                            </div>
+
+                            <!-- Crisp Number Badge -->
+                            <span class="font-mono text-xs font-bold px-2.5 py-1 rounded-md bg-slate-100 text-slate-500 border border-slate-200/80 group-hover:bg-sky-50 group-hover:text-physio-600 group-hover:border-sky-200 transition-colors">
+                                #<?= e($member['num']) ?>
+                            </span>
+                        </div>
+
+                        <!-- Info -->
+                        <h3 class="text-lg font-bold text-slate-900 group-hover:text-physio-600 transition-colors mb-1.5 text-start">
+                            <?= e($name) ?>
+                        </h3>
+                        
+                        <p class="text-xs font-semibold text-physio-600 mb-3 text-start leading-snug">
+                            <?= e($role) ?>
+                        </p>
+                        
+                        <p class="text-sm text-slate-600 leading-relaxed text-justify mb-5">
+                            <?= e($desc) ?>
+                        </p>
+
+                        <!-- Tech Tags -->
+                        <div class="flex flex-wrap gap-1.5 mb-6">
+                            <?php foreach ($member['tags'] as $tag): ?>
+                                <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-slate-50 text-slate-700 border border-slate-200/70">
+                                    <?= e($tag) ?>
+                                </span>
+                            <?php endforeach; ?>
                         </div>
                     </div>
+
+                    <!-- Bottom Link CTA -->
+                    <div class="pt-4 border-t border-slate-100">
+                        <a href="<?= e($profileUrl) ?>" class="inline-flex items-center justify-between w-full text-xs font-bold text-slate-800 group-hover:text-physio-600 transition-colors">
+                            <span><?= e($currentLang === 'fa' ? 'مشاهده کامل پروفایل' : 'View Full Profile') ?></span>
+                            <i data-lucide="arrow-right" class="w-4 h-4 rtl:rotate-180 transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform"></i>
+                        </a>
+                    </div>
+
                 </div>
             <?php endforeach; ?>
         </div>
+
     </div>
 </section>
 
@@ -145,33 +242,47 @@
     </div>
 
     <!-- Mindset Flowchart -->
-    <div class="max-w-5xl mx-auto px-6 lg:px-8 mb-32 reveal reveal-delay-1">
-        <div class="relative w-full h-[300px] md:h-[150px] flex flex-col md:flex-row items-center justify-between">
-            <svg class="hidden md:block absolute top-1/2 left-0 w-full h-10 -translate-y-1/2 z-0" preserveAspectRatio="none">
-                <line x1="10%" y1="50%" x2="90%" y2="50%" stroke="#cbd5e1" stroke-width="2" class="flow-line" />
-            </svg>
-            <svg class="md:hidden absolute left-1/2 top-0 w-10 h-full -translate-x-1/2 z-0" preserveAspectRatio="none">
-                <line x1="50%" y1="10%" x2="50%" y2="90%" stroke="#cbd5e1" stroke-width="2" class="flow-line" />
-            </svg>
+    <div class="max-w-6xl mx-auto px-6 lg:px-8 mb-32 reveal reveal-delay-1">
+        <div class="relative w-full py-8 flex items-center justify-center">
+            
+            <!-- Foolproof Animated Pipeline Track (Black Dashed + Red/Black Laser) -->
+            <div class="hidden md:block absolute left-4 right-4 z-0 pointer-events-none" style="top: 50%; transform: translateY(-50%);">
+                <!-- خط‌چین مشکی تیره با استایل مستقیم -->
+                <div style="width: 100%; border-top: 2px dashed #0f172a; opacity: 0.65;"></div>
+                <!-- پرتو نوری متحرک قرمز-مشکی -->
+                <div class="pipeline-laser-beam"></div>
+            </div>
 
             <?php
             $nodes = [
-                ['label' => 'node.problem', 'color' => 'bg-white border-slate-200 text-slate-700'],
-                ['label' => 'node.analysis', 'color' => 'bg-white border-slate-200 text-slate-700'],
-                ['label' => 'node.model', 'color' => 'bg-white border-slate-200 text-slate-700'],
-                ['label' => 'node.implementation', 'color' => 'bg-white border-slate-200 text-slate-700'],
-                ['label' => 'node.validation', 'color' => 'bg-white border-slate-200 text-slate-700'],
-                ['label' => 'node.solution', 'color' => 'bg-physio-900 border-physio-800 text-white shadow-glow'],
+                ['num' => '01', 'label' => 'node.problem'],
+                ['num' => '02', 'label' => 'node.analysis'],
+                ['num' => '03', 'label' => 'node.model'],
+                ['num' => '04', 'label' => 'node.implementation'],
+                ['num' => '05', 'label' => 'node.validation'],
+                ['num' => '06', 'label' => 'node.solution'],
             ];
             ?>
-            <?php foreach ($nodes as $i => $node): ?>
-                <div class="<?= e($node['color']) ?> border shadow-sm rounded-xl px-6 py-3 z-10 text-sm font-bold">
-                    <?= e(t($node['label'])) ?>
-                </div>
-                <?php if ($i < count($nodes) - 1): ?>
-                    <i data-lucide="arrow-down" class="md:hidden w-4 h-4 text-slate-400 z-10 bg-slate-50"></i>
-                <?php endif; ?>
-            <?php endforeach; ?>
+
+            <!-- Nodes Container -->
+            <div class="relative z-10 w-full flex flex-col md:flex-row items-center justify-between gap-4 md:gap-2">
+                <?php foreach ($nodes as $i => $node): ?>
+                    
+                    <!-- Uniform Glowing Nodes -->
+                    <div class="group bg-white border border-slate-100 rounded-2xl px-6 py-3 shadow-[0_0_15px_rgba(14,165,233,0.12)] hover:shadow-[0_0_25px_rgba(14,165,233,0.25)] hover:border-physio-300 flex items-center gap-2.5 transition-all duration-300 hover:-translate-y-1">
+                        <span class="font-mono text-xs font-bold text-slate-400 group-hover:text-physio-600 transition-colors"><?= $node['num'] ?>.</span>
+                        <span class="text-sm font-bold text-slate-700 group-hover:text-slate-900 transition-colors"><?= e(t($node['label'])) ?></span>
+                    </div>
+
+                    <!-- فلش موبایل -->
+                    <?php if ($i < count($nodes) - 1): ?>
+                        <div class="md:hidden flex items-center justify-center my-1 text-slate-300">
+                            <i data-lucide="arrow-down" class="w-4 h-4"></i>
+                        </div>
+                    <?php endif; ?>
+
+                <?php endforeach; ?>
+            </div>
         </div>
     </div>
 

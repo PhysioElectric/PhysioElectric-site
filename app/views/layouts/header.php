@@ -16,10 +16,12 @@ $activeNav   = basename((string) $currentPath); // home|projects|blog|about|cont
 <!-- Bulletproof Navbar (Independent of Tailwind) -->
 <nav id="navbar" class="pe-navbar">
     <div class="pe-nav-container">
-        <!-- Logo -->
-        <a href="<?= e(url($lang)) ?>" class="pe-logo-wrapper">
-            <div class="pe-logo-icon">P</div>
-            <span class="pe-logo-text"><?= e(setting('site_name', 'PhysioElectric')) ?></span>
+        <!-- Logo (brand lockup image) -->
+        <a href="<?= e(url($lang)) ?>" class="pe-logo-wrapper" aria-label="<?= e(setting('site_name', 'PhysioElectric')) ?>">
+            <img src="/assets/images/brand/logo-header.png"
+                 alt="<?= e(setting('site_name', 'PhysioElectric')) ?>"
+                 class="pe-logo-img"
+                 width="320" height="184">
         </a>
 
         <!-- Desktop Menu -->

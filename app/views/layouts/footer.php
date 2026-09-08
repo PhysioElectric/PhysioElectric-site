@@ -18,7 +18,10 @@ $year     = (string) date('Y');
             <!-- Brand -->
             <div>
                 <a href="<?= e(url($lang)) ?>" class="flex items-center gap-2 mb-4 group">
-                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-physio-500 to-physio-600 flex items-center justify-center text-white font-bold text-xl">P</div>
+                    <img src="/assets/images/brand/logo-disc.png"
+                         alt="<?= e(setting('site_name', 'PhysioElectric')) ?>"
+                         class="w-8 h-8 object-contain"
+                         width="32" height="32">
                     <span class="text-xl font-bold text-white"><?= e(setting('site_name', 'PhysioElectric')) ?></span>
                 </a>
                 <p class="text-sm leading-relaxed"><?= e(t('footer.desc')) ?></p>
