@@ -11,7 +11,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title><?= e(t('admin.login.title')) ?> | <?= e(setting('site_name', 'PhysioElectric')) ?></title>
-<link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/images/favicon-192.png">
+<link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
 <link rel="stylesheet" href="/assets/fonts/fonts.css">
 <script src="/assets/js/tailwind.js"></script>
 <script nonce="<?= e(\Security::nonce()) ?>">
@@ -37,7 +39,7 @@ tailwind.config = {
 
     <div class="relative w-full max-w-md">
         <div class="text-center mb-8">
-            <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-physio-500 to-physio-900 flex items-center justify-center text-white font-bold text-3xl shadow-lg">P</div>
+            <img src="/assets/images/brand/logo-disc.png" alt="<?= e(setting('site_name', 'PhysioElectric')) ?>" class="w-14 h-14 mx-auto object-contain shadow-lg" width="56" height="56">
             <h1 class="mt-5 text-2xl font-bold text-white"><?= e(t('admin.login.title')) ?></h1>
             <p class="mt-2 text-sm text-slate-400"><?= e(t('admin.login.sub')) ?></p>
         </div>

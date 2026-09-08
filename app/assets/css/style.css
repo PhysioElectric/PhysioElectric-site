@@ -1382,6 +1382,19 @@ html[dir="rtl"] .pe-dot { left: auto; right: -65px; }
     font-size: 1.25rem !important; font-weight: 700 !important; color: #0f172a !important;
 }
 
+/* Brand logo image inside the navbar (replaces the old letter chip + text) */
+.pe-logo-img {
+    display: block !important;
+    height: 52px !important;
+    width: auto !important;
+    max-width: none !important;
+    object-fit: contain !important;
+    flex: 0 0 auto !important;
+}
+@media (max-width: 767px) {
+    .pe-logo-img { height: 44px !important; }
+}
+
 .pe-nav-actions {
     display: flex !important; align-items: center !important; gap: 1rem !important;
 }

@@ -13,7 +13,9 @@ $unreadMessages = Auth::check() ? MessageModel::unreadCount() : 0;
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title><?= e(t('admin.title')) ?> | <?= e(setting('site_name', 'PhysioElectric')) ?></title>
-<link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/images/favicon-192.png">
+<link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
 <link rel="stylesheet" href="/assets/fonts/fonts.css">
 <script src="/assets/js/tailwind.js"></script>
 <script nonce="<?= e(\Security::nonce()) ?>">
@@ -39,7 +41,7 @@ tailwind.config = {
     <!-- Sidebar -->
     <aside class="admin-sidebar">
         <div class="h-16 flex items-center gap-2.5 px-5 border-b border-slate-800/70">
-            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-physio-500 to-physio-900 flex items-center justify-center text-white font-bold text-lg">P</div>
+            <img src="/assets/images/brand/logo-disc.png" alt="" class="w-8 h-8 object-contain" width="32" height="32">
             <div>
                 <p class="text-sm font-bold text-white leading-tight"><?= e(setting('site_name', 'PhysioElectric')) ?></p>
                 <p class="text-[10px] text-slate-500 uppercase tracking-wider"><?= e(t('admin.title')) ?></p>
