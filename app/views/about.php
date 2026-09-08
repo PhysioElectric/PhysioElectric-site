@@ -1,7 +1,60 @@
 <?php
 /**
- * About page - Merged version with team, purpose, motivation, and domains.
+ * About page - Standalone & Bulletproof version
  */
+$currentLang = lang();
+
+// داده‌های ۴ عضو به صورت مستقیم داخل ویو (بدون وابستگی به فایل خارجی)
+$membersData = [
+    [
+        'num' => '01',
+        'slug' => 'mehrab-mahmoudi',
+        'avatar_type' => 'ai_security',
+        'name_fa' => 'محمد محراب محمودی',
+        'name_en' => 'Mohammad Mehrab Mahmoudi',
+        'role_fa' => 'مدیر ارشد تیم، معمار امنیت و سیستم‌های هوش مصنوعی',
+        'role_en' => 'Team Lead & Systems Architect / Security & AI',
+        'desc_fa' => 'راهبری معماری سیستم‌های توزیع‌شده، انتخاب زیرساخت‌های اجرایی، ارزیابی امنیت شبکه و نظارت بر توسعه سیستم‌های هوش مصنوعی و اتوماسیون سازمانی.',
+        'desc_en' => 'Leading distributed systems architecture, tech-stack orchestration, deployment infrastructure security, and the development of intelligent AI automation workflows.',
+        'tags' => ['AI Systems', 'DevSecOps', 'Cloud Architecture'],
+    ],
+    [
+        'num' => '02',
+        'slug' => 'mohammadreza-afraz',
+        'avatar_type' => 'vision_multiphysics',
+        'name_fa' => 'محمدرضا افراز',
+        'name_en' => 'Mohammad Reza Afraz',
+        'role_fa' => 'مدیر فرانت‌اند و شبیه‌سازی / بینایی ماشین و پردازش تصویر',
+        'role_en' => 'Lead Front-End & Simulation / Computer Vision',
+        'desc_fa' => 'توسعه فرانت‌اند تعاملی و اتصال APIها، پردازش تصویر بلادرنگ با OpenCV، الگوریتم‌های هوش مصنوعی و شبیه‌سازی‌های پیشرفته در متلب و کامسول.',
+        'desc_en' => 'Front-end system orchestration, real-time computer vision with OpenCV, machine learning models, and high-precision multiphysics modeling in MATLAB & COMSOL.',
+        'tags' => ['Computer Vision', 'COMSOL', 'MATLAB'],
+    ],
+    [
+        'num' => '03',
+        'slug' => 'parsa-ahadi',
+        'avatar_type' => 'backend_iot',
+        'name_fa' => 'پارسا احدی',
+        'name_en' => 'Parsa Ahadi',
+        'role_fa' => 'مهندس ارشد بک‌اند، اینترنت اشیا (IoT) و امنیت API',
+        'role_en' => 'Back-End & IoT Systems Engineer',
+        'desc_fa' => 'طراحی سیستم‌های سرور مقیاس‌پذیر، معماری میکروسرویس، پیاده‌سازی پروتکل‌های مخابراتی سخت‌افزار (IoT) و استانداردهای سخت‌گیرانه امنیت داده.',
+        'desc_en' => 'Engineering scalable server architectures, microservice backends, embedded hardware network protocols, and robust API cryptographic defenses.',
+        'tags' => ['Backend APIs', 'Embedded IoT', 'Security'],
+    ],
+    [
+        'num' => '04',
+        'slug' => 'amirreza-hashemi',
+        'avatar_type' => 'data_architecture',
+        'name_fa' => 'سید امیررضا هاشمی',
+        'name_en' => 'Seyed Amirreza Hashemi',
+        'role_fa' => 'معمار پایگاه داده و تحلیل‌گر داده‌های ساختاریافته',
+        'role_en' => 'Database Architect & Data Strategist',
+        'desc_fa' => 'مدل‌سازی اسکیماهای رابطه‌ای و غیررابطه‌ای، بهینه‌سازی کوئری‌های پیچیده، پایداری تراکنش‌ها و معماری خطوط پردازش داده در مقیاس بالا.',
+        'desc_en' => 'Architecting relational and distributed database schemata, query execution optimization, ACID transaction guarantees, and high-volume data pipeline engineering.',
+        'tags' => ['Database Architecture', 'Query Tuning', 'PostgreSQL'],
+    ]
+];
 ?>
 
 <!-- ============ ABOUT HERO ============ -->
@@ -45,18 +98,12 @@
             </p>
         </div>
 
-        <?php
-        $membersData = require __DIR__ . '/../data/team.php';
-        $currentLang = lang();
-        ?>
-
         <!-- Team Grid -->
-<<<<<<< HEAD
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
             <?php foreach ($membersData as $member): 
                 $name = $currentLang === 'fa' ? $member['name_fa'] : $member['name_en'];
                 $role = $currentLang === 'fa' ? $member['role_fa'] : $member['role_en'];
-                $desc = $currentLang === 'fa' ? $member['short_desc_fa'] : $member['short_desc_en'];
+                $desc = $currentLang === 'fa' ? $member['desc_fa'] : $member['desc_en'];
                 $profileUrl = url($currentLang, 'team/' . $member['slug']);
             ?>
                 <!-- Member Card -->
@@ -117,95 +164,18 @@
 
                         <!-- Tech Tags -->
                         <div class="flex flex-wrap gap-1.5 mb-6">
-                            <?php foreach (array_slice($member['tags'], 0, 3) as $tag): ?>
+                            <?php foreach ($member['tags'] as $tag): ?>
                                 <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-slate-50 text-slate-700 border border-slate-200/70">
                                     <?= e($tag) ?>
                                 </span>
                             <?php endforeach; ?>
-=======
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <?php
-            /**
-             * Team cards come from the admin panel (team_members table).
-             * When the table is empty / not migrated yet, translated defaults
-             * keep the section populated.
-             */
-            $isFa       = lang() === 'fa';
-            $team       = [];
-            $initialsOf = static function (string $s): string {
-                $s = trim($s);
-                if ($s === '') {
-                    return '?';
-                }
-                return function_exists('mb_substr') ? mb_substr($s, 0, 1, 'UTF-8') : substr($s, 0, 1);
-            };
-
-            $localized = static function (string $fa, string $en) use ($isFa): string {
-                if ($isFa) {
-                    return $fa !== '' ? $fa : $en;
-                }
-                return $en !== '' ? $en : $fa;
-            };
-
-            if (!empty($members) && is_array($members)) {
-                foreach ($members as $m) {
-                    $faN = trim((string) ($m['name_fa'] ?? ''));
-                    $enN = trim((string) ($m['name_en'] ?? ''));
-                    $team[] = [
-                        'name'  => $localized($faN, $enN),
-                        'role'  => $localized(trim((string) ($m['role_fa'] ?? '')), trim((string) ($m['role_en'] ?? ''))),
-                        'desc'  => $localized(trim((string) ($m['desc_fa'] ?? '')), trim((string) ($m['desc_en'] ?? ''))),
-                        'img'   => trim((string) ($m['image'] ?? '')),
-                        'delay' => ['', 'reveal-delay-1', 'reveal-delay-2', 'reveal-delay-3'][count($team) % 4],
-                        'init'  => $initialsOf($faN !== '' ? $faN : $enN),
-                    ];
-                }
-            }
-
-            if (empty($team)) {
-                $defaults = [
-                    ['k' => 'team.m1', 'img' => 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=800&auto=format&fit=crop'],
-                    ['k' => 'team.m2', 'img' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop'],
-                    ['k' => 'team.m3', 'img' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop'],
-                    ['k' => 'team.m4', 'img' => 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=800&auto=format&fit=crop'],
-                ];
-                foreach ($defaults as $i => $d) {
-                    $team[] = [
-                        'name'  => t($d['k'] . '.name'),
-                        'role'  => t($d['k'] . '.role'),
-                        'desc'  => t($d['k'] . '.desc'),
-                        'img'   => $d['img'],
-                        'delay' => $i === 0 ? '' : 'reveal-delay-' . $i,
-                        'init'  => '',
-                    ];
-                }
-            }
-            ?>
-            <?php foreach ($team as $member): ?>
-                <div class="group cursor-pointer reveal <?= e($member['delay']) ?>">
-                    <div class="relative overflow-hidden rounded-2xl aspect-[3/4] bg-slate-100 mb-6">
-                        <?php if ($member['img'] !== ''): ?>
-                            <img src="<?= e($member['img']) ?>" alt="<?= e($member['name']) ?>" class="w-full h-full object-cover filter grayscale opacity-90 transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105 group-hover:opacity-100" loading="lazy">
-                        <?php else: ?>
-                            <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-physio-100 to-slate-200 text-physio-900 text-6xl font-bold select-none"><?= e($member['init']) ?></div>
-                        <?php endif; ?>
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    </div>
-                    <div class="transform transition-transform duration-300 group-hover:-translate-y-1">
-                        <h3 class="text-xl font-bold text-physio-950 group-hover:text-physio-600 transition-colors"><?= e($member['name']) ?></h3>
-                        <p class="text-sm font-semibold text-physio-500 uppercase tracking-wider mt-1 mb-3"><?= e($member['role']) ?></p>
-                        <p class="text-slate-600 text-sm leading-relaxed mb-4 line-clamp-2 text-justify"><?= e($member['desc']) ?></p>
-                        <div class="flex items-center text-sm font-semibold text-slate-400 group-hover:text-physio-600 transition-colors">
-                            <span><?= e(t('team.viewProfile')) ?></span>
-                            <i data-lucide="arrow-right" class="w-4 h-4 ml-1 rtl:ml-0 rtl:mr-1 rtl:rotate-180 transform opacity-0 -translate-x-2 rtl:translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"></i>
->>>>>>> 384f502776f5a5e8c96af040efcfc56402b69fc3
                         </div>
                     </div>
 
                     <!-- Bottom Link CTA -->
                     <div class="pt-4 border-t border-slate-100">
                         <a href="<?= e($profileUrl) ?>" class="inline-flex items-center justify-between w-full text-xs font-bold text-slate-800 group-hover:text-physio-600 transition-colors">
-                            <span><?= e(t('team.viewProfile') !== 'team.viewProfile' ? t('team.viewProfile') : (lang() === 'fa' ? 'مشاهده کامل پروفایل' : 'View Full Profile')) ?></span>
+                            <span><?= e($currentLang === 'fa' ? 'مشاهده کامل پروفایل' : 'View Full Profile') ?></span>
                             <i data-lucide="arrow-right" class="w-4 h-4 rtl:rotate-180 transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform"></i>
                         </a>
                     </div>
@@ -270,18 +240,19 @@
             <?= e(t('mindset.subtitle')) ?>
         </p>
     </div>
-<!-- Mindset Flowchart -->
+
+    <!-- Mindset Flowchart -->
     <div class="max-w-6xl mx-auto px-6 lg:px-8 mb-32 reveal reveal-delay-1">
-        <div class="relative w-full py-8">
+        <div class="relative w-full py-8 flex items-center justify-center">
             
-            <!-- Animated Pipeline Track & Laser Light (Desktop) -->
-        <!-- Animated Pipeline Track & Laser Light (Desktop) -->
-        <div class="hidden md:block absolute top-1/2 left-0 right-0 h-[2px] -translate-y-1/2 z-0 pointer-events-none">
-         <!-- خط‌چین مشکی تیره -->
-        <div class="absolute inset-0 border-t-2 border-dashed border-black opacity-70"></div>
-        <!-- پرتو نوری متحرک قرمز-مشکی -->
-        <div class="pipeline-laser-beam"></div>
-        </div>      
+            <!-- Foolproof Animated Pipeline Track (Black Dashed + Red/Black Laser) -->
+            <div class="hidden md:block absolute left-4 right-4 z-0 pointer-events-none" style="top: 50%; transform: translateY(-50%);">
+                <!-- خط‌چین مشکی تیره با استایل مستقیم -->
+                <div style="width: 100%; border-top: 2px dashed #0f172a; opacity: 0.65;"></div>
+                <!-- پرتو نوری متحرک قرمز-مشکی -->
+                <div class="pipeline-laser-beam"></div>
+            </div>
+
             <?php
             $nodes = [
                 ['num' => '01', 'label' => 'node.problem'],
@@ -294,16 +265,16 @@
             ?>
 
             <!-- Nodes Container -->
-            <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-2">
+            <div class="relative z-10 w-full flex flex-col md:flex-row items-center justify-between gap-4 md:gap-2">
                 <?php foreach ($nodes as $i => $node): ?>
                     
-                    <!-- Uniform Glowing Nodes (همه بلوک‌ها دقیقاً یکسان با هاله نور دور کارت) -->
+                    <!-- Uniform Glowing Nodes -->
                     <div class="group bg-white border border-slate-100 rounded-2xl px-6 py-3 shadow-[0_0_15px_rgba(14,165,233,0.12)] hover:shadow-[0_0_25px_rgba(14,165,233,0.25)] hover:border-physio-300 flex items-center gap-2.5 transition-all duration-300 hover:-translate-y-1">
                         <span class="font-mono text-xs font-bold text-slate-400 group-hover:text-physio-600 transition-colors"><?= $node['num'] ?>.</span>
                         <span class="text-sm font-bold text-slate-700 group-hover:text-slate-900 transition-colors"><?= e(t($node['label'])) ?></span>
                     </div>
 
-                    <!-- فلش جهت نما فقط برای موبایل -->
+                    <!-- فلش موبایل -->
                     <?php if ($i < count($nodes) - 1): ?>
                         <div class="md:hidden flex items-center justify-center my-1 text-slate-300">
                             <i data-lucide="arrow-down" class="w-4 h-4"></i>
@@ -314,6 +285,7 @@
             </div>
         </div>
     </div>
+
     <!-- Tech Domains -->
     <div class="max-w-7xl mx-auto px-6 lg:px-8 reveal reveal-delay-2">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
