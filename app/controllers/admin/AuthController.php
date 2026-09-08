@@ -7,6 +7,14 @@ final class AuthController
 {
     public static function loginForm(): void
     {
+        // Hosting without Docker entrypoint: create/resync the bootstrap
+        // admin from `.env` the first time someone opens /admin/login.
+        try {
+            \UserModel::bootstrapFromEnv();
+        } catch (\Throwable $e) {
+            error_log('[admin.login] bootstrapFromEnv: ' . $e->getMessage());
+        }
+
         if (\Auth::check()) {
             redirect('/admin/dashboard');
         }

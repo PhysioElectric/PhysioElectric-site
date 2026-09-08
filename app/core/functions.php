@@ -191,12 +191,13 @@ function admin_can_edit(): bool
 function admin_view(string $template, array $data = []): void
 {
     extract($data, EXTR_SKIP);
-    // 'login' ships its own full layout.
-    if ($template !== 'login') {
+    // login + login2fa ship their own full layout (no sidebar).
+    $standalone = ($template === 'login' || $template === 'login2fa');
+    if (!$standalone) {
         require BASE_PATH . '/views/admin/layouts/header.php';
     }
     require BASE_PATH . '/views/admin/' . $template . '.php';
-    if ($template !== 'login') {
+    if (!$standalone) {
         require BASE_PATH . '/views/admin/layouts/footer.php';
     }
 }
@@ -418,7 +419,7 @@ function seo_head(array $seo): void
         '@type'    => 'Organization',
         'name'     => $site,
         'url'      => Config::baseUrl() . url($lang),
-        'logo'     => Config::baseUrl() . '/assets/images/logo.svg',
+        'logo'     => Config::baseUrl() . '/assets/images/brand/logo-disc.png',
         'description' => $desc,
         'sameAs'  => [
             'https://t.me/' . rawurlencode(telegram_user()),
@@ -466,8 +467,9 @@ function seo_head(array $seo): void
 <meta name="twitter:description" content="<?= e($desc) ?>">
 <meta name="twitter:image" content="<?= e($absImage) ?>">
 
-<link rel="icon" type="image/svg+xml" href="/assets/images/favicon.svg">
-<link rel="apple-touch-icon" href="/assets/images/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/images/favicon-192.png">
+<link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png">
 <meta name="theme-color" content="#0f172a">
 
 <!-- Fonts (local, offline-safe) -->

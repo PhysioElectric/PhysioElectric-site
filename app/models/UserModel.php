@@ -154,4 +154,136 @@ final class UserModel
             ->query("SELECT COUNT(*) FROM users WHERE role = 'super_admin' AND is_active = 1")
             ->fetchColumn();
     }
+
+    /**
+     * Create / resync the bootstrap admin from ADMIN_* env (and `.env`).
+     *
+     * Called from create_admin.php on every container start AND from the
+     * login page so a `.env` dropped onto a host without a Docker restart
+     * still takes effect.
+     *
+     *  - missing account → created
+     *  - ADMIN_PASSWORD_RESET=1 → hash rewritten to ADMIN_PASSWORD
+     *  - force_password_change still 1 (bootstrap never completed) → hash
+     *    rewritten to the current ADMIN_PASSWORD so a newly supplied .env
+     *    actually logs in
+     *  - operator-supplied password (not the generated secret) → the forced
+     *    first-login rotation is skipped so the panel is reachable
+     *
+     * @return array{ok:bool, action:string, email:string, error:?string}
+     */
+    public static function bootstrapFromEnv(): array
+    {
+        static $done = false;
+        if ($done) {
+            return ['ok' => true, 'action' => 'skipped', 'email' => '', 'error' => null];
+        }
+        $done = true;
+
+        $name     = (string) (Config::get('ADMIN_NAME', 'Admin') ?? 'Admin');
+        $email    = strtolower(trim((string) (Config::get('ADMIN_EMAIL', 'admin@physioelectric.com') ?? 'admin@physioelectric.com')));
+        $password = (string) (Config::get('ADMIN_PASSWORD', '') ?? '');
+        $reset    = Config::getBool('ADMIN_PASSWORD_RESET', false);
+        $isProd   = Config::isProduction();
+
+        $empty = ['ok' => false, 'action' => 'none', 'email' => $email, 'error' => null];
+
+        if ($password === '') {
+            $empty['error'] = 'ADMIN_PASSWORD is empty';
+            return $empty;
+        }
+        if ($isProd && $password === 'Physio@2026') {
+            $empty['error'] = 'ADMIN_PASSWORD is still the shipped default';
+            return $empty;
+        }
+        if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            $empty['error'] = 'ADMIN_EMAIL is not a valid address';
+            return $empty;
+        }
+
+        $generated = Config::getBool('ADMIN_PASSWORD_GENERATED', false);
+        $secretFile = '/run/secrets/admin_pass';
+        if (is_readable($secretFile)) {
+            $fromSecret = trim((string) file_get_contents($secretFile));
+            if ($fromSecret !== '' && hash_equals($fromSecret, $password)) {
+                $generated = true;
+            }
+        }
+
+        $policy = PasswordPolicy::validate($password, $email, $name);
+        if (!$policy['ok']) {
+            $empty['error'] = 'ADMIN_PASSWORD rejected: ' . (string) $policy['reason'];
+            return $empty;
+        }
+
+        try {
+            $pdo = Database::pdo();
+        } catch (Throwable $e) {
+            $empty['error'] = 'DB not ready: ' . $e->getMessage();
+            return $empty;
+        }
+
+        try {
+            $st = $pdo->prepare(
+                'SELECT id, password_hash, force_password_change
+                 FROM users WHERE email = :email LIMIT 1'
+            );
+            $st->execute([':email' => $email]);
+            $row = $st->fetch();
+        } catch (Throwable $e) {
+            $empty['error'] = 'users table unavailable: ' . $e->getMessage();
+            return $empty;
+        }
+
+        $forceOnCreate = $generated && !$reset ? 1 : 0;
+
+        if ($row === false) {
+            $hash = password_hash($password, Auth::hashOptions(), Auth::hashAlgoOptions());
+            $ins  = $pdo->prepare(
+                'INSERT INTO users (name, email, password_hash, is_active, role, force_password_change)
+                 VALUES (:name, :email, :hash, 1, \'super_admin\', :force)'
+            );
+            $ins->execute([
+                ':name'  => mb_substr($name, 0, 120),
+                ':email' => $email,
+                ':hash'  => $hash,
+                ':force' => $forceOnCreate,
+            ]);
+            return ['ok' => true, 'action' => 'created', 'email' => $email, 'error' => null];
+        }
+
+        $id        = (int) $row['id'];
+        $hashNow   = (string) $row['password_hash'];
+        $forceFlag = (int) ($row['force_password_change'] ?? 0) === 1;
+
+        if (!$reset && !$forceFlag) {
+            return ['ok' => true, 'action' => 'exists', 'email' => $email, 'error' => null];
+        }
+
+        $matches = password_verify($password, $hashNow);
+
+        // Resync when the operator asked for a reset, or when first-login
+        // rotation never completed (the .env password was ignored before).
+        if (!$matches) {
+            $newHash = password_hash($password, Auth::hashOptions(), Auth::hashAlgoOptions());
+            $clear   = ($reset || !$generated) ? 1 : 0;
+            $upd = $pdo->prepare(
+                'UPDATE users
+                 SET password_hash = :hash,
+                     is_active = 1,
+                     force_password_change = CASE WHEN :clear = 1 THEN 0 ELSE force_password_change END
+                 WHERE id = :id'
+            );
+            $upd->execute([':hash' => $newHash, ':clear' => $clear, ':id' => $id]);
+            return ['ok' => true, 'action' => 'updated', 'email' => $email, 'error' => null];
+        }
+
+        if ($forceFlag && ($reset || !$generated)) {
+            $pdo->prepare('UPDATE users SET force_password_change = 0, is_active = 1 WHERE id = :id')
+                ->execute([':id' => $id]);
+            return ['ok' => true, 'action' => 'unlocked', 'email' => $email, 'error' => null];
+        }
+
+        return ['ok' => true, 'action' => 'exists', 'email' => $email, 'error' => null];
+    }
 }

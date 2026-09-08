@@ -292,6 +292,9 @@ final class Security
             return false;
         }
         $host = strtolower($host);
+        if (Config::isTrustedHost($host)) {
+            return true;
+        }
         foreach (self::knownHosts() as $known) {
             if ($known !== '' && strcasecmp($host, $known) === 0) {
                 return true;
@@ -308,6 +311,7 @@ final class Security
             $_SERVER['SERVER_NAME'] ?? '',
             $_SERVER['HTTP_X_FORWARDED_HOST'] ?? '',
             (string) parse_url((string) Config::get('SITE_BASE_URL', ''), PHP_URL_HOST),
+            (string) Config::get('TRUSTED_HOSTS', ''),
         ];
         $out = [];
         foreach ($candidates as $c) {

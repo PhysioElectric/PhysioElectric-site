@@ -51,6 +51,7 @@
         ?>
 
         <!-- Team Grid -->
+<<<<<<< HEAD
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
             <?php foreach ($membersData as $member): 
                 $name = $currentLang === 'fa' ? $member['name_fa'] : $member['name_en'];
@@ -121,6 +122,83 @@
                                     <?= e($tag) ?>
                                 </span>
                             <?php endforeach; ?>
+=======
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <?php
+            /**
+             * Team cards come from the admin panel (team_members table).
+             * When the table is empty / not migrated yet, translated defaults
+             * keep the section populated.
+             */
+            $isFa       = lang() === 'fa';
+            $team       = [];
+            $initialsOf = static function (string $s): string {
+                $s = trim($s);
+                if ($s === '') {
+                    return '?';
+                }
+                return function_exists('mb_substr') ? mb_substr($s, 0, 1, 'UTF-8') : substr($s, 0, 1);
+            };
+
+            $localized = static function (string $fa, string $en) use ($isFa): string {
+                if ($isFa) {
+                    return $fa !== '' ? $fa : $en;
+                }
+                return $en !== '' ? $en : $fa;
+            };
+
+            if (!empty($members) && is_array($members)) {
+                foreach ($members as $m) {
+                    $faN = trim((string) ($m['name_fa'] ?? ''));
+                    $enN = trim((string) ($m['name_en'] ?? ''));
+                    $team[] = [
+                        'name'  => $localized($faN, $enN),
+                        'role'  => $localized(trim((string) ($m['role_fa'] ?? '')), trim((string) ($m['role_en'] ?? ''))),
+                        'desc'  => $localized(trim((string) ($m['desc_fa'] ?? '')), trim((string) ($m['desc_en'] ?? ''))),
+                        'img'   => trim((string) ($m['image'] ?? '')),
+                        'delay' => ['', 'reveal-delay-1', 'reveal-delay-2', 'reveal-delay-3'][count($team) % 4],
+                        'init'  => $initialsOf($faN !== '' ? $faN : $enN),
+                    ];
+                }
+            }
+
+            if (empty($team)) {
+                $defaults = [
+                    ['k' => 'team.m1', 'img' => 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=800&auto=format&fit=crop'],
+                    ['k' => 'team.m2', 'img' => 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=800&auto=format&fit=crop'],
+                    ['k' => 'team.m3', 'img' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop'],
+                    ['k' => 'team.m4', 'img' => 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=800&auto=format&fit=crop'],
+                ];
+                foreach ($defaults as $i => $d) {
+                    $team[] = [
+                        'name'  => t($d['k'] . '.name'),
+                        'role'  => t($d['k'] . '.role'),
+                        'desc'  => t($d['k'] . '.desc'),
+                        'img'   => $d['img'],
+                        'delay' => $i === 0 ? '' : 'reveal-delay-' . $i,
+                        'init'  => '',
+                    ];
+                }
+            }
+            ?>
+            <?php foreach ($team as $member): ?>
+                <div class="group cursor-pointer reveal <?= e($member['delay']) ?>">
+                    <div class="relative overflow-hidden rounded-2xl aspect-[3/4] bg-slate-100 mb-6">
+                        <?php if ($member['img'] !== ''): ?>
+                            <img src="<?= e($member['img']) ?>" alt="<?= e($member['name']) ?>" class="w-full h-full object-cover filter grayscale opacity-90 transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105 group-hover:opacity-100" loading="lazy">
+                        <?php else: ?>
+                            <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-physio-100 to-slate-200 text-physio-900 text-6xl font-bold select-none"><?= e($member['init']) ?></div>
+                        <?php endif; ?>
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    </div>
+                    <div class="transform transition-transform duration-300 group-hover:-translate-y-1">
+                        <h3 class="text-xl font-bold text-physio-950 group-hover:text-physio-600 transition-colors"><?= e($member['name']) ?></h3>
+                        <p class="text-sm font-semibold text-physio-500 uppercase tracking-wider mt-1 mb-3"><?= e($member['role']) ?></p>
+                        <p class="text-slate-600 text-sm leading-relaxed mb-4 line-clamp-2 text-justify"><?= e($member['desc']) ?></p>
+                        <div class="flex items-center text-sm font-semibold text-slate-400 group-hover:text-physio-600 transition-colors">
+                            <span><?= e(t('team.viewProfile')) ?></span>
+                            <i data-lucide="arrow-right" class="w-4 h-4 ml-1 rtl:ml-0 rtl:mr-1 rtl:rotate-180 transform opacity-0 -translate-x-2 rtl:translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"></i>
+>>>>>>> 384f502776f5a5e8c96af040efcfc56402b69fc3
                         </div>
                     </div>
 

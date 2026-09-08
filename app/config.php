@@ -19,6 +19,7 @@ final class Config
         'APP_ENV', 'APP_TIMEZONE', 'SITE_BASE_URL', 'TRUSTED_HOSTS',
         'DB_HOST', 'DB_PORT', 'DB_NAME', 'DB_USER', 'DB_PASS',
         'ADMIN_NAME', 'ADMIN_EMAIL', 'ADMIN_PASSWORD',
+        'ADMIN_PASSWORD_RESET', 'ADMIN_PASSWORD_GENERATED',
         'SESSION_IDLE_MINUTES', 'SESSION_ABSOLUTE_MINUTES',
         'LOGIN_MAX_ATTEMPTS', 'LOGIN_WINDOW_MINUTES',
         'MAX_UPLOAD_BYTES', 'MAX_IMAGE_EDGE', 'MAX_UPLOADS',
@@ -36,16 +37,108 @@ final class Config
     public static function env(): array
     {
         if (self::$env === null) {
+            // Hosting / bind-mount: pick up a dropped `.env` so operators do
+            // not have to export variables by hand. Existing non-empty process
+            // env (Docker compose, secrets, putenv from tests) always wins.
+            self::loadDotenv();
             $env = [];
             foreach (self::ALLOWED_KEYS as $key) {
-                $val = getenv($key);
-                if ($val !== false && $val !== '') {
+                $val = self::readRaw($key);
+                if ($val !== null && $val !== '') {
                     $env[$key] = $val;
                 }
             }
             self::$env = $env;
         }
         return self::$env;
+    }
+
+    /**
+     * getenv() / $_ENV / $_SERVER, in that order. PHP-FPM and some Apache
+     * SAPIs expose PassEnv values only in $_SERVER, so getenv() alone was
+     * silently dropping ADMIN_* / SITE_BASE_URL on real hosts.
+     */
+    private static function readRaw(string $key): ?string
+    {
+        $val = getenv($key);
+        if (is_string($val) && $val !== '') {
+            return $val;
+        }
+        if (isset($_ENV[$key]) && is_string($_ENV[$key]) && $_ENV[$key] !== '') {
+            return $_ENV[$key];
+        }
+        if (isset($_SERVER[$key]) && is_string($_SERVER[$key]) && $_SERVER[$key] !== '') {
+            return $_SERVER[$key];
+        }
+        return null;
+    }
+
+    /**
+     * Parse `.env` files without executing them. Empty values never clobber
+     * a non-empty process environment (so Docker secrets stay intact).
+     */
+    private static function loadDotenv(): void
+    {
+        $candidates = [
+            __DIR__ . DIRECTORY_SEPARATOR . '.env',
+            dirname(__DIR__) . DIRECTORY_SEPARATOR . '.env',
+        ];
+        $seen = [];
+        foreach ($candidates as $path) {
+            if (!is_readable($path) || !is_file($path)) {
+                continue;
+            }
+            $real = realpath($path) ?: $path;
+            if (isset($seen[$real])) {
+                continue;
+            }
+            $seen[$real] = true;
+            self::applyDotenvFile($real);
+        }
+    }
+
+    private static function applyDotenvFile(string $path): void
+    {
+        $raw = @file_get_contents($path);
+        if (!is_string($raw) || $raw === '') {
+            return;
+        }
+        if (str_starts_with($raw, "\xEF\xBB\xBF")) {
+            $raw = substr($raw, 3);
+        }
+        foreach (preg_split("/\r\n|\n|\r/", $raw) ?: [] as $line) {
+            $trim = ltrim($line);
+            if ($trim === '' || str_starts_with($trim, '#')) {
+                continue;
+            }
+            if (preg_match('/^export\s+/', $trim) === 1) {
+                $trim = ltrim((string) preg_replace('/^export\s+/', '', $trim));
+            }
+            $eq = strpos($trim, '=');
+            if ($eq === false) {
+                continue;
+            }
+            $key = trim(substr($trim, 0, $eq));
+            if ($key === '' || !in_array($key, self::ALLOWED_KEYS, true)) {
+                continue;
+            }
+            if (self::readRaw($key) !== null) {
+                continue; // process env wins
+            }
+            $val = trim(substr($trim, $eq + 1));
+            if ($val !== '' && (
+                (str_starts_with($val, '"') && str_ends_with($val, '"'))
+                || (str_starts_with($val, "'") && str_ends_with($val, "'"))
+            )) {
+                $val = substr($val, 1, -1);
+            }
+            if ($val === '') {
+                continue;
+            }
+            putenv($key . '=' . $val);
+            $_ENV[$key] = $val;
+            $_SERVER[$key] = $val;
+        }
     }
 
     /**
@@ -180,6 +273,13 @@ final class Config
         if ($bare === '' || in_array($bare, ['localhost', '127.0.0.1', '::1', '[::1]'], true)) {
             return true;
         }
+        $base = self::get('SITE_BASE_URL', '');
+        if (is_string($base) && $base !== '') {
+            $baseHost = parse_url($base, PHP_URL_HOST);
+            if (is_string($baseHost) && strtolower($baseHost) === $bare) {
+                return true;
+            }
+        }
         $list = self::get('TRUSTED_HOSTS', '');
         if ($list === null || $list === '') {
             return false;
@@ -189,6 +289,11 @@ final class Config
             if ($allowed === '') {
                 continue;
             }
+            if (str_contains($allowed, '://')) {
+                $parsed = parse_url($allowed, PHP_URL_HOST);
+                $allowed = is_string($parsed) ? strtolower($parsed) : $allowed;
+            }
+            $allowed = (string) preg_replace('/:\\d+$/', '', $allowed);
             if ($allowed === $bare) {
                 return true;
             }
@@ -211,8 +316,20 @@ final class Config
         if ((($_SERVER['SERVER_PORT'] ?? '') === '443')) {
             return true;
         }
+        $scheme = $_SERVER['REQUEST_SCHEME'] ?? '';
+        if (is_string($scheme) && strtolower($scheme) === 'https') {
+            return true;
+        }
         $proto = $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '';
         if (is_string($proto) && strtolower(trim(explode(',', $proto)[0])) === 'https') {
+            return true;
+        }
+        $fwdSsl = $_SERVER['HTTP_X_FORWARDED_SSL'] ?? '';
+        if (is_string($fwdSsl) && strtolower($fwdSsl) === 'on') {
+            return true;
+        }
+        $cf = $_SERVER['HTTP_CF_VISITOR'] ?? '';
+        if (is_string($cf) && str_contains($cf, 'https')) {
             return true;
         }
         return false;
