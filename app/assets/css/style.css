@@ -1483,3 +1483,59 @@ html[dir="rtl"] .reveal-from-left.active {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+/* ============ Inter-Card Dimming Interaction ============ */
+
+.pe-member-card {
+    transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform, opacity;
+}
+
+/* ============ Traveling Laser Pipeline (Black-Red Blinking) ============ */
+.pipeline-laser-beam {
+    position: absolute;
+    top: -1.5px;
+    height: 4px;
+    width: 140px;
+    border-radius: 9999px;
+    /* ترکیب طیف مشکی به قرمز درخشان */
+    background: linear-gradient(90deg, transparent, rgba(0,0,0,0.9), #ff1a1a, rgba(0,0,0,0.9), transparent);
+    z-index: 1;
+}
+
+/* حرکت و چشمک در زبان فارسی (راست‌چین) */
+html[dir="rtl"] .pipeline-laser-beam {
+    /* ترکیب دو انیمیشن: حرکت ۴ ثانیه‌ای + چشمک زدن ۰.۱۵ ثانیه‌ای */
+    animation: flowLaserRTL 4s linear infinite, blinkRedLaser 0.15s infinite alternate;
+}
+
+/* حرکت و چشمک در زبان انگلیسی (چپ‌چین) */
+html[dir="ltr"] .pipeline-laser-beam {
+    animation: flowLaserLTR 4s linear infinite, blinkRedLaser 0.15s infinite alternate;
+}
+
+/* انیمیشن چشمک‌زن (پالس نوری قرمز) */
+@keyframes blinkRedLaser {
+    0% {
+        box-shadow: 0 0 2px rgba(255, 0, 0, 0.3);
+        filter: brightness(0.8);
+    }
+    100% {
+        box-shadow: 0 0 15px rgba(255, 0, 0, 1), 0 0 30px rgba(220, 38, 38, 0.8);
+        filter: brightness(1.4);
+    }
+}
+
+/* انیمیشن حرکت (مسیر طی‌شده) */
+@keyframes flowLaserRTL {
+    0% { right: -10%; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { right: 110%; opacity: 0; }
+}
+
+@keyframes flowLaserLTR {
+    0% { left: -10%; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { left: 110%; opacity: 0; }
+}
